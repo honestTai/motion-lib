@@ -286,7 +286,7 @@ Use the voice-over timestamps to fill each scene's `data-t` / `data-d` and the t
 
 ## License
 
-- Code: [MIT](LICENSE).
+- Code: [MIT](LICENSE). Third-party notes: [NOTICE](NOTICE).
 - GSAP: used under GreenSock's [Standard License](https://gsap.com/standard-license) (free, including commercial use).
 - Fonts: see [fonts/README.md](fonts/README.md).
 

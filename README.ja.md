@@ -286,7 +286,7 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 
 ## ライセンス
 
-- コード：[MIT](LICENSE)。
+- コード：[MIT](LICENSE)。サードパーティについては [NOTICE](NOTICE) を参照してください。
 - GSAP：GreenSock の [Standard License](https://gsap.com/standard-license) のもとで使用しています（商用利用を含め無料）。
 - フォント：[fonts/README.md](fonts/README.md) を参照してください。
 

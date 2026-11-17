@@ -286,7 +286,7 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 
 ## 授權
 
-- 程式碼：[MIT](LICENSE)。
+- 程式碼：[MIT](LICENSE)；第三方元件說明見 [NOTICE](NOTICE)。
 - GSAP：使用 GreenSock 的 [Standard License](https://gsap.com/standard-license)（免費，含商用）。
 - 字型：見 [fonts/README.md](fonts/README.md)。
 
