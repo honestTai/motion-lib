@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>Pixel prompt tips</title>
+<link rel="stylesheet" href="lib/fx.css" />
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/fx.js"></script>
+<style>
+  /* ── 像素天空场景（阶梯式渐变，硬边） ── */
+  .theme-pixel .scene.sky { background-color: #8fd3ff; background-size: auto;
+    background-image: linear-gradient(#7ec8f8 0 24%, #94d3fb 24% 40%, #addffd 40% 54%, #c6ebfe 54% 66%, #def5ff 66% 100%); }
+  .scenery { position: absolute; inset: 0; pointer-events: none; }
+  .cloud { position: absolute; width: 24px; height: 24px; background: #fff;
+    box-shadow: 24px 0 #fff, 48px 0 #fff, 72px 0 #fff, 96px 0 #fff, 24px -24px #fff, 48px -24px #fff, 72px -24px #fff, 48px -48px #fff, 0 24px #dbeefa, 24px 24px #dbeefa; }
+  .cloud.s { box-shadow: 24px 0 #fff, 48px 0 #fff, 24px -24px #fff, 0 24px #dbeefa, 24px 24px #dbeefa; }
+  .ground { position: absolute; left: 0; right: 0; bottom: 0; height: 150px;
+    background: linear-gradient(#3f8f35 0 12px, #6cc04a 12px 40px, #5aad3f 40px 48px, #a56a3a 48px 100%); border-top: 6px solid #1d1b19; }
+  .hill i { position: absolute; background: #5aad3f; border-top: 6px solid #3f8f35; right: 0; height: 48px; }
+  .house { position: absolute; width: 216px; height: 190px; }
+  .house i { position: absolute; display: block; border: 6px solid #1d1b19; box-sizing: border-box; }
+  .tree { position: absolute; width: 36px; height: 96px; background: #8a5a2b; border: 6px solid #1d1b19; box-sizing: border-box; }
+  .tree b { position: absolute; left: -48px; top: -78px; width: 120px; height: 84px; background: #3fa04a; border: 6px solid #1d1b19; box-sizing: border-box; }
+  .sparkle { position: absolute; width: 12px; height: 12px; background: #fff; }
+  .runner { position: absolute; width: 48px; height: 48px; background: #ffcf3f; border: 6px solid #1d1b19; box-sizing: border-box; }
+  .runner::before, .runner::after { content: ""; position: absolute; top: 12px; width: 6px; height: 12px; background: #1d1b19; }
+  .runner::before { left: 8px; } .runner::after { right: 8px; }
+  .track { position: absolute; height: 12px; background: repeating-linear-gradient(90deg, #1d1b19 0 24px, transparent 24px 36px); }
+  .theme-pixel .scene.overlay { background: none; }
+  .abs.fx-window, .abs.pbar { position: absolute; }
+  .host svg { shape-rendering: crispEdges; }
+  .host [data-mouth] { position: absolute; left: 0; bottom: 0; width: 100%; height: 100%; visibility: hidden; }
+  .body28 { font-size: 36px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div id="root" class="theme-pixel" data-composition-id="main" data-width="1920" data-height="1080">
+
+  <!-- 0 风格标题卡 -->
+  <section class="scene dark center" id="title" data-d="1.8" style="background:#171719;color:#fff">
+    <div class="t-pixel" style="font-size:168px;line-height:1.1;color:#fff" data-fx="blur-rise-in@0(dur=0.5)">像素复古</div>
+    <div class="t-mono" style="font-size:48px;margin-top:36px;color:#fff;letter-spacing:2px" data-fx="blur-rise-in@0.2(dur=0.5)">.theme-pixel</div>
+    <div class="t-mono" style="font-size:30px;margin-top:20px;color:#bdbdc4" data-fx="blur-rise-in@0.4(dur=0.5)">motion-lib example</div>
+  </section>
+
+  <!-- 1 开场：天空 -->
+  <section class="scene sky" id="s1" data-d="6" data-in="pixelate(cols=24,color=#171719)">
+    <div class="scenery sc"></div>
+    <div class="abs" style="left:700px;top:130px" data-make="pixels" data-text="PROMPT" data-size="18" data-colors="#3fbf5a,#2f7de1,#ffcf3f,#1d1b19,#e0463a" data-fx="each:pixel-in@0.3(order=random,stagger=0.012)"></div>
+    <div class="abs fx-window" style="left:700px;top:320px;width:1060px" data-fx="pop-in@1.4(from=0.6)">
+      <div class="fx-win-bar">TODAY.TXT</div>
+      <div class="fx-win-body col" style="gap:22px;padding:28px 32px">
+        <span class="t-pixel" style="font-size:48px">写好提示词的三个小技巧</span>
+        <div class="row" style="gap:22px" data-fx="each:drop-in@2.4(stagger=0.4)">
+          <span class="ptag" style="font-size:36px">1 说清目标</span><span class="ptag" style="font-size:36px">2 给例子</span><span class="ptag" style="font-size:36px">3 先列计划</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 说清目标：米色网点纸 -->
+  <section class="scene" id="s2" data-d="7" data-in="pixelate(cols=24,color=#171719)">
+    <div class="abs t-pixel" style="left:700px;top:100px;font-size:60px;white-space:nowrap" data-fx="slide-in@0.1(dir=right,dist=60)">技巧一：<span data-fx="marker@1.0(dur=0.6)">说清目标</span></div>
+    <div class="abs fx-window" id="wa" style="left:700px;top:240px;width:520px" data-fx="pop-in@0.4(from=0.6) shake@2.4">
+      <div class="fx-win-bar">模糊的</div>
+      <div class="fx-win-body col" style="padding:24px 28px;min-height:250px"><span class="t-pixel body28" data-fx="type@0.9(cps=9)">帮我写点东西</span></div>
+    </div>
+    <div class="abs ptag" style="left:1040px;top:470px;color:#e0463a;font-size:48px;transform:rotate(-8deg);background:#fbf6ea" data-fx="stamp-in@2.3">✘ 太含糊</div>
+    <div class="abs fx-window" id="wb" style="left:1290px;top:240px;width:540px" data-fx="pop-in@0.6(from=0.6)">
+      <div class="fx-win-bar">清楚的</div>
+      <div class="fx-win-body col" style="padding:24px 28px;min-height:250px"><span class="t-pixel body28" data-fx="type@3.0(cps=11)">给新人写封欢迎邮件，<span id="k80" data-fx="box@5.2(pad=6,w=4,r=0)">80 字</span>，语气友好</span></div>
+    </div>
+    <div class="abs t-pixel" style="left:700px;top:620px;font-size:24px;color:#7a7266">清晰度</div>
+    <div class="abs pbar h" style="position:absolute;left:700px;top:664px;width:520px"><i data-fx="fill@2.0(to=20,dur=0.8,ease=steps(8))"></i></div>
+    <div class="abs pbar h" style="position:absolute;left:1290px;top:664px;width:540px"><i data-fx="fill@4.0(to=92,dur=1.4,ease=steps(8))"></i></div>
+    <div class="abs ptag" style="left:1380px;top:770px;color:#2c8a43;font-size:48px;background:#fbf6ea;transform:rotate(4deg)" data-fx="stamp-in@5.6">✔ 一次就对</div>
+  </section>
+
+  <!-- 3 给例子：天空 -->
+  <section class="scene sky" id="s3" data-d="7" data-in="pixelate(cols=24,color=#171719)">
+    <div class="scenery sc"></div>
+    <div class="abs t-pixel" style="left:700px;top:100px;font-size:60px;white-space:nowrap" data-fx="slide-in@0.1(dir=right,dist=60)">技巧二：<span data-fx="marker@1.0(dur=0.6)">给个例子</span></div>
+    <div class="abs" id="stack" data-fx="each:drop-bounce@0.8(stagger=0.5,dist=760)">
+      <div class="abs t-pixel center" style="left:720px;top:804px;width:132px;height:126px;background:#3fbf5a;border:6px solid #1d1b19;font-size:36px;color:#1d1b19">例1</div>
+      <div class="abs t-pixel center" style="left:720px;top:678px;width:132px;height:126px;background:#2f7de1;border:6px solid #1d1b19;font-size:36px;color:#fff">例2</div>
+      <div class="abs t-pixel center" style="left:720px;top:552px;width:132px;height:126px;background:#ffcf3f;border:6px solid #1d1b19;font-size:36px;color:#1d1b19">例3</div>
+    </div>
+    <div class="abs fx-window" style="left:960px;top:240px;width:800px" data-fx="pop-in@2.4(from=0.6)">
+      <div class="fx-win-bar">提示词 + 例子</div>
+      <div class="fx-win-body col" style="gap:16px;padding:24px 32px">
+        <span class="t-pixel body28">写一句饮料文案。</span>
+        <span class="t-pixel body28" style="color:#2f7de1" data-fx="type@3.0(cps=12)">例：清爽一口，快乐加倍。</span>
+        <span class="t-pixel body28" data-fx="fade-in@4.4"><span data-fx="marker@4.8(dur=0.6)">照这个味道</span>再写三句。</span>
+      </div>
+    </div>
+    <div class="abs t-pixel" style="left:1840px;top:200px;font-size:24px;color:#1d1b19;transform:translateX(-100%)">质量</div>
+    <div class="abs pbar" style="position:absolute;left:1780px;top:240px;height:360px;width:60px"><i data-fx="fill@4.2(dir=y,to=88,dur=1.4,ease=steps(8))"></i></div>
+  </section>
+
+  <!-- 4 先列计划：米色网点纸 -->
+  <section class="scene" id="s4" data-d="7" data-in="pixelate(cols=24,color=#171719)">
+    <div class="abs t-pixel" style="left:700px;top:100px;font-size:60px;white-space:nowrap" data-fx="slide-in@0.1(dir=right,dist=60)">技巧三：<span data-fx="marker@1.0(dur=0.6)">先列计划</span></div>
+    <div class="abs fx-window" style="left:700px;top:240px;width:1100px" data-fx="pop-in@0.4(from=0.6)">
+      <div class="fx-win-bar">给 AI 的话</div>
+      <div class="fx-win-body col" style="padding:24px 32px;min-height:120px"><span class="t-pixel body28" data-fx="type@1.0(cps=13,caret=1)">先列出你的步骤，我确认后再开始。</span></div>
+    </div>
+    <div class="abs row" id="plan" style="left:700px;top:470px;gap:34px" data-fx="each:drop-in@2.6(stagger=0.45)">
+      <span class="ptag" style="font-size:36px">1 读需求</span><span class="ptag" style="font-size:36px">2 拆步骤</span><span class="ptag" style="font-size:36px">3 再开写</span>
+    </div>
+    <div class="abs track" style="left:700px;top:630px;width:660px" data-fx="grow-x@3.4"></div>
+    <div class="abs runner" style="left:700px;top:600px" data-fx="pop-in@3.6 walk@4.3(x=612,dur=1.6,ease=steps(8),steps=6)"></div>
+    <div class="abs ptag" style="left:1420px;top:560px;color:#2c8a43;font-size:48px;background:#fbf6ea;transform:rotate(4deg)" data-fx="stamp-in@6.0">✔ 更靠谱</div>
+  </section>
+
+  <!-- 5 总结：天空 -->
+  <section class="scene sky" id="s5" data-d="3.7" data-in="pixelate(cols=24,color=#171719)">
+    <div class="scenery sc"></div>
+    <div class="abs" style="left:700px;top:130px" data-make="pixels" data-text="3 TIPS" data-size="18" data-colors="#3fbf5a,#2f7de1,#ffcf3f,#e0463a" data-fx="each:pixel-in@0.2(order=random,stagger=0.01)"></div>
+    <div class="abs row" style="left:700px;top:370px;gap:30px" data-fx="each:pop-in@1.0(stagger=0.25)">
+      <span class="ptag" style="font-size:36px">✔ 说清目标</span><span class="ptag" style="font-size:36px">✔ 给例子</span><span class="ptag" style="font-size:36px">✔ 先列计划</span>
+    </div>
+    <div class="abs t-pixel" style="left:700px;top:530px;font-size:48px;white-space:nowrap" data-fx="rise-in@1.8"><span data-fx="marker@2.2(dur=0.6)">越具体，越好用</span></div>
+  </section>
+
+  <!-- 6 结尾：天空 -->
+  <section class="scene sky" id="s6" data-d="4" data-in="pixelate(cols=24,color=#171719)">
+    <div class="scenery sc"></div>
+    <div class="abs" style="left:800px;top:130px" data-make="pixels" data-text="GO!" data-size="30" data-gap="4" data-colors="#3fbf5a,#2f7de1,#ffcf3f,#e0463a,#1d1b19" data-fx="each:pixel-in@0.2(order=random,stagger=0.008)"></div>
+    <div class="abs t-pixel" style="left:700px;top:520px;font-size:60px;white-space:nowrap" data-fx="rise-in@1.0">写好提示词，从今天开始</div>
+    <div class="abs ptag" style="left:700px;top:660px;font-size:36px;background:#ffcf3f" data-fx="drop-in@1.6">motion-lib · theme-pixel</div>
+  </section>
+
+  <!-- 叠加层：章节条 + 主持人 -->
+  <section class="scene overlay" id="ov" data-t="0" data-d="36.5">
+    <div class="fx-chapters" data-make="chapters" data-labels="开场,说清目标,给例子,先列计划,总结"
+      data-fx="fade-in@1.8(dur=0.05) chapter@1.8(i=1,dur=0.01) chapter@7.8(i=2,dur=0.4,ease=steps(4)) chapter@14.8(i=3,dur=0.4,ease=steps(4)) chapter@21.8(i=4,dur=0.4,ease=steps(4)) chapter@28.8(i=5,dur=0.4,ease=steps(4))"></div>
+    <div class="host" id="host" style="left:0;bottom:130px;width:576px;height:768px;transform:translateX(-600px)"
+      data-fx="walk@1.8(x=600,dur=1,ease=steps(8),steps=4)
+        lipsync@1.9(dur=2.5,seed=1) lipsync@4.5(dur=3.2,seed=2) lipsync@7.9(dur=2.7,seed=3) lipsync@10.7(dur=3.9,seed=4) lipsync@14.9(dur=3.1,seed=5)
+        lipsync@18.1(dur=3.6,seed=6) lipsync@21.9(dur=3.1,seed=7) lipsync@25.1(dur=3.6,seed=8) lipsync@28.9(dur=3.5,seed=9) lipsync@32.6(dur=3.7,seed=10)
+        hop@3.3(h=40) hop@13.2(h=40) hop@20.2(h=40) pose@21.8(name=think,bounce=1) pose@24.8(name=point,bounce=1)
+        pose@28.8(name=cheer,bounce=1) hop@29.4(h=48) hop@33.2(h=56,n=2)"></div>
+  </section>
+</div>
+
+<script>
+/* ── 像素主持人：24×32 格，每格 24px，用 <rect> 画 ── */
+(function () {
+  var PAL = { K: '#1d1b19', B: '#2f7de1', L: '#7db8ff', W: '#fbf6ea', Y: '#ffcf3f', R: '#e0463a', G: '#3fbf5a' };
+  function mk() { var g = []; for (var y = 0; y < 32; y++) g.push(new Array(24).fill('.')); return g; }
+  function rect(g, x, y, w, h, c) { for (var j = y; j < y + h; j++) for (var i = x; i < x + w; i++) if (g[j] && i >= 0 && i < 24) g[j][i] = c; }
+  function box(g, x, y, w, h, c) { rect(g, x, y, w, h, 'K'); rect(g, x + 1, y + 1, w - 2, h - 2, c); }
+  function svg(g, name) {
+    var h = '<svg viewBox="0 0 24 32" width="100%" height="100%" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg"' + (name ? ' data-pose="' + name + '"' : '') + '>';
+    for (var y = 0; y < 32; y++) { var x = 0; while (x < 24) { var c = g[y][x]; if (c === '.') { x++; continue; } var x2 = x; while (x2 < 24 && g[y][x2] === c) x2++; h += '<rect x="' + x + '" y="' + y + '" width="' + (x2 - x) + '" height="1" fill="' + PAL[c] + '"/>'; x = x2; } }
+    return h + '</svg>';
+  }
+  function base(face) {
+    var g = mk();
+    rect(g, 11, 0, 2, 1, 'Y'); rect(g, 11, 1, 2, 1, 'K');          // 天线
+    box(g, 4, 2, 16, 12, 'B'); rect(g, 6, 4, 12, 8, 'W');          // 方块脑袋 + 屏幕脸
+    face(g);
+    rect(g, 7, 8, 1, 1, 'R'); rect(g, 16, 8, 1, 1, 'R');           // 腮红
+    rect(g, 10, 14, 4, 1, 'K');                                     // 脖子
+    box(g, 7, 15, 10, 11, 'B'); rect(g, 9, 17, 6, 4, 'W');        // 身体 + 胸口面板
+    rect(g, 10, 18, 1, 1, 'Y'); rect(g, 13, 18, 1, 1, 'Y'); rect(g, 11, 19, 2, 1, 'G');
+    rect(g, 8, 23, 8, 1, 'K');                                      // 腰带
+    box(g, 8, 26, 3, 4, 'B'); box(g, 13, 26, 3, 4, 'B'); rect(g, 7, 30, 5, 2, 'K'); rect(g, 12, 30, 5, 2, 'K');
+    return g;
+  }
+  var eyesN = function (g) { rect(g, 8, 5, 2, 2, 'K'); rect(g, 14, 5, 2, 2, 'K'); };
+  var eyesUp = function (g) { rect(g, 8, 4, 2, 2, 'K'); rect(g, 14, 4, 2, 2, 'K'); };
+  var eyesHappy = function (g) { [[8, 6], [9, 5], [10, 5], [11, 6], [13, 6], [14, 5], [15, 5], [16, 6]].forEach(function (p) { rect(g, p[0], p[1], 1, 1, 'K'); }); };
+  // 姿势 1：指向右边
+  var p1 = base(eyesN); box(p1, 4, 16, 3, 8, 'B'); box(p1, 17, 16, 7, 3, 'B'); rect(p1, 22, 17, 2, 1, 'Y');
+  // 姿势 2：思考托腮
+  var p2 = base(eyesUp); box(p2, 4, 16, 3, 8, 'B'); box(p2, 17, 16, 5, 3, 'B'); box(p2, 20, 11, 3, 8, 'B'); rect(p2, 20, 9, 3, 2, 'Y');
+  rect(p2, 21, 4, 1, 1, 'K'); rect(p2, 22, 2, 1, 1, 'K'); rect(p2, 23, 0, 1, 1, 'K');
+  // 姿势 3：欢呼举手
+  var p3 = base(eyesHappy); box(p3, 3, 15, 4, 4, 'B'); box(p3, 1, 6, 3, 12, 'B'); rect(p3, 1, 4, 3, 2, 'Y');
+  box(p3, 17, 15, 4, 4, 'B'); box(p3, 20, 6, 3, 12, 'B'); rect(p3, 20, 4, 3, 2, 'Y');
+  rect(p3, 0, 1, 1, 1, 'Y'); rect(p3, 23, 1, 1, 1, 'Y');
+  // 嘴型 3 帧：闭 / 半开 / 张开
+  function mouth(f) { var g = mk(); f(g); return svg(g, ''); }
+  var m = mouth(function (g) { rect(g, 9, 10, 6, 1, 'K'); }) +
+          mouth(function (g) { rect(g, 10, 9, 4, 2, 'K'); }) +
+          mouth(function (g) { rect(g, 9, 9, 6, 3, 'K'); rect(g, 11, 11, 2, 1, 'R'); });
+  m = m.replace(/<svg /g, '<svg data-mouth ');
+  document.getElementById('host').innerHTML = svg(p1, 'point') + svg(p2, 'think') + svg(p3, 'cheer') + m;
+  // 让 [data-pose] 与 [data-mouth] 都铺满容器
+  Array.prototype.forEach.call(document.querySelectorAll('#host svg'), function (s) { s.style.cssText += ';position:absolute;left:0;bottom:0;width:100%;height:100%'; });
+  Array.prototype.forEach.call(document.querySelectorAll('#host [data-pose]'), function (s, i) { s.style.visibility = i === 0 ? 'visible' : 'hidden'; });
+  Array.prototype.forEach.call(document.querySelectorAll('#host [data-mouth]'), function (s, i) { s.style.visibility = i === 0 ? 'visible' : 'hidden'; });
+})();
+
+/* ── 场景装饰：云、地面、山丘、房子、树（全是方块） ── */
+Array.prototype.forEach.call(document.querySelectorAll('.scenery.sc'), function (el, n) {
+  el.innerHTML =
+    '<div class="cloud" style="left:1560px;top:120px" data-fx="to@0(x=-96,dur=6,ease=steps(12))"></div>' +
+    '<div class="cloud s" style="left:640px;top:84px" data-fx="to@0(x=72,dur=6,ease=steps(12))"></div>' +
+    '<div class="cloud s" style="left:60px;top:220px" data-fx="to@0(x=96,dur=6,ease=steps(12))"></div>' +
+    '<div class="sparkle" style="left:1500px;top:330px"></div><div class="sparkle" style="left:620px;top:420px"></div>' +
+    '<div class="ground"></div>' +
+    '<div class="hill"><i style="width:600px;bottom:150px"></i><i style="width:432px;bottom:198px"></i><i style="width:264px;bottom:246px"></i></div>' +
+    '<div class="house" style="left:1140px;bottom:150px"><i style="left:0;top:0;width:216px;height:48px;background:#e0463a"></i><i style="left:24px;top:-42px;width:168px;height:48px;background:#e0463a"></i><i style="left:12px;top:42px;width:192px;height:148px;background:#f4e3c1"></i><i style="left:84px;top:104px;width:48px;height:86px;background:#8a5a2b"></i><i style="left:30px;top:78px;width:36px;height:36px;background:#9fd8ff"></i><i style="left:150px;top:78px;width:36px;height:36px;background:#9fd8ff"></i></div>' +
+    '<div class="tree" style="left:1450px;bottom:150px"><b></b></div>';
+});
+
+FX.subtitles([
+  [1.9, 4.4, '大家好，我是小方块，今天教你{三个小技巧}'],
+  [4.5, 7.7, '让 AI 一次就听懂你想要什么'],
+  [7.9, 10.6, '第一招：{说清目标}，别只丢一句“帮我写点东西”'],
+  [10.7, 14.6, '写明给谁看、写多长、什么语气，结果立刻不一样'],
+  [14.9, 18.0, '第二招：{给个例子}，让它照着学'],
+  [18.1, 21.7, '比一大段形容词管用，它马上知道你要的味道'],
+  [21.9, 25.0, '第三招：{先列计划}，再让它动手'],
+  [25.1, 28.7, '计划不对就先改，比做完再返工省事得多'],
+  [28.9, 32.4, '记住这{三招}，提示词一次写对'],
+  [32.6, 36.3, '好了，快去试试吧，我们下期见'],
+], { style: 'bar' });
+FX.build();
+</script>
+</body>
+</html>

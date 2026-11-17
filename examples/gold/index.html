@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>gold example</title>
+<link rel="stylesheet" href="lib/fx.css" />
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/fx.js"></script>
+<style>
+  .theme-gold .scene.overlay { background: none !important; }
+  .bgl { z-index: 0; }
+  .vignette { z-index: 1; }
+  .fg { z-index: 2; }
+  .city {
+    background:
+      radial-gradient(ellipse 22% 30% at 18% 68%, rgba(255,170,60,.95), transparent 70%),
+      radial-gradient(ellipse 16% 22% at 36% 76%, rgba(255,214,140,.8), transparent 70%),
+      radial-gradient(ellipse 26% 34% at 62% 62%, rgba(60,110,200,.9), transparent 70%),
+      radial-gradient(ellipse 14% 20% at 80% 72%, rgba(255,150,80,.85), transparent 70%),
+      radial-gradient(ellipse 20% 26% at 90% 38%, rgba(70,170,190,.7), transparent 70%),
+      radial-gradient(ellipse 30% 24% at 48% 92%, rgba(255,190,90,.7), transparent 70%),
+      linear-gradient(180deg, #0a0e18 0%, #0d1220 55%, #1a1410 100%);
+  }
+  .city.b { background:
+      radial-gradient(ellipse 24% 32% at 80% 60%, rgba(255,170,60,.9), transparent 70%),
+      radial-gradient(ellipse 20% 26% at 50% 80%, rgba(255,220,150,.7), transparent 70%),
+      radial-gradient(ellipse 30% 36% at 25% 55%, rgba(50,100,190,.9), transparent 70%),
+      radial-gradient(ellipse 16% 22% at 12% 82%, rgba(255,140,70,.8), transparent 70%),
+      radial-gradient(ellipse 22% 28% at 70% 22%, rgba(80,160,200,.6), transparent 70%),
+      linear-gradient(180deg, #0a0e18 0%, #0e1322 55%, #18120e 100%); }
+  .flat { background: none !important; -webkit-background-clip: initial !important; background-clip: initial !important; filter: none !important; color: #e4b256 !important; font-style: normal !important; }
+  .t-title.flat { font-size: 150px; }
+  .stack { display: flex; flex-direction: column; align-items: center; gap: 26px; }
+  .cards3 { display: flex; gap: 50px; margin-top: 30px; }
+  .cards3 .card { width: 440px; height: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 18px; font-family: var(--fx-font-title); font-size: 56px; }
+  .cards3 .card .t-en { font-family: var(--fx-font-body); font-size: 17px; }
+  .hbars { display: flex; flex-direction: column; gap: 34px; width: 1260px; margin-top: 20px; }
+  .hbars .fx-hbar { grid-template-columns: 260px 1fr 140px; font-size: 38px; font-family: var(--fx-font-title); }
+  .hbars .fx-hbar i { height: 30px; border-radius: 15px; background: rgba(243,239,230,.55); transform-origin: left center; }
+  .hbars .fx-hbar.hero i { background: #e4b256; box-shadow: 0 0 24px rgba(228,178,86,.5); }
+  .hbars .fx-hbar.neg i { background: #ff5b56; }
+  .hbars .v { text-align: right; }
+  .hbars .hero .v { color: #e4b256; }
+  .hbars .neg .v { color: #ff5b56; }
+  .slots { display: flex; gap: 50px; margin-top: 30px; }
+  .slot { position: relative; width: 340px; height: 400px; }
+  .slot > * { position: absolute; inset: 0; }
+  .slot .ans { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 18px; font-family: var(--fx-font-title); font-size: 56px; }
+  .news { width: 1180px; padding: 54px 70px; background: #f4f1ea !important; color: #15151a !important; border: none !important; text-align: left; }
+  .news .src { font-size: 24px; letter-spacing: .2em; color: #8a7a55; font-weight: 700; }
+  .news h3 { font-family: var(--fx-font-title); font-size: 62px; line-height: 1.3; margin: 18px 0 20px; color: #15151a; }
+  .news p { font-size: 34px; line-height: 1.6; color: #3a3a42; margin: 0; }
+  .news .hl { display: inline-block; padding: 0 8px; }
+  .redbig { font-family: var(--fx-font-title); font-size: 300px; line-height: 1; color: #ff5b56; text-shadow: 0 0 60px rgba(255,91,86,.35); }
+  .tagsmp { position: absolute; right: 56px; top: 44px; padding: 8px 20px; border: 1px solid rgba(243,239,230,.35); border-radius: 6px; font-size: 24px; letter-spacing: .3em; color: rgba(243,239,230,.7); z-index: 900; }
+  .mono { font-family: ui-monospace, Menlo, monospace; font-size: 30px; color: rgba(243,239,230,.6); letter-spacing: .06em; }
+</style>
+</head>
+<body>
+<div id="root" class="theme-gold" data-composition-id="main" data-width="1920" data-height="1080">
+
+  <!-- 0 风格标题卡 -->
+  <section class="scene center" id="title" data-d="1.8" data-bg="drift">
+    <div class="layer fg center">
+      <div class="t-title" style="font-size:190px" data-fx="blur-rise-in@0.15(dur=0.6)">黑金电影</div>
+      <div class="mono" style="margin-top:34px" data-fx="blur-rise-in@0.45(dur=0.6)">.theme-gold</div>
+      <div class="t-en" style="margin-top:22px;font-size:20px" data-fx="blur-rise-in@0.75(dur=0.6)">motion-lib example</div>
+    </div>
+  </section>
+
+  <!-- 1 钩子 -->
+  <section class="scene center" id="s1" data-d="3.8" data-bg="push" data-in="blur-cross(dur=0.5)">
+    <div class="layer fg center">
+      <div class="t-en" data-fx="focus-in@0.2">where does the money go</div>
+      <div class="t-title flat" style="margin-top:36px" data-fx="chars:blur-in@0.5(stagger=0.14,dur=0.8)">钱去哪了</div>
+      <div class="t-en" style="margin-top:40px" data-fx="blur-rise-in@1.6">compute spending, fictional data</div>
+    </div>
+  </section>
+
+  <!-- 2 大数字 -->
+  <section class="scene center" id="s2" data-d="4.8" data-bg="drift" data-in="blur-cross(dur=0.5)">
+    <div class="layer fg center">
+      <div class="t-en" data-fx="focus-in@0.2">annual compute capex</div>
+      <div class="t-hero flat" style="font-size:300px;margin-top:20px;line-height:1.1" data-fx="zoom-settle@0.3(dur=1)">
+        <span data-fx="roll@0.4(dur=1.6,stagger=0.12,spins=9)">7,000</span><span class="unit">亿</span>
+      </div>
+      <div class="t-h2" style="margin-top:20px" data-fx="blur-rise-in@1.8"><span data-fx="underline@2.6(color=#e4b256,w=4)">全年投入</span></div>
+    </div>
+  </section>
+
+  <!-- 3 三层卡片 -->
+  <section class="scene center" id="s3" data-d="5.4" data-bg="push" data-in="blur-cross(dur=0.5)">
+    <div class="layer fg center">
+      <div class="t-h2" data-fx="blur-rise-in@0.2">钱的三个去处</div>
+      <div class="t-en" style="margin-top:14px" data-fx="focus-in@0.5">three layers of the stack</div>
+      <div class="cards3" data-fx="each:blur-rise-in@0.9(stagger=0.25) each:spot@2.2(i=1) each:spot@2.9(i=2) each:spot@3.8(i=3)">
+        <div class="card">芯片层<span class="t-en">chips</span></div>
+        <div class="card hot" id="hotc"><span data-fx="glow@3.2(color=#e4b256,n=2)">算力设施层</span><span class="t-en">data centers</span></div>
+        <div class="card">模型层<span class="t-en">models</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 条形图 -->
+  <section class="scene center" id="s4" data-d="5.8" data-bg="drift" data-in="fade(dur=0.5)">
+    <div class="layer fg center">
+      <div class="t-h2" data-fx="blur-rise-in@0.2">四层分账</div>
+      <div class="t-en" style="margin-top:14px" data-fx="focus-in@0.5">share of new spending, %</div>
+      <div class="hbars" data-fx="each:blur-in@0.8(stagger=0.2)">
+        <div class="fx-hbar"><span>芯片层</span><i data-fx="grow-x@0.9(origin=left,dur=1)" style="width:42%"></i><span class="v">+38%</span></div>
+        <div class="fx-hbar hero"><span>算力设施层</span><i data-fx="grow-x@1.1(origin=left,dur=1.1)" style="width:58%"></i><span class="v">+52%</span></div>
+        <div class="fx-hbar"><span>模型层</span><i data-fx="grow-x@1.3(origin=left,dur=1)" style="width:20%"></i><span class="v">+17%</span></div>
+        <div class="fx-hbar neg"><span>应用层</span><i data-fx="grow-x@1.5(origin=left,dur=0.8)" style="width:10%"></i><span class="v" data-fx="shake@2.5">-9%</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 问号卡 -->
+  <section class="scene center" id="s5" data-d="4.8" data-bg="push" data-in="blur-cross(dur=0.5)">
+    <div class="layer fg center">
+      <div class="t-h2" data-fx="blur-rise-in@0.2">谁拿走最多</div>
+      <div class="t-en" style="margin-top:14px" data-fx="focus-in@0.5">who takes the biggest share</div>
+      <div class="slots" data-fx="each:blur-in@0.8(stagger=0.2)">
+        <div class="slot"><div class="qcard">?</div></div>
+        <div class="slot"><div class="qcard" data-fx="blur-out@2.3(dur=0.4)">?</div>
+          <div class="card hot ans" data-fx="flip-in@2.5(dur=0.8)"><span data-fx="sheen@3.4">算力设施层</span><span class="t-en">data centers</span></div></div>
+        <div class="slot"><div class="qcard">?</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 新闻卡 -->
+  <section class="scene center" id="s6" data-d="5" data-bg="drift" data-in="blur-cross(dur=0.5)">
+    <div class="layer fg center">
+      <div class="t-en" style="margin-bottom:34px" data-fx="focus-in@0.2">a headline, fictional</div>
+      <div class="card news" data-fx="blur-rise-in@0.5(dur=0.9)">
+        <div class="src">示例快讯 · SAMPLE NEWS</div>
+        <h3>某云厂商上调年度资本开支指引</h3>
+        <p>新增预算主要投向<span class="hl" style="margin:0 6px" data-fx="box@1.9(color=#c9953f,pad=8,w=4,r=8)">算力设施</span>，模型与应用层预算维持不变。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 下跌 -->
+  <section class="scene center" id="s7" data-d="4" data-bg="push" data-in="dip(dur=0.6)">
+    <div class="layer fg center">
+      <div class="t-en" data-fx="focus-in@0.2">application layer margin</div>
+      <div class="redbig" style="margin-top:20px" data-fx="blur-in@0.4(dur=0.8) shake@1.9">-<span data-fx="count@0.5(dur=1.2)">18</span>%</div>
+      <div class="t-h2" style="margin-top:20px" data-fx="blur-rise-in@1.5">应用层承压</div>
+    </div>
+  </section>
+
+  <!-- 8 结尾 -->
+  <section class="scene center" id="s8" data-d="3.8" data-bg="drift" data-in="blur-cross(dur=0.6)">
+    <div class="layer fg center">
+      <div class="t-en" data-fx="focus-in@0.2">the money flows to infrastructure</div>
+      <div class="t-hero" style="font-size:220px;margin-top:24px" data-fx="zoom-settle@0.4(dur=1) fade-out@-0.4"><span data-fx="underline@1.6(color=#e4b256,w=4)">流向地基</span></div>
+      <div class="mono" style="margin-top:80px" data-fx="blur-rise-in@1.4 fade-out@-0.4">motion-lib · theme-gold</div>
+    </div>
+  </section>
+
+  <!-- 示例数据角标 -->
+  <section class="scene overlay" id="tagx" data-t="1.8" data-d="37.4">
+    <div class="tagsmp" data-fx="fade-in@0.3">示例数据</div>
+  </section>
+</div>
+
+<script>
+  document.querySelectorAll('.scene[data-bg]').forEach((s, i) => {
+    const d = parseFloat(s.dataset.d);
+    const mode = s.dataset.bg;
+    const fx = mode === 'push' ? 'push@0(from=1,to=1.12,dur=' + d + ')' : 'drift@0(x=-70,y=-24,dur=' + d + ')';
+    const h = '<div class="layer bgl" data-fx="' + fx + '"><div class="bg-footage city' + (i % 2 ? ' b' : '') + '"></div></div>' +
+      '<div class="layer bgl" data-make="dust" data-n="36" data-seed="' + (i + 3) + '" data-fx="drift@0(x=40,y=-60,dur=' + d + ')"></div>' +
+      '<div class="vignette"></div>';
+    s.insertAdjacentHTML('afterbegin', h);
+  });
+  FX.subtitles([
+    [1.9, 5.4, '今年，{算力}的钱花得像流水'],
+    [5.7, 10.2, '全年投入接近{七千亿}，这是示例数字'],
+    [10.5, 15.6, '钱分到芯片、{算力设施}、模型三层'],
+    [15.9, 21.4, '设施层拿走最多，{应用层}反而在失血'],
+    [21.7, 26.2, '谁拿走最多？答案是{算力设施层}'],
+    [26.5, 31.2, '新增预算，主要投向了{基建}'],
+    [31.5, 35.2, '应用层毛利，下滑了{十八个点}'],
+    [35.5, 38.9, '钱，流向了{地基}']
+  ], { style: 'plain' });
+  FX.build({
+    extra(tl, at) {
+      // 聚光：三张卡依次点亮
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>violet example</title>
+<link rel="stylesheet" href="lib/fx.css" />
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/fx.js"></script>
+<style>
+  .eg { font-family: var(--fx-font-mono); font-size: 22px; color: var(--fx-sub); letter-spacing: .08em; }
+  .flow4 { position: absolute; left: 130px; top: 330px; display: grid; grid-template-columns: repeat(4, 392px); gap: 32px; }
+  .flow4 .card { height: 380px; display: flex; flex-direction: column; justify-content: space-between; }
+  .flow4 .no { font-family: var(--fx-font-title); font-size: 96px; line-height: 1; color: var(--fx-accent); }
+  .flow4 .nm { font-family: var(--fx-font-title); font-size: 54px; }
+  .flow4 .ds { font-size: 26px; color: var(--fx-sub); font-weight: 600; line-height: 1.5; }
+  .stat3 { display: grid; grid-template-columns: repeat(3, 500px); gap: 40px; }
+  .stat3 .card { height: 330px; display: flex; flex-direction: column; justify-content: space-between; }
+  .stat3 .t-num { font-size: 150px; color: #8453e8; }
+  .lib-card { border-radius: 10px; background: #f2f2f6; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .lib-card b { height: 190px; border-radius: 6px; background: linear-gradient(135deg, #8453e8, #d5befe); }
+  .lib-card i { height: 8px; border-radius: 4px; background: #d0d0d8; }
+  .lib-card.hot { outline: 4px solid #8453e8; }
+  .box2 { position: absolute; inset: 0; padding: 36px 40px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.pbar.h { background: #2a2a30; border-color: #2a2a30; } .pbar.h i { background: #d5befe; }
+  .term { font-family: var(--fx-font-mono); font-size: 34px; line-height: 1.8; color: #e8e8ee; }
+</style>
+</head>
+<body>
+<div id="root" class="theme-violet" data-composition-id="main" data-width="1920" data-height="1080">
+
+<!-- 0 风格标题卡 -->
+<section class="scene dark center" id="title" data-d="1.8">
+  <div class="t-hero" style="font-size:190px" data-fx="blur-rise-in@0.05">白紫科技</div>
+  <div class="t-mono" style="font-size:44px;margin-top:34px;color:#d5befe" data-fx="blur-rise-in@0.25">.theme-violet</div>
+  <div class="t-small" style="font-size:28px;margin-top:20px" data-fx="blur-rise-in@0.45">motion-lib example</div>
+</section>
+
+<!-- 1 深：时钟 + 聊天 + 打字机 -->
+<section class="scene dark" id="s1" data-d="4" data-in="blur-cross(dur=0.4)">
+  <div class="abs row" style="left:110px;top:80px;gap:18px" data-fx="fade-in@0.1">
+    <span class="accent" style="font-size:44px">☾</span>
+    <span class="t-num" style="font-size:110px" data-fx="clock@0.3(from=23:28,to=01:23,dur=1.4)">23:28</span>
+  </div>
+  <div class="abs fx-chat" style="left:380px;top:300px;width:1160px" data-fx="blur-rise-in@0.5">
+    <div class="fx-chat-who"><span class="av">我</span>我 → AI 助手 <time>示例对话</time></div>
+    <div class="fx-chat-msg" data-fx="type@0.9(cps=20,caret=1)">帮我做一支讲解视频：一个人，怎么做出一支团队的产出。</div>
+  </div>
+  <div class="abs fx-chat" style="left:380px;top:620px;width:1160px" data-fx="blur-rise-in@2.6">
+    <div class="fx-chat-who"><span class="av">AI</span>AI 助手</div>
+    <div class="fx-chat-msg" style="background:#3a2a66" data-fx="type@3.0(cps=26,caret=1)">收到，先拆成四步来跑。</div>
+  </div>
+</section>
+
+<!-- 2 白：章节乱码解码 + 逐字弹入 -->
+<section class="scene light center" id="s2" data-d="3.6" data-in="wipe(dir=left,dur=0.45)">
+  <div class="t-mono" style="font-size:34px;color:#8453e8;letter-spacing:.2em;margin-bottom:30px" data-fx="scramble@0.1(dur=0.9,color=#8453e8)">CHAPTER 01 · 总览</div>
+  <div class="t-hero" style="font-size:170px;color:#020202" data-fx="chars:pop-in@0.4(from=0.4,dur=0.5,ease=elastic,stagger=0.07)">一个人 = 一支团队</div>
+  <div class="t-h3" style="margin-top:50px"><span data-fx="rise-in@1.5 marker@2.0(color=rgba(132,83,232,.25))">AI 工作流负责重复的活</span></div>
+</section>
+
+<!-- 3 深：步骤胶囊 + 卡片错峰 -->
+<section class="scene dark" id="s3" data-d="3.6" data-in="push(dir=left,dur=0.45)">
+  <div class="abs" style="left:130px;top:110px;transform:scale(1.4);transform-origin:0 0" data-make="steps" data-labels="选题,写稿,做画面,渲染" data-fx="fade-in@0.1 step@0.3(i=1) step@1.0(i=2) step@1.7(i=3) step@2.4(i=4)"></div>
+  <div class="flow4" data-fx="each:rise-in@0.3(dist=70,stagger=0.14)">
+    <div class="card"><span class="no">01</span><span class="nm">选题</span><span class="ds">从一堆想法里，挑出值得讲的那一个</span></div>
+    <div class="card"><span class="no">02</span><span class="nm">写稿</span><span class="ds">先出大纲，再逐段打磨成口语稿</span></div>
+    <div class="card"><span class="no">03</span><span class="nm">做画面</span><span class="ds">每个镜头用代码写，改字改色一秒钟</span></div>
+    <div class="card"><span class="no">04</span><span class="nm">渲染</span><span class="ds">逐帧截图合成，每次结果一致</span></div>
+  </div>
+</section>
+
+<!-- 4 白：数字滚动 -->
+<section class="scene light" id="s4" data-d="3.8" data-in="flash(dur=0.3,color=#ffffff)">
+  <div class="abs" style="left:130px;top:110px"><span class="t-title" data-fx="mask-rise@0.1">效率，<span data-fx="marker@1.0(color=rgba(132,83,232,.25))">肉眼可见</span></span></div>
+  <div class="abs eg" style="left:134px;top:250px" data-fx="fade-in@0.4">示例数据</div>
+  <div class="abs stat3" style="left:130px;top:330px" data-fx="each:rise-in@0.4(dist=60,stagger=0.12)">
+    <div class="card"><span class="t-small">从选题到成片</span><span class="t-num"><span data-fx="count@0.7(dur=1.2)">45</span><span class="unit">分钟</span></span><span class="t-h3">一个人</span></div>
+    <div class="card"><span class="t-small">每周可发布</span><span class="t-num"><span data-fx="count@0.85(dur=1.2)">12</span><span class="unit">条</span></span><span class="t-h3">稳定节奏</span></div>
+    <div class="card"><span class="t-small">重复劳动减少</span><span class="t-num"><span data-fx="count@1.0(dur=1.2)">80</span><span class="unit">%</span></span><span class="t-h3">省下来想内容</span></div>
+  </div>
+</section>
+
+<!-- 5 深：柱状图 + 圆环 -->
+<section class="scene dark" id="s5" data-d="4" data-in="zoom-through(dur=0.5)">
+  <div class="abs" style="left:130px;top:90px" data-fx="slide-in@0.1(dir=right,dist=80)"><span class="t-h2">每周产出（条）</span></div>
+  <div class="abs eg" style="left:134px;top:200px" data-fx="fade-in@0.3">示例数据</div>
+  <div class="abs" style="left:130px;top:290px;width:1100px;height:560px" data-make="bars" data-values="2,3,4,6,8,10,12,14" data-labels="W1,W2,W3,W4,W5,W6,W7,W8" data-hi="8" data-fx="each:grow-y@0.4(stagger=0.07)"></div>
+  <span class="abs note" style="left:1000px;top:260px" data-fx="pop-in@1.6">第 8 周</span>
+  <div class="abs center" style="left:1400px;top:300px" data-make="ring" data-size="380" data-stroke="22" data-fx="pop-in@0.3 ring@0.6(to=0.8,dur=1.6)">
+    <span class="t-num" style="font-size:110px" data-fx="count@0.6(dur=1.6)">80%</span>
+  </div>
+  <div class="abs t-h3" style="left:1400px;top:710px;width:380px;text-align:center" data-fx="fade-in@1.2">自动化占比</div>
+</section>
+
+<!-- 6 白：截图窗口 3D 飞入 + 光标 + 推近 -->
+<section class="scene light" id="s6" data-d="4.2" data-in="push(dir=up,dur=0.45)">
+  <div class="abs" id="cam" style="left:200px;top:110px;width:1520px;height:790px" data-fx="zoom-to@2.6(to=#zt,fill=0.55,dur=0.8) zoom-reset@3.7(dur=0.5)">
+    <div class="fx-window light" style="position:absolute;inset:0" data-fx="tilt-in@0.1(ry=-40,rx=10,dist=200,dur=0.8)">
+      <div class="fx-win-bar">my-video / index.html</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding:28px">
+        <div class="lib-card"><b></b><i></i><i style="width:60%"></i></div>
+        <div class="lib-card"><b style="filter:hue-rotate(40deg)"></b><i></i><i style="width:60%"></i></div>
+        <div class="lib-card" id="zt"><b style="filter:hue-rotate(90deg)"></b><i></i><i style="width:60%"></i></div>
+        <div class="lib-card"><b style="filter:hue-rotate(140deg)"></b><i></i><i style="width:60%"></i></div>
+        <div class="lib-card"><b style="filter:hue-rotate(190deg)"></b><i></i><i style="width:60%"></i></div>
+        <div class="lib-card"><b style="filter:hue-rotate(230deg)"></b><i></i><i style="width:60%"></i></div>
+        <div class="lib-card"><b style="filter:hue-rotate(280deg)"></b><i></i><i style="width:60%"></i></div>
+        <div class="lib-card"><b style="filter:hue-rotate(320deg)"></b><i></i><i style="width:60%"></i></div>
+      </div>
+    </div>
+    <i class="fx-cursor" style="left:1300px;top:640px" data-fx="fade-in@1.0(dur=0.2) move@1.1(to=#zt,dur=0.7) click@1.9"></i>
+    <span class="abs note" style="left:720px;top:150px" data-fx="pop-in@2.0">改这一格就行</span>
+  </div>
+</section>
+
+<!-- 7 深：清单打勾 + 挤压换内容 -->
+<section class="scene dark" id="s7" data-d="3.6" data-in="blur-cross(dur=0.45)">
+  <div class="abs t-h2" style="left:130px;top:110px" data-fx="mask-rise@0.1">交付前检查</div>
+  <div class="abs col" style="left:130px;top:300px;gap:44px" data-fx="each:check@0.5(stagger=0.4)">
+    <div class="fx-check"><span class="fx-check-box"><span class="fx-check-mark"></span></span>文字没有溢出</div>
+    <div class="fx-check"><span class="fx-check-box"><span class="fx-check-mark"></span></span>字幕没有压住画面</div>
+    <div class="fx-check"><span class="fx-check-box"><span class="fx-check-mark"></span></span>每个数字都有出处</div>
+    <div class="fx-check"><span class="fx-check-box"><span class="fx-check-mark"></span></span>逐帧渲染一次过</div>
+  </div>
+  <div class="abs card" id="sq" style="left:1010px;top:300px;width:780px;height:460px" data-fx="rise-in@0.3(dist=60) squash@2.2">
+    <div class="box2" id="sqA" data-fx="swap@2.25(to=#sqB)">
+      <span class="t-small">状态</span><span class="t-num" style="font-size:150px;color:var(--fx-ink)">草稿</span><span class="t-body" style="color:var(--fx-sub)">还在修改中</span>
+    </div>
+    <div class="box2" id="sqB" style="opacity:0">
+      <span class="t-small">状态</span><span class="t-num accent" style="font-size:150px">定稿</span><span class="t-body" style="color:var(--fx-sub)">可以渲染了</span>
+    </div>
+  </div>
+</section>
+
+<!-- 8 白：波形 + 荧光笔 + 文字硬切 -->
+<section class="scene light center" id="s8" data-d="3.6" data-in="iris(dur=0.5)">
+  <div class="t-title" data-fx="mask-rise@0.1">声音和画面，<span data-fx="marker@1.0(color=rgba(132,83,232,.28))">自动对齐</span></div>
+  <div style="width:1200px;height:240px;margin-top:70px" data-make="wave" data-n="56" data-seed="7" data-fx="each:grow-y@0.4(stagger=0.012) wave-live@1.0(dur=2.4,seed=7)"></div>
+  <div class="row" style="gap:20px;margin-top:50px">
+    <span class="pill accent" data-fx="pop-in@0.9">配音</span>
+    <span class="pill" data-fx="pop-in@1.05"><span data-fx="text@2.2(v=已对齐)">对齐中</span></span>
+  </div>
+</section>
+
+<!-- 9 深：渲染进度 -->
+<section class="scene dark" id="s9" data-d="3.4" data-in="wipe(dir=right,dur=0.45)">
+  <div class="abs" style="left:0;right:0;top:120px;display:flex;justify-content:center">
+    <div data-make="steps" data-labels="选题,写稿,做画面,渲染" style="transform:scale(1.5);transform-origin:50% 0" data-fx="fade-in@0.1 step@0.2(i=4)"></div>
+  </div>
+  <div class="fx-window" style="position:absolute;left:310px;top:360px;width:1300px;height:420px;background:#111114" data-fx="rise-in@0.2(dist=40)">
+    <div class="fx-win-bar">render</div>
+    <div class="fx-win-body col" style="gap:20px">
+      <div class="term" data-fx="type@0.5(cps=30)">&gt; render  1920×1080  30fps</div>
+      <div class="pbar h" style="width:1100px"><i data-fx="fill@0.9(to=100,dur=1.6,ease=steps(12))"></i></div>
+      <div class="term"><span data-fx="count@0.9(dur=1.6)">100</span>%</div>
+      <div class="term" style="color:#9fe07a" data-fx="fade-in@2.6(dur=0.1)">✓ out.mp4</div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 结尾 -->
+<section class="scene dark center" id="s10" data-d="3.8" data-in="flash(dur=0.35)">
+  <div class="layer" data-make="dust" data-n="60" data-seed="5" data-fx="drift@0(x=60,y=-60)"></div>
+  <div class="t-hero" style="font-size:170px" data-fx="zoom-settle@0.1">一个人，一支团队</div>
+  <div class="t-mono" style="font-size:40px;margin-top:40px;color:#d5befe" data-fx="blur-rise-in@0.8">motion-lib · theme-violet</div>
+  <div class="row" style="gap:20px;margin-top:50px" data-fx="each:pop-in@1.4(stagger=0.1)">
+    <span class="pill accent">选题</span><span class="pill ghost" style="color:#fdfdfd">写稿</span><span class="pill ghost" style="color:#fdfdfd">做画面</span><span class="pill ghost" style="color:#fdfdfd">渲染</span>
+  </div>
+</section>
+</div>
+
+<script>
+  FX.subtitles([
+    [1.9, 5.7, '凌晨一点，我只发了{一句话}'],
+    [5.9, 9.3, '一个人，也能有{一支团队}的产出'],
+    [9.5, 12.9, '选题、写稿、做画面、渲染，{四步}走完'],
+    [13.1, 16.7, '从选题到成片，大约{四十五分钟}'],
+    [16.9, 20.7, '每周产出，{一路往上}走'],
+    [20.9, 24.9, '想改哪里，{点一下}就行'],
+    [25.1, 28.5, '交付前，{逐项}确认'],
+    [28.7, 32.1, '配音和画面，{自动对齐}'],
+    [32.3, 35.5, '最后，逐帧渲染成片'],
+    [35.7, 39.2, '重复的交给{工作流}']
+  ], { style: 'pill' });
+  FX.build();
+</script>
+</body>
+</html>

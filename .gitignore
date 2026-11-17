@@ -1,0 +1,12 @@
+.DS_Store
+# 每个项目里的 lib/ 是 new-project.sh 拷进去的库副本，不入库
+demo/lib/
+promo/lib/
+examples/*/lib/
+# HyperFrames 的截图缓存和中间产物
+.hyperframes/
+**/.hyperframes/
+renders/
+**/renders/
+*.log
+node_modules/
