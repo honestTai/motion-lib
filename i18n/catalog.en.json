@@ -31,6 +31,14 @@
     "转场": {
       "title": "Transitions",
       "intro": "Written on the **later** scene: `<section class=\"scene\" data-in=\"blur-cross(dur=0.5)\">`."
+    },
+    "文字": {
+      "title": "Text",
+      "intro": "Made for text: shimmer, glitch, word swap, delete-and-retype, split-flap, stroke, echo."
+    },
+    "剪纸": {
+      "title": "Papercut",
+      "intro": "Papercut / paper-craft collage style: unfold, cut open, tear, stick on, layers rising one by one, plus a handmade stop-motion feel at 12 fps. Pairs best with the `theme-paper` skin, but works with any skin."
     }
   },
   "stats": {
@@ -42,7 +50,7 @@
     "makers": "Component generators",
     "makersLine": "**{n}** ({list})",
     "skins": "Skins",
-    "skinsLine": "**3** themes (violet tech · black-gold cinema · retro pixel)"
+    "skinsLine": "**4** themes (violet tech · black-gold cinema · retro pixel · papercut collage)"
   },
   "catalog": {
     "heading": "Effect catalog ({nFx} effects + {nTrans} transitions)",
@@ -137,6 +145,50 @@
     "iris": "Iris: the new scene expands from a point to full screen. Params: x, y (percent)",
     "flash": "Flash to white (or any color): for key sentences and chapter openings. Param: color",
     "dip": "Dip to black: fades to dark then back up (change of topic). Param: color",
-    "pixelate": "Pixel dissolve: blocks cover the screen in random order and then disperse (scene change for the pixel style). Params: cols, color"
+    "pixelate": "Pixel dissolve: blocks cover the screen in random order and then disperse (scene change for the pixel style). Params: cols, color",
+    "文字/shimmer": "Shimmer text: a highlight sweeps across the text from left to right (ShinyText). Params: color=highlight color, n=number of sweeps, gap=pause between sweeps",
+    "文字/glitch": "Glitch text: red/blue split + jitter + skew for a short burst, then settles (GlitchText). Params: amp=split in px, dur, seed. Note: it zeroes the element's x, so wrap the element in a shell if it needs to move itself",
+    "文字/rotate-words": "Word rotate: the word flips up and away, the next one flips in at the same spot (WordRotate). Params: words=B/C/D (separated by /, the element's original text is the first), every=seconds each word stays",
+    "文字/morph": "Morphing words: the old word blurs and disperses, the new one condenses out of the blur (MorphingText). Params: words=B/C, every",
+    "文字/retype": "Delete and retype: erases the existing text character by character from the end, then types the new text (TextType). Params: v=new text, cps=characters typed per second, del=characters deleted per second",
+    "文字/true-focus": "Word-by-word focus: only one word is sharp at a time, the rest blur, and a focus frame jumps to the active word (TrueFocus). For Chinese separate words with / (e.g. AI/won't/replace/you); English splits on spaces. Params: every, blur, color",
+    "文字/split-flap": "Split-flap board: each character flips through random glyphs, then settles on the right one from left to right (SplitFlap, airport departure board). Use as an entrance. Params: dur, stagger, chars=glyph pool",
+    "文字/stroke-in": "Stroke text: draws a hollow outline in one direction first, then fills in the color (StrokeText). Params: w=stroke width, color=stroke color, hold=seconds to stay hollow",
+    "文字/echo": "Echo entrance: several translucent copies trail behind and slide in together, then fade away once in place (EchoText). Params: n=number of echo layers, dist, dir",
+    "入场/light-speed-in": "Light-speed entrance: rushes in from one side with a skew, overshoots, then straightens (animate.css lightSpeedIn). Params: dir=left|right (direction of motion), dist",
+    "入场/jack-in": "Jack-in-the-box: pops up gradually from the bottom, wobbles left and right twice and settles (animate.css jackInTheBox)",
+    "退场/hinge": "Hinge drop: pinned at the top-left corner, it swings twice, then falls out of frame (animate.css hinge). Param: dist",
+    "退场/fall-out": "Falling text: each character tumbles down out of frame with some rotation (FallingText); usually used with chars:. Params: dist, seed",
+    "强调/tada": "Tada: shrinks slightly, then scales up and sways left and right (animate.css tada)",
+    "强调/jello": "Jello: skews back and forth with decreasing amplitude (animate.css jello)",
+    "强调/rubber-band": "Rubber band: stretches horizontally, squashes vertically, and bounces a few times (animate.css rubberBand)",
+    "强调/heartbeat": "Heartbeat: two quick scale-ups in a row (animate.css heartBeat)",
+    "强调/head-shake": "Head shake: a left-right shake with a bit of 3D rotation (for \"no\" or \"wrong\") (animate.css headShake)",
+    "强调/wobble": "Wobble: translates while tilting back and forth (animate.css wobble)",
+    "强调/border-beam": "Border beam: a short streak of light runs around the element's border (BorderBeam / StarBorder). Params: color, w=thickness, len=beam length as a fraction of the perimeter, n=laps, dur=seconds per lap, keep=1 to stay visible after finishing",
+    "强调/spotlight": "Spotlight: dims the screen and leaves one circular bright area over the target; calling it again in the same scene moves the spot to the new target (Spotlight). Put it on the element to light, or use to=#id. Params: r=radius, dim=darkness 0~1, off=1 to turn it off",
+    "强调/confetti": "Confetti: bursts a handful of confetti from the element's center, tossed up and falling back down (Confetti / ClickSpark). Params: n, colors=c1/c2/c3, power, seed",
+    "强调/sparkle": "Sparkle: little stars pop up at random around the element and twinkle (SparklesText). Params: n, color, dur, seed",
+    "强调/orbit": "Orbit: spreads the container's children evenly on a circle and rotates them around the center while keeping each child upright (OrbitingCircles). Put it on the container. Params: r=radius, turns=number of turns, dur, reverse=1 to reverse",
+    "强调/beam": "Connecting beam: draws an arc between two elements and a glow flows along it (AnimatedBeam, good for \"A sends data to B\"). Put it on the start element, to=#end. Params: curve=curvature, color, n=number of flows, dur",
+    "强调/flip-swap": "Flip and swap: the element flips around its vertical axis, the back shows the second child, then flips back (flip cards, reveal an answer). Put two children inside: the first is the front, the second is the back. Param: axis=y|x",
+    "镜头/meteors": "Meteor shower: streaks of light slanting across the screen (Meteors); put it on a full-bleed background layer. Params: n, angle=direction in degrees (default 135 = toward bottom-left), color, dur, seed",
+    "镜头/marquee": "Marquee: a row of content scrolls horizontally in an endless loop (Marquee / LogoLoop). Put it on a single-row container; children are duplicated automatically to fill the width. Params: speed=px per second, reverse=1 to reverse",
+    "镜头/bg-scroll": "Background pattern scroll: keeps the background (grid, texture, stripes) translating at a set speed; use it with the retro-grid component. Params: x, y=px per second",
+    "镜头/parallax": "Parallax: layers inside the container translate at different speeds by order (back layers move less, front layers more); use it with the hills layered paper hills. Put it on the container. Params: x, y=total displacement of the front layer, dur",
+    "剪纸/paper-unfold": "Paper unfold: like folded paper opening flat from the crease, with a bit of rebound. Param: dir=down|up|left|right (direction of unfolding)",
+    "剪纸/cut-in": "Scissor cut: \"cuts\" the element out snip by snip along a zigzag edge, advancing frame by frame for a papercut feel. Params: dir=right|left|down|up, teeth=number of teeth, jag=tooth depth (%), snips=number of cuts",
+    "剪纸/peel-in": "Corner peel: a sticker lifted at one corner settles back and is pressed flat. Param: corner=tl|tr|bl|br (which corner)",
+    "剪纸/layer-rise": "Layer rise: paper layers in the container rise from below one after another, back to front; the nearer the layer, the later and farther it rises (layered paper hills, paper stage). Put it on the container. Params: dist, stagger",
+    "剪纸/stick-on": "Sticker slap: slaps onto the paper from in front of the camera with a big shadow that tightens on landing (labels, photos). Params: from=starting scale, rot=starting tilt angle",
+    "剪纸/stop-in": "Stop-motion entrance: jumps in at the pace of 12 fps stop-motion, each frame with a random bit of tilt (handmade animation feel). Params: dist, steps=number of jumps, fps, seed",
+    "剪纸/jitter": "Stop-motion jitter: keeps tilting and shifting slightly at 12 fps, as if shot frame by frame by hand (boiling). Best added to an outer container so it does not fight an entrance effect for position. Params: amp=angle, px=offset, fps, dur",
+    "剪纸/lift": "Paper lift: floats up slightly while the shadow grows larger and fainter, as if pinched up by a finger; down=1 puts it back. Param: dist",
+    "剪纸/flutter": "Flutter: like a paper caught by a gust, it swings side to side a few times and slowly settles. Params: deg, n=number of swings, origin",
+    "剪纸/sway": "Hanging sway: hanging things (lanterns, tags, window flowers) keep swaying slowly left and right. Params: deg, period=seconds per swing, dur",
+    "转场/paper-slide": "Paper pull: a new sheet slides in from one side over the old one, with a shadow along the edge and the old sheet slightly darkened. Param: dir=left|right|up|down",
+    "转场/tear": "Paper tear: the new scene is revealed from one side along a jagged torn edge (papercut-style scene change). Params: dir=right|left|down|up, jag, teeth",
+    "转场/glitch-cut": "Glitch cut: the new scene flickers a few times with a red/blue split, then stabilizes (tech-style cut)",
+    "转场/open": "Doors open: the new scene opens outward from a slit in the middle. Param: dir=x (opens left/right)|y (opens up/down)"
   }
 }

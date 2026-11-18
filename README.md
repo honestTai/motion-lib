@@ -4,6 +4,8 @@
 
 **HTML → 视频的声明式动效库。** 在元素上写一行 `data-fx="动效名@秒数"`，就能做出知识口播、科技解说这类视频里常见的动效，再用 [HyperFrames](https://hyperframes.heygen.com) 逐帧渲染成 MP4。
 
+> **v1.1 新增**：40 种动效 + 4 个转场（`paper-slide` `tear` `glitch-cut` `open`）+ 5 个组件生成器（`circle-text` `retro-grid` `papercut` `hills` `torn`）；2 个新分类「文字」「剪纸」；第 4 套皮肤 `theme-paper`（剪纸拼贴）。灵感来自 animate.css、Magic UI、React Bits，见文末「致谢」。
+
 [![motion-lib 宣传片](promo/cover.jpg)](promo/motion-lib-promo.mp4)
 
 > 上面的宣传片就是用这个库写的，源码在 [`promo/index.html`](promo/index.html)。
@@ -11,10 +13,10 @@
 <!-- STATS:START -->
 | | 数量 |
 |---|---|
-| 动效 | **76** 种（入场 24 · 退场 7 · 强调 24 · 数据 6 · 镜头 7 · 角色 5 · 组件 3） |
-| 转场 | **10** 种 |
-| 组件生成器 | **9** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels`） |
-| 皮肤 | **3** 套（白紫科技 · 黑金电影 · 像素复古） |
+| 动效 | **116** 种（入场 26 · 退场 9 · 强调 37 · 文字 9 · 数据 6 · 镜头 11 · 角色 5 · 剪纸 10 · 组件 3） |
+| 转场 | **14** 种 |
+| 组件生成器 | **14** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn`） |
+| 皮肤 | **4** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴） |
 <!-- STATS:END -->
 
 ## 为什么要用它
@@ -42,15 +44,15 @@ motion-lib 把所有动效都排进**一条暂停的 GSAP 时间线**，你只�
 ```
 motion-lib/
 ├── fx.js            动效库本体：动效、转场、组件生成器、字幕、预览播放器
-├── fx.css           基础样式、组件样式、三套皮肤
-├── fonts/           优设标题黑、得意黑、Fusion Pixel 像素字体（许可见 fonts/README.md）
+├── fx.css           基础样式、组件样式、四套皮肤
+├── fonts/           优设标题黑、得意黑、Fusion Pixel 像素字体、站酷快乐体（许可见 fonts/README.md）
 ├── vendor/          GSAP 3.15（本地一份）
 ├── new-project.sh   把库装进一个视频项目（也用来更新）
 ├── chrome-tall.sh   渲染用 Chrome 包装（防止成片底部字幕被截掉）
 ├── gen-readme.mjs   从 fx.js 自动生成本文的数量表和动效目录（node gen-readme.mjs）
 ├── demo/            演示页：6 个场景，三套皮肤都用到
 ├── promo/           宣传片源码 + 成片
-└── examples/        三套皮肤各一条完整示例片 + 合集
+└── examples/        四套皮肤各一条完整示例片 + 合集
 ```
 
 ## 环境要求
@@ -120,15 +122,16 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 
 ## 示例片
 
-三套皮肤各做了一条完整示例（纯动效、无配音），源码就在对应目录里，可以直接改着用：
+四套皮肤各做了一条完整示例（纯动效、无配音），源码就在对应目录里，可以直接改着用：
 
 | 皮肤 | 示例 | 源码 |
 |---|---|---|
 | 白紫科技 `theme-violet` | [![violet](examples/violet/cover.jpg)](examples/violet/violet.mp4) | [`examples/violet/index.html`](examples/violet/index.html) |
 | 黑金电影 `theme-gold` | [![gold](examples/gold/cover.jpg)](examples/gold/gold.mp4) | [`examples/gold/index.html`](examples/gold/index.html) |
 | 像素复古 `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
+| 剪纸拼贴 `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
 
-三条合在一起：[`examples/showreel.mp4`](examples/showreel.mp4)。
+四条合在一起：[`examples/showreel.mp4`](examples/showreel.mp4)。
 
 ## 写法
 
@@ -198,6 +201,11 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 | `pixels` | `data-text="SKILL?"` `data-size` `data-colors` | `each:pixel-in(order=random)` | 5×7 点阵方块字 |
 | `wall` | `data-cols` `data-rows` `data-seed` | `drift` | 背景卡片墙 |
 | `dust` | `data-n` `data-seed` | `drift`、`float` | 漂浮粒子 |
+| `circle-text` | `data-text` `data-r`（半径） | `spin`（让文字环转起来） | 环形文字、徽章、印章 |
+| `retro-grid` | `data-cell`（格子大小）`data-color` `data-angle`（倾角） | `bg-scroll`（让网格往前流动） | 复古透视网格背景 |
+| `papercut` | `data-size` `data-fold`（几折：6 / 8 / 12）`data-shape`（`flower` `circle` `square`）`data-color` `data-seed` | `pop-in`、`spin`、`jitter` | 对称剪纸窗花，每个 seed 图案都不同 |
+| `hills` | `data-layers`（层数）`data-colors`（从后到前的颜色）`data-seed` | `layer-rise`、`parallax` | 层叠纸山；每层是一个子元素 |
+| `torn` | `data-edges`（`top,right,bottom,left`，默认 `top,bottom`）`data-depth` `data-teeth` `data-seed` | `stick-on`、`rise-in` | 把元素的边剪成毛边纸条；`clip-path` 会裁掉阴影，要投影请在外面套一层 `fx-torn-shadow` |
 
 ### 字幕
 
@@ -213,6 +221,7 @@ FX.subtitles([
 | `pill` | 黑色圆角胶囊 + 白字 | 白紫科技 |
 | `bar` | 半透明黑条 | 像素复古 |
 | `plain` | 白字 + 描影，无底 | 黑金电影 |
+| `paper` | 米色毛边纸条 + 深色字 | 剪纸拼贴 |
 
 `pop: true` 时每句字幕会轻轻上浮出现；默认是硬切，口播视频一般就是硬切。
 
@@ -238,7 +247,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 
 **三条硬规则**：不用 CSS animation / transition；不用 `setTimeout` / `requestAnimationFrame`；要随机就用 `FX.rand(种子)`，不用 `Math.random`。
 
-## 三套皮肤
+## 四套皮肤
 
 在根元素上换一个 class，整片换风格：
 
@@ -247,6 +256,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `theme-violet` | 白紫科技 | 白 `#fdfdfd` / 深 `#171719`（场景加 `dark` / `light` 切换） | 优设标题黑 | 紫 `#8453e8` / 浅紫 `#d5befe` | AI 工具、效率、工作流讲解 |
 | `theme-gold` | 黑金电影 | 深蓝黑 `#080a0f` + 模糊实拍 + 暗角 | 金色渐变斜体 | 金 `#e4b256`，红 `#ff5b56` 只给下跌 | 财经、行业分析、榜单 |
 | `theme-pixel` | 像素复古 | 米色网点纸 `#efe9dc` | Fusion Pixel 像素字 | 绿 `#9fe07a` · 红 · 黄 | 动漫主持人、轻松科普 |
+| `theme-paper` | 剪纸拼贴 | 米色纸底 `#efe6d6` + 纯 CSS 纸纹 | 站酷快乐体 ZCOOL KuaiLe | 剪纸红 `#c8322b` · 青 `#2f6b6e` · 芥黄 `#e3a83b` | 文化、节气、生活方式、儿童科普、手作感品牌 |
 
 所有颜色、字体、圆角、字幕尺寸都是 `fx.css` 顶部的 CSS 变量（`--fx-bg` `--fx-accent` `--fx-font-title` …），改变量就能做自己的皮肤。
 
@@ -261,6 +271,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | 组件 | `fx-window`（mac 窗口，加 `.pixel` 变像素窗口）`fx-chat`（聊天气泡）`fx-check`（清单打勾）`fx-cursor`（鼠标光标）`pbar`（像素能量条）`fx-hbar`（横向条形） |
 | 背景 | `bg-footage`（模糊实拍）`vignette`（暗角） |
 | 角色 | `host`（立绘容器，里面放多张 `[data-pose]` 图，配 `pose` / `lipsync`） |
+| 剪纸 | `paper`（纸片，可加 `.red` `.teal` `.mustard` `.ink` `.tilt-l` `.tilt-r`）`paper-tag`（毛边标签）`tape`（胶带）`fx-torn-shadow`（给毛边元素补投影的外壳）`scene.paper-bg`（任意皮肤下给场景铺纸纹底）；新变量 `--fx-font-round`（圆体字） |
 
 ## 常见问题
 
@@ -288,13 +299,23 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 - GSAP：使用 GreenSock 的 [Standard License](https://gsap.com/standard-license)（免费，含商用）。
 - 字体：见 [fonts/README.md](fonts/README.md)。
 
+## 致谢 / Credits
+
+v1.1 的新动效和皮肤受到下面这些开源项目的启发：
+
+- [animate.css](https://github.com/animate-css/animate.css)（MIT）
+- [Magic UI](https://github.com/magicuidesign/magicui)（MIT）
+- [React Bits](https://github.com/DavidHDev/react-bits)（MIT + Commons Clause）
+
+这些项目是 CSS 动画或 React 组件，渲染器无法逐帧控制。本库按「逐帧可 seek、结果可复现」的需求重新实现了相应的效果：只借用了它们的创意和效果名称（说明里括号中的原名），**没有复制它们的代码**。
+
 <!-- CATALOG:START -->
-## 动效目录（76 种动效 + 10 种转场）
+## 动效目录（116 种动效 + 14 种转场）
 
 > 这一节由 `node gen-readme.mjs` 从 `fx.js` 自动生成，不要手改。
 > 所有动效都支持通用参数 `dur`（时长）、`ease`（缓动）、`stagger`（错峰）；下表只列各自特有的参数。
 
-### 入场（24）
+### 入场（26）
 
 元素出现的方式。默认从「入场前」状态回到元素本来的样子，所以元素自己写的 CSS 位置、旋转都会保留。
 
@@ -324,8 +345,10 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `draw` | 描线：SVG 线条沿路径画出来（连线、箭头、圈注、折线图） |
 | `pixel-in` | 像素风入场：分 4~5 档跳着出现（不是平滑的），配 each: 可做方块拼字 |
 | `scramble` | 乱码解码：每个字先闪随机字符（灰），从左到右逐个锁定成正确的字（白）。参数 dur、chars=乱码字符池 |
+| `light-speed-in` | 光速入场：带着斜切从一侧高速冲进来，冲过头再回正（animate.css lightSpeedIn）。参数 dir=left/right（往哪边运动）、dist |
+| `jack-in` | 弹簧盒：从底部一点点弹出来，左右晃两下站稳（animate.css jackInTheBox） |
 
-### 退场（7）
+### 退场（9）
 
 元素离开的方式。一般写成 `@-0.4`（场景结束前 0.4 秒）。
 
@@ -338,8 +361,10 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `scale-out` | 缩小 + 淡出。参数 to=结束缩放（>1 则是放大着消失） |
 | `slide-out` | 向一侧滑出。参数 dir |
 | `wipe-out` | 遮罩擦除消失 |
+| `hinge` | 铰链掉落：左上角像钉了一颗钉子，晃两下后掉出画面（animate.css hinge）。参数 dist |
+| `fall-out` | 文字掉落：每个字带着旋转往下掉出画面（FallingText），一般配 chars: 用。参数 dist、seed |
 
-### 强调（24）
+### 强调（37）
 
 元素已经在画面上，念到它时做一下强调；也包括移动、变色、内容切换。
 
@@ -369,6 +394,35 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `cycle` | 子元素轮播硬切：一次只显示一个，每 every 秒换下一个（缩略图里画面一直在换）。参数 every、loop=1 循环、stop=停在第几张 |
 | `text` | 文字硬切成新内容（时钟跳变、标签换字）。参数 v=新文字 |
 | `to` | 万能补间：直接写 GSAP 属性。例 to@2(x=120,scale=1.2,opacity=0.5,dur=0.6,ease=inout) |
+| `tada` | 欢呼：先缩一下，再放大着左右摇摆（animate.css tada） |
+| `jello` | 果冻：斜切着来回晃，幅度越来越小（animate.css jello） |
+| `rubber-band` | 橡皮筋：横向拉长、纵向压扁，来回弹几下（animate.css rubberBand） |
+| `heartbeat` | 心跳：连续两下放大（animate.css heartBeat） |
+| `head-shake` | 摇头：带一点 3D 转动的左右摇（否定、不对）（animate.css headShake） |
+| `wobble` | 摇晃：边平移边歪着来回晃（animate.css wobble） |
+| `border-beam` | 边框流光：一小段光沿着元素边框绕圈跑（BorderBeam / StarBorder）。参数 color、w=粗细、len=光带占周长比例、n=绕几圈、dur=每圈秒数、keep=1 跑完不消失 |
+| `spotlight` | 聚光灯：画面压暗，只留一个圆形亮区罩住目标；同一场景里再调一次，光圈会移到新目标（Spotlight）。写在要照的元素上，或 to=#id。参数 r=半径、dim=暗度 0~1、off=1 关灯 |
+| `confetti` | 撒彩纸：从元素中心炸开一把彩纸，抛起再落下（Confetti / ClickSpark）。参数 n、colors=色1/色2/色3、power=力度、seed |
+| `sparkle` | 闪烁星点：元素四周随机冒出小星星，一闪一闪（SparklesText）。参数 n、color、dur、seed |
+| `orbit` | 环绕：把容器的子元素均匀摆在一个圆上，绕中心转，子元素始终保持正立（OrbitingCircles）。写在容器上。参数 r=半径、turns=圈数、dur、reverse=1 反转 |
+| `beam` | 连接光束：在两个元素之间画一条弧线，一团光沿线流过去（AnimatedBeam，适合画「A 把数据传给 B」）。写在起点元素上，to=#终点。参数 curve=弯曲度、color、n=流几次、dur |
+| `flip-swap` | 翻面换内容：元素绕竖轴翻过去，背面换成第二个子元素再翻回来（翻牌、揭晓答案）。元素里放两个子元素：第一个是正面，第二个是背面。参数 axis=y/x |
+
+### 文字（9）
+
+专门给文字用的：流光、故障、换词、删掉重打、翻牌、描边、残影。
+
+| 名字 | 作用 / 参数 |
+|---|---|
+| `shimmer` | 流光字：一道高光从左到右扫过文字（ShinyText）。参数 color=高光色、n=扫几次、gap=两次间隔 |
+| `glitch` | 故障字：红蓝错位 + 抖动 + 斜切，闪一小段后恢复（GlitchText）。参数 amp=错位像素、dur、seed。注意会把元素 x 归零，元素本身要移动时套一层外壳 |
+| `rotate-words` | 词语轮换：同一位置的词向上翻走、下一个词翻上来（WordRotate）。参数 words=乙/丙/丁（用 / 分隔，元素原文是第一个）、every=每个词停留秒数 |
+| `morph` | 模糊变形换词：旧词变虚散开，新词从模糊中聚拢（MorphingText）。参数 words=乙/丙、every |
+| `retype` | 删掉重打：把现有文字从后往前一个个删掉，再敲出新文字（TextType）。参数 v=新文字、cps=每秒打几个字、del=每秒删几个字 |
+| `true-focus` | 逐词聚焦：一次只让一个词清晰，其余变虚，取景框跳到这个词上（TrueFocus）。中文用 / 分词（如 AI/不会/替代/你），英文按空格。参数 every、blur、color |
+| `split-flap` | 翻牌机：每个字先快速翻过一串随机字符，再从左到右依次停在正确的字上（SplitFlap，机场航班牌）。入场用。参数 dur、stagger、chars=字符池 |
+| `stroke-in` | 描边字：先沿一个方向画出空心描边，再把颜色灌满（StrokeText）。参数 w=描边粗细、color=描边色、hold=空心停留秒数 |
+| `echo` | 残影入场：几层半透明的拷贝拖在后面一起滑入，到位后残影散掉（EchoText）。参数 n=残影层数、dist、dir |
 
 ### 数据（6）
 
@@ -383,7 +437,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `ring` | 圆环进度：配 data-make="ring"。参数 from、to（0~1） |
 | `wave-live` | 波形跳动：配 data-make="wave"，每根条按种子随机起伏。参数 dur、seed |
 
-### 镜头（7）
+### 镜头（11）
 
 作用在一整个容器上：推近、平移、3D 倾斜、震动。
 
@@ -396,6 +450,10 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `tilt` | 3D 倾斜摆放并缓慢转动（悬浮的界面卡片）。参数 rx、ry 起始角度，rx2、ry2 结束角度 |
 | `drift` | 背景缓慢漂移（模糊卡片墙、粒子层）。参数 x、y、rot、dur |
 | `cam-shake` | 镜头震动（重击、报错） |
+| `meteors` | 流星雨：一根根斜着划过的光线（Meteors），写在铺满的背景层上。参数 n、angle=方向角度（默认 135 = 往左下）、color、dur、seed |
+| `marquee` | 跑马灯：一排内容无限循环地横向滚动（Marquee / LogoLoop）。写在一行的容器上，子元素会自动复制补满。参数 speed=每秒像素、reverse=1 反向 |
+| `bg-scroll` | 背景图案滚动：让 background（网格、纹理、条纹）按速度持续平移，配 retro-grid 组件用。参数 x、y=每秒像素 |
+| `parallax` | 视差：容器里的各层按前后顺序以不同速度平移（后面的层动得少、前面的层动得多），配 hills 层叠纸山用。写在容器上。参数 x、y=最前层的总位移、dur |
 
 ### 角色（5）
 
@@ -409,6 +467,23 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `hop` | 原地跳一下（惊讶、高兴）。参数 h=高度、n=次数 |
 | `walk` | 走过去：水平移动 + 一步一颠。参数 x=位移 或 to=#目标、steps=步数；像素角色加 ease=steps(8) |
 
+### 剪纸（10）
+
+剪纸 / 纸艺拼贴风：展开、剪开、撕开、贴上、逐层升起，以及每秒 12 格的定格手工感。和 `theme-paper` 皮肤最配，但任何皮肤都能用。
+
+| 名字 | 作用 / 参数 |
+|---|---|
+| `paper-unfold` | 纸张展开：像对折的纸从折痕处翻开摊平，带一点回弹。参数 dir=down/up/left/right（往哪边展开） |
+| `cut-in` | 剪刀剪开：沿一条锯齿边一刀一刀地把元素「剪」出来，逐格推进有剪纸感。参数 dir=right/left/down/up、teeth=锯齿数、jag=锯齿深度（%）、snips=剪几刀 |
+| `peel-in` | 卷角揭开：像贴纸从一个角翘起的状态落回原位按平。参数 corner=tl/tr/bl/br（从哪个角） |
+| `layer-rise` | 逐层升起：容器里的纸层从后往前依次从下方升起，越靠前升得越晚、越远（层叠纸山、纸片舞台）。写在容器上。参数 dist、stagger |
+| `stick-on` | 贴纸拍上：从镜头前方带着大投影拍到纸面上，落定时投影收紧（贴标签、贴照片）。参数 from=起始缩放、rot=起始歪斜角度 |
+| `stop-in` | 定格入场：以每秒 12 格的定格动画节奏跳进来，每一格带一点随机歪斜（手工动画感）。参数 dist、steps=跳几格、fps、seed |
+| `jitter` | 定格抖动：以每秒 12 格不停地微微歪动、挪动，像手工逐格拍出来的（boiling）。建议加在外层容器上，免得和入场动效抢位置。参数 amp=角度、px=位移、fps、dur |
+| `lift` | 纸片抬起：往上浮起一点、投影变大变淡，像被手指捏起来；down=1 放回去。参数 dist |
+| `flutter` | 飘动：像纸片被风吹了一下，左右摆几下慢慢停住。参数 deg、n=摆几下、origin |
+| `sway` | 悬挂摇摆：挂着的东西（灯笼、吊牌、窗花）持续缓慢地左右摆。参数 deg、period=一个来回秒数、dur |
+
 ### 组件（3）
 
 配合 `data-make` 生成的组件使用。
@@ -419,7 +494,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `chapter` | 章节进度条：配 data-make="chapters"，高亮块滑到第 i 章（从 1 数） |
 | `check` | 清单打勾：配 .fx-check 组件，勾画出来、文字变实 |
 
-### 转场（10）
+### 转场（14）
 
 写在**后一个**场景上：`<section class="scene" data-in="blur-cross(dur=0.5)">`。
 
@@ -435,4 +510,8 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `flash` | 闪白（或任意色）切换：重点句、章节开头。参数 color |
 | `dip` | 黑场过渡：先暗下去再亮起来（换话题）。参数 color |
 | `pixelate` | 像素溶解：方块按随机顺序盖满画面再散开（像素风换场景）。参数 cols、color |
+| `paper-slide` | 抽纸：新的一页纸从一侧滑进来盖住旧页，边缘带投影，旧页稍微压暗。参数 dir=left/right/up/down |
+| `tear` | 撕纸：新画面沿一条参差的撕裂边从一侧露出来（剪纸风换场景）。参数 dir=right/left/down/up、jag、teeth |
+| `glitch-cut` | 故障闪切：新画面带红蓝错位闪几下再稳定下来（科技感切换） |
+| `open` | 开门：新画面从中间一条缝向两边拉开。参数 dir=x（左右拉开）/y（上下拉开） |
 <!-- CATALOG:END -->

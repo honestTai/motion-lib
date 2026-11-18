@@ -4,6 +4,8 @@
 
 **HTML → 影片的宣告式動效庫。** 在元素上寫一行 `data-fx="動效名@秒數"`，就能做出知識口播、科技解說這類影片裡常見的動效，再用 [HyperFrames](https://hyperframes.heygen.com) 逐格渲染成 MP4。
 
+> **v1.1 新增**：40 種動效 + 4 個轉場（`paper-slide` `tear` `glitch-cut` `open`）+ 5 個元件產生器（`circle-text` `retro-grid` `papercut` `hills` `torn`）；2 個新分類「文字」「剪紙」；第 4 套外觀主題 `theme-paper`（剪紙拼貼）。靈感來自 animate.css、Magic UI、React Bits，見文末「致謝」。
+
 [![motion-lib 宣傳片](promo/cover.jpg)](promo/motion-lib-promo.mp4)
 
 > 上面的宣傳片就是用這個動效庫寫的，原始碼在 [`promo/index.html`](promo/index.html)。
@@ -11,10 +13,10 @@
 <!-- STATS:START -->
 | | 數量 |
 |---|---|
-| 動效 | **76** 種（入場 24 · 退場 7 · 強調 24 · 資料 6 · 鏡頭 7 · 角色 5 · 元件 3） |
-| 轉場 | **10** 種 |
-| 元件產生器 | **9** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels`） |
-| 外觀主題 | **3** 套（白紫科技 · 黑金電影 · 像素復古） |
+| 動效 | **116** 種（入場 26 · 退場 9 · 強調 37 · 文字 9 · 資料 6 · 鏡頭 11 · 角色 5 · 剪紙 10 · 元件 3） |
+| 轉場 | **14** 種 |
+| 元件產生器 | **14** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn`） |
+| 外觀主題 | **4** 套（白紫科技 · 黑金電影 · 像素復古 · 剪紙拼貼） |
 <!-- STATS:END -->
 
 ## 為什麼要用它
@@ -42,15 +44,15 @@ motion-lib 把所有動效都排進**一條暫停的 GSAP 時間軸**，你只�
 ```
 motion-lib/
 ├── fx.js            動效庫本體：動效、轉場、元件產生器、字幕、預覽播放器
-├── fx.css           基礎樣式、元件樣式、三套外觀主題
-├── fonts/           優設標題黑、得意黑、Fusion Pixel 像素字型（授權見 fonts/README.md）
+├── fx.css           基礎樣式、元件樣式、四套外觀主題
+├── fonts/           優設標題黑、得意黑、Fusion Pixel 像素字型、站酷快樂體（授權見 fonts/README.md）
 ├── vendor/          GSAP 3.15（本機一份）
 ├── new-project.sh   把動效庫裝進一個影片專案（也用來更新）
 ├── chrome-tall.sh   渲染用 Chrome 包裝（避免成片底部字幕被截掉）
 ├── gen-readme.mjs   從 fx.js 自動產生本文的數量表和動效目錄（node gen-readme.mjs）
 ├── demo/            示範頁：6 個場景，三套外觀主題都用到
 ├── promo/           宣傳片原始碼 + 成片
-└── examples/        三套外觀主題各一支完整範例片 + 合輯
+└── examples/        四套外觀主題各一支完整範例片 + 合輯
 ```
 
 ## 環境需求
@@ -120,15 +122,16 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 
 ## 範例片
 
-三套外觀主題各做了一支完整範例（純動效、無配音），原始碼就在對應目錄裡，可以直接拿來改：
+四套外觀主題各做了一支完整範例（純動效、無配音），原始碼就在對應目錄裡，可以直接拿來改：
 
 | 外觀主題 | 範例 | 原始碼 |
 |---|---|---|
 | 白紫科技 `theme-violet` | [![violet](examples/violet/cover.jpg)](examples/violet/violet.mp4) | [`examples/violet/index.html`](examples/violet/index.html) |
 | 黑金電影 `theme-gold` | [![gold](examples/gold/cover.jpg)](examples/gold/gold.mp4) | [`examples/gold/index.html`](examples/gold/index.html) |
 | 像素復古 `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
+| 剪紙拼貼 `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
 
-三支合在一起：[`examples/showreel.mp4`](examples/showreel.mp4)。
+四支合在一起：[`examples/showreel.mp4`](examples/showreel.mp4)。
 
 ## 寫法
 
@@ -198,6 +201,11 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 | `pixels` | `data-text="SKILL?"` `data-size` `data-colors` | `each:pixel-in(order=random)` | 5×7 點陣方塊字 |
 | `wall` | `data-cols` `data-rows` `data-seed` | `drift` | 背景卡片牆 |
 | `dust` | `data-n` `data-seed` | `drift`、`float` | 漂浮粒子 |
+| `circle-text` | `data-text` `data-r`（半徑） | `spin`（讓文字環轉起來） | 環形文字、徽章、印章 |
+| `retro-grid` | `data-cell`（格子大小）`data-color` `data-angle`（傾角） | `bg-scroll`（讓網格往前流動） | 復古透視網格背景 |
+| `papercut` | `data-size` `data-fold`（幾摺：6 / 8 / 12）`data-shape`（`flower` `circle` `square`）`data-color` `data-seed` | `pop-in`、`spin`、`jitter` | 對稱剪紙窗花，每個 seed 圖案都不同 |
+| `hills` | `data-layers`（層數）`data-colors`（從後到前的顏色）`data-seed` | `layer-rise`、`parallax` | 層疊紙山；每層是一個子元素 |
+| `torn` | `data-edges`（`top,right,bottom,left`，預設 `top,bottom`）`data-depth` `data-teeth` `data-seed` | `stick-on`、`rise-in` | 把元素的邊剪成毛邊紙條；`clip-path` 會裁掉陰影，要投影請在外面套一層 `fx-torn-shadow` |
 
 ### 字幕
 
@@ -213,6 +221,7 @@ FX.subtitles([
 | `pill` | 黑色圓角膠囊 + 白字 | 白紫科技 |
 | `bar` | 半透明黑條 | 像素復古 |
 | `plain` | 白字 + 描影，無底 | 黑金電影 |
+| `paper` | 米色毛邊紙條 + 深色字 | 剪紙拼貼 |
 
 `pop: true` 時每句字幕會輕輕上浮出現；預設是硬切，口播影片通常就是硬切。
 
@@ -236,11 +245,11 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 });
 ```
 
-> 第二個參數是目錄使用的分類鍵（`入场` 入場、`退场` 退場、`强调` 強調、`数据` 資料、`镜头` 鏡頭、`角色` 角色、`组件` 元件、`转场` 轉場）。這些鍵請維持簡體原樣。
+> 第二個參數是目錄使用的分類鍵（`入场` 入場、`退场` 退場、`强调` 強調、`数据` 資料、`文字` 文字、`镜头` 鏡頭、`角色` 角色、`剪纸` 剪紙、`组件` 元件、`转场` 轉場）。這些鍵請維持簡體原樣。
 
 **三條硬規則**：不使用 CSS animation / transition；不使用 `setTimeout` / `requestAnimationFrame`；要隨機就用 `FX.rand(種子)`，不要用 `Math.random`。
 
-## 三套外觀主題
+## 四套外觀主題
 
 在根元素上換一個 class，整支影片就換風格：
 
@@ -249,6 +258,7 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 | `theme-violet` | 白紫科技 | 白 `#fdfdfd` / 深 `#171719`（場景加 `dark` / `light` 切換） | 優設標題黑 | 紫 `#8453e8` / 淺紫 `#d5befe` | AI 工具、效率、工作流程講解 |
 | `theme-gold` | 黑金電影 | 深藍黑 `#080a0f` + 模糊實拍 + 暗角 | 金色漸層斜體 | 金 `#e4b256`，紅 `#ff5b56` 只用於下跌 | 財經、產業分析、排行榜 |
 | `theme-pixel` | 像素復古 | 米色網點紙 `#efe9dc` | Fusion Pixel 像素字 | 綠 `#9fe07a` · 紅 · 黃 | 動漫主持人、輕鬆科普 |
+| `theme-paper` | 剪紙拼貼 | 米色紙底 `#efe6d6` + 純 CSS 紙紋 | 站酷快樂體 ZCOOL KuaiLe | 剪紙紅 `#c8322b` · 青 `#2f6b6e` · 芥黃 `#e3a83b` | 文化、節氣、生活風格、兒童科普、手作感品牌 |
 
 所有顏色、字型、圓角、字幕尺寸都是 `fx.css` 最上方的 CSS 變數（`--fx-bg` `--fx-accent` `--fx-font-title` …），改變數就能做出自己的外觀主題。
 
@@ -263,6 +273,7 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 | 元件 | `fx-window`（mac 視窗，加 `.pixel` 變像素視窗）`fx-chat`（聊天氣泡）`fx-check`（清單打勾）`fx-cursor`（滑鼠游標）`pbar`（像素能量條）`fx-hbar`（橫向長條） |
 | 背景 | `bg-footage`（模糊實拍）`vignette`（暗角） |
 | 角色 | `host`（立繪容器，裡面放多張 `[data-pose]` 圖，搭配 `pose` / `lipsync`） |
+| 剪紙 | `paper`（紙片，可加 `.red` `.teal` `.mustard` `.ink` `.tilt-l` `.tilt-r`）`paper-tag`（毛邊標籤）`tape`（膠帶）`fx-torn-shadow`（替毛邊元素補投影的外殼）`scene.paper-bg`（在任何外觀主題下替場景鋪紙紋底）；新變數 `--fx-font-round`（圓體字） |
 
 ## 常見問題
 
@@ -290,13 +301,23 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 - GSAP：使用 GreenSock 的 [Standard License](https://gsap.com/standard-license)（免費，含商用）。
 - 字型：見 [fonts/README.md](fonts/README.md)。
 
+## 致謝 / Credits
+
+v1.1 的新動效和外觀主題受到下列開源專案的啟發：
+
+- [animate.css](https://github.com/animate-css/animate.css)（MIT）
+- [Magic UI](https://github.com/magicuidesign/magicui)（MIT）
+- [React Bits](https://github.com/DavidHDev/react-bits)（MIT + Commons Clause）
+
+這些專案是 CSS 動畫或 React 元件，渲染器無法逐格控制。本動效庫依照「逐格可 seek、結果可重現」的需求重新實作了對應的效果：只借用了它們的創意和效果名稱（說明裡括號中的原名），**沒有複製它們的程式碼**。
+
 <!-- CATALOG:START -->
-## 動效目錄（76 種動效 + 10 種轉場）
+## 動效目錄（116 種動效 + 14 種轉場）
 
 > 本節由 `node gen-readme.mjs` 從 `fx.js` 自動產生，請勿手動修改。
 > 所有動效都支援通用參數 `dur`（時長）、`ease`（緩動）、`stagger`（錯峰）；下表只列出各自特有的參數。
 
-### 入場 (24)
+### 入場 (26)
 
 元素出現的方式。預設會從「入場前」的狀態回到元素原本的樣子，所以元素自己寫的 CSS 位置、旋轉都會保留。
 
@@ -326,8 +347,10 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 | `draw` | 描線：SVG 線條沿路徑畫出來（連線、箭頭、圈註、折線圖） |
 | `pixel-in` | 像素風入場：分 4~5 檔跳著出現（不是平滑的），搭配 each: 可做方塊拼字 |
 | `scramble` | 亂碼解碼：每個字先閃隨機字元（灰），從左到右逐個鎖定成正確的字（白）。參數 dur、chars=亂碼字元池 |
+| `light-speed-in` | 光速入場：帶著斜切從一側高速衝進來，衝過頭再回正（animate.css lightSpeedIn）。參數 dir=left/right（往哪邊運動）、dist |
+| `jack-in` | 彈簧盒：從底部一點一點彈出來，左右晃兩下站穩（animate.css jackInTheBox） |
 
-### 退場 (7)
+### 退場 (9)
 
 元素離開的方式。通常寫成 `@-0.4`（場景結束前 0.4 秒）。
 
@@ -340,8 +363,10 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 | `scale-out` | 縮小 + 淡出。參數 to=結束縮放（>1 則是放大著消失） |
 | `slide-out` | 向一側滑出。參數 dir |
 | `wipe-out` | 遮罩擦除消失 |
+| `hinge` | 鉸鏈掉落：左上角像釘了一根釘子，晃兩下後掉出畫面（animate.css hinge）。參數 dist |
+| `fall-out` | 文字掉落：每個字帶著旋轉往下掉出畫面（FallingText），一般搭配 chars: 使用。參數 dist、seed |
 
-### 強調 (24)
+### 強調 (37)
 
 元素已經在畫面上，唸到它時做一下強調；也包括移動、變色、內容切換。
 
@@ -371,6 +396,35 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 | `cycle` | 子元素輪播硬切：一次只顯示一個，每 every 秒換下一個（縮圖裡畫面一直在換）。參數 every、loop=1 循環、stop=停在第幾張 |
 | `text` | 文字硬切成新內容（時鐘跳變、標籤換字）。參數 v=新文字 |
 | `to` | 萬能補間：直接寫 GSAP 屬性。例 to@2(x=120,scale=1.2,opacity=0.5,dur=0.6,ease=inout) |
+| `tada` | 歡呼：先縮一下，再放大著左右搖擺（animate.css tada） |
+| `jello` | 果凍：斜切著來回晃，幅度越來越小（animate.css jello） |
+| `rubber-band` | 橡皮筋：橫向拉長、縱向壓扁，來回彈幾下（animate.css rubberBand） |
+| `heartbeat` | 心跳：連續兩下放大（animate.css heartBeat） |
+| `head-shake` | 搖頭：帶一點 3D 轉動的左右搖（否定、不對）（animate.css headShake） |
+| `wobble` | 搖晃：邊平移邊歪著來回晃（animate.css wobble） |
+| `border-beam` | 邊框流光：一小段光沿著元素邊框繞圈跑（BorderBeam / StarBorder）。參數 color、w=粗細、len=光帶佔周長比例、n=繞幾圈、dur=每圈秒數、keep=1 跑完不消失 |
+| `spotlight` | 聚光燈：畫面壓暗，只留一個圓形亮區罩住目標；同一場景裡再呼叫一次，光圈會移到新目標（Spotlight）。寫在要照的元素上，或 to=#id。參數 r=半徑、dim=暗度 0~1、off=1 關燈 |
+| `confetti` | 撒彩紙：從元素中心炸開一把彩紙，拋起再落下（Confetti / ClickSpark）。參數 n、colors=色1/色2/色3、power=力道、seed |
+| `sparkle` | 閃爍星點：元素四周隨機冒出小星星，一閃一閃（SparklesText）。參數 n、color、dur、seed |
+| `orbit` | 環繞：把容器的子元素均勻擺在一個圓上，繞中心轉，子元素始終保持正立（OrbitingCircles）。寫在容器上。參數 r=半徑、turns=圈數、dur、reverse=1 反轉 |
+| `beam` | 連接光束：在兩個元素之間畫一條弧線，一團光沿線流過去（AnimatedBeam，適合畫「A 把資料傳給 B」）。寫在起點元素上，to=#終點。參數 curve=彎曲度、color、n=流幾次、dur |
+| `flip-swap` | 翻面換內容：元素繞垂直軸翻過去，背面換成第二個子元素再翻回來（翻牌、揭曉答案）。元素裡放兩個子元素：第一個是正面，第二個是背面。參數 axis=y/x |
+
+### 文字 (9)
+
+專門給文字用的：流光、故障、換詞、刪掉重打、翻牌、描邊、殘影。
+
+| 名稱 | 作用 / 參數 |
+|---|---|
+| `shimmer` | 流光字：一道高光從左到右掃過文字（ShinyText）。參數 color=高光色、n=掃幾次、gap=兩次間隔 |
+| `glitch` | 故障字：紅藍錯位 + 抖動 + 斜切，閃一小段後恢復（GlitchText）。參數 amp=錯位像素、dur、seed。注意會把元素 x 歸零，元素本身要移動時請外加一層外殼 |
+| `rotate-words` | 詞語輪換：同一位置的詞向上翻走，下一個詞翻上來（WordRotate）。參數 words=乙/丙/丁（用 / 分隔，元素原文是第一個）、every=每個詞停留秒數 |
+| `morph` | 模糊變形換詞：舊詞變虛散開，新詞從模糊中聚攏（MorphingText）。參數 words=乙/丙、every |
+| `retype` | 刪掉重打：把現有文字從後往前一個個刪掉，再敲出新文字（TextType）。參數 v=新文字、cps=每秒打幾個字、del=每秒刪幾個字 |
+| `true-focus` | 逐詞聚焦：一次只讓一個詞清晰，其餘變虛，取景框跳到這個詞上（TrueFocus）。中文用 / 分詞（如 AI/不會/取代/你），英文按空格。參數 every、blur、color |
+| `split-flap` | 翻牌機：每個字先快速翻過一串隨機字元，再從左到右依序停在正確的字上（SplitFlap，機場航班看板）。入場用。參數 dur、stagger、chars=字元池 |
+| `stroke-in` | 描邊字：先沿一個方向畫出空心描邊，再把顏色灌滿（StrokeText）。參數 w=描邊粗細、color=描邊色、hold=空心停留秒數 |
+| `echo` | 殘影入場：幾層半透明的拷貝拖在後面一起滑入，到位後殘影散掉（EchoText）。參數 n=殘影層數、dist、dir |
 
 ### 資料 (6)
 
@@ -385,7 +439,7 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 | `ring` | 圓環進度：搭配 data-make="ring"。參數 from、to（0~1） |
 | `wave-live` | 波形跳動：搭配 data-make="wave"，每根長條依種子隨機起伏。參數 dur、seed |
 
-### 鏡頭 (7)
+### 鏡頭 (11)
 
 作用在整個容器上：推近、平移、3D 傾斜、震動。
 
@@ -398,6 +452,10 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 | `tilt` | 3D 傾斜擺放並緩慢轉動（懸浮的介面卡片）。參數 rx、ry 起始角度，rx2、ry2 結束角度 |
 | `drift` | 背景緩慢漂移（模糊卡片牆、粒子層）。參數 x、y、rot、dur |
 | `cam-shake` | 鏡頭震動（重擊、報錯） |
+| `meteors` | 流星雨：一根根斜著劃過的光線（Meteors），寫在鋪滿的背景層上。參數 n、angle=方向角度（預設 135 = 往左下）、color、dur、seed |
+| `marquee` | 跑馬燈：一排內容無限循環地橫向捲動（Marquee / LogoLoop）。寫在單行的容器上，子元素會自動複製補滿。參數 speed=每秒像素、reverse=1 反向 |
+| `bg-scroll` | 背景圖案捲動：讓 background（網格、紋理、條紋）依速度持續平移，搭配 retro-grid 元件使用。參數 x、y=每秒像素 |
+| `parallax` | 視差：容器裡的各層依前後順序以不同速度平移（後面的層動得少、前面的層動得多），搭配 hills 層疊紙山使用。寫在容器上。參數 x、y=最前層的總位移、dur |
 
 ### 角色 (5)
 
@@ -411,6 +469,23 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 | `hop` | 原地跳一下（驚訝、高興）。參數 h=高度、n=次數 |
 | `walk` | 走過去：水平移動 + 一步一顛。參數 x=位移 或 to=#目標、steps=步數；像素角色加 ease=steps(8) |
 
+### 剪紙 (10)
+
+剪紙 / 紙藝拼貼風：展開、剪開、撕開、貼上、逐層升起，以及每秒 12 格的定格手作感。和 `theme-paper` 外觀主題最搭，但任何外觀主題都能用。
+
+| 名稱 | 作用 / 參數 |
+|---|---|
+| `paper-unfold` | 紙張展開：像對摺的紙從摺痕處翻開攤平，帶一點回彈。參數 dir=down/up/left/right（往哪邊展開） |
+| `cut-in` | 剪刀剪開：沿一條鋸齒邊一刀一刀地把元素「剪」出來，逐格推進有剪紙感。參數 dir=right/left/down/up、teeth=鋸齒數、jag=鋸齒深度（%）、snips=剪幾刀 |
+| `peel-in` | 捲角揭開：像貼紙從一個角翹起的狀態落回原位按平。參數 corner=tl/tr/bl/br（從哪個角） |
+| `layer-rise` | 逐層升起：容器裡的紙層從後往前依序從下方升起，越靠前升得越晚、越遠（層疊紙山、紙片舞台）。寫在容器上。參數 dist、stagger |
+| `stick-on` | 貼紙拍上：從鏡頭前方帶著大投影拍到紙面上，落定時投影收緊（貼標籤、貼照片）。參數 from=起始縮放、rot=起始歪斜角度 |
+| `stop-in` | 定格入場：以每秒 12 格的定格動畫節奏跳進來，每一格帶一點隨機歪斜（手工動畫感）。參數 dist、steps=跳幾格、fps、seed |
+| `jitter` | 定格抖動：以每秒 12 格不停地微微歪動、挪動，像手工逐格拍出來的（boiling）。建議加在外層容器上，免得和入場動效搶位置。參數 amp=角度、px=位移、fps、dur |
+| `lift` | 紙片抬起：往上浮起一點、投影變大變淡，像被手指捏起來；down=1 放回去。參數 dist |
+| `flutter` | 飄動：像紙片被風吹了一下，左右擺幾下慢慢停住。參數 deg、n=擺幾下、origin |
+| `sway` | 懸掛搖擺：掛著的東西（燈籠、吊牌、窗花）持續緩慢地左右擺。參數 deg、period=一個來回秒數、dur |
+
 ### 元件 (3)
 
 搭配 `data-make` 產生的元件使用。
@@ -421,7 +496,7 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 | `chapter` | 章節進度條：搭配 data-make="chapters"，醒目區塊滑到第 i 章（從 1 數起） |
 | `check` | 清單打勾：搭配 .fx-check 元件，勾畫出來、文字變實 |
 
-### 轉場 (10)
+### 轉場 (14)
 
 寫在**後一個**場景上：`<section class="scene" data-in="blur-cross(dur=0.5)">`。
 
@@ -437,4 +512,8 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 | `flash` | 閃白（或任意色）切換：重點句、章節開頭。參數 color |
 | `dip` | 黑場過渡：先暗下去再亮起來（換話題）。參數 color |
 | `pixelate` | 像素溶解：方塊依隨機順序蓋滿畫面再散開（像素風換場景）。參數 cols、color |
+| `paper-slide` | 抽紙：新的一頁紙從一側滑進來蓋住舊頁，邊緣帶投影，舊頁稍微壓暗。參數 dir=left/right/up/down |
+| `tear` | 撕紙：新畫面沿一條參差的撕裂邊從一側露出來（剪紙風換場景）。參數 dir=right/left/down/up、jag、teeth |
+| `glitch-cut` | 故障閃切：新畫面帶紅藍錯位閃幾下再穩定下來（科技感切換） |
+| `open` | 開門：新畫面從中間一條縫向兩邊拉開。參數 dir=x（左右拉開）/y（上下拉開） |
 <!-- CATALOG:END -->

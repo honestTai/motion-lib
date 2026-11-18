@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>paper example</title>
+<link rel="stylesheet" href="lib/fx.css" />
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/fx.js"></script>
+<style>
+  /* 皮肤自带的 SVG 噪声纸纹在无头渲染里会变黑，这里换成纯 CSS 的细纹 */
+  .theme-paper .scene { background-image: repeating-linear-gradient(0deg, rgba(120,90,50,.045) 0 2px, transparent 2px 5px), radial-gradient(rgba(120,90,50,.07) 1px, transparent 1.3px); background-size: auto, 9px 9px; }
+  .theme-paper .scene.overlay, .theme-paper .scene.clear { background: none; }
+  .kanji { position: absolute; left: 150px; top: 90px; width: 270px; height: 270px; display: flex; align-items: center; justify-content: center;
+    font-family: var(--fx-font-title); font-size: 200px; line-height: 1; padding: 0; }
+  .kanji.white { background-color: #f4f7f9; color: #4b6a80; }
+  .head { position: absolute; left: 470px; top: 120px; font-family: var(--fx-font-title); font-size: 110px; line-height: 1.1; color: var(--fx-ink); letter-spacing: .04em; }
+  .head .hl { color: var(--fx-accent); }
+  .sub2 { position: absolute; left: 480px; top: 275px; }
+  .strip { padding: 14px 64px; font-family: var(--fx-font-round); font-size: 44px; letter-spacing: .12em; }
+  .hang { position: absolute; width: 4px; background: #6b5a45; }
+  .chip { display: inline-block; font-family: var(--fx-font-title); font-size: 64px; padding: 14px 40px; }
+  .snow, .leaf { position: absolute; top: 0; }
+</style>
+</head>
+<body>
+<div id="root" class="theme-paper" data-composition-id="main" data-width="1920" data-height="1080">
+
+<!-- 0 风格标题卡 -->
+<section class="scene center" id="title" data-d="1.8" style="background:#171719;background-image:none">
+  <div class="t-hero" style="font-size:190px;color:#fff" data-fx="blur-rise-in@0.05">剪纸拼贴</div>
+  <div class="t-mono" style="font-size:44px;margin-top:34px;color:#e3a83b" data-fx="blur-rise-in@0.25">.theme-paper</div>
+  <div class="t-small" style="font-size:28px;margin-top:20px;color:#9a9aa2" data-fx="blur-rise-in@0.45">motion-lib example</div>
+</section>
+
+<!-- 1 开场：一张纸 -->
+<section class="scene" id="intro" data-d="4.5" data-in="tear(dir=right)">
+  <div class="abs" style="left:110px;top:70px"><div data-make="papercut" data-size="380" data-seed="5" data-fx="cut-in@0.3(dur=1.2) sway@1.6(deg=3)"></div></div>
+  <div class="abs" style="left:1450px;top:80px"><div data-make="papercut" data-size="330" data-seed="11" data-fold="12" data-shape="circle" data-color="#2f6b6e" data-fx="paper-unfold@0.6 spin@1.5(deg=50,dur=3)"></div></div>
+  <div class="abs" style="left:1430px;top:560px"><div data-make="papercut" data-size="250" data-seed="23" data-fold="6" data-shape="square" data-color="#e3a83b" data-fx="peel-in@1.2(corner=tl)"></div></div>
+  <div class="abs" style="left:170px;top:600px"><div data-make="papercut" data-size="230" data-seed="31" data-fold="8" data-color="#c8322b" data-fx="stop-in@1.0 flutter@2.4"></div></div>
+  <div class="abs t-hero" style="left:0;right:0;top:400px;text-align:center;font-size:190px;color:#c8322b" data-fx="stroke-in@0.5(w=4,hold=0.5)">一张纸的四季</div>
+  <div class="abs" style="left:0;right:0;top:700px;text-align:center"><span class="paper-tag" data-fx="stick-on@1.8(rot=8)">折 · 剪 · 贴 · 撕</span></div>
+</section>
+
+<!-- 2 春 -->
+<section class="scene" id="spring" data-d="6.5" data-in="tear(dir=left)">
+  <div data-make="hills" data-layers="4" data-seed="3" data-colors="#d6e8b8,#a9d08a,#78b86a,#4f9a52" data-fx="layer-rise@0 parallax@0.8(x=-120,dur=5.5)"></div>
+  <div class="abs hang" style="left:1600px;top:0;height:90px"></div>
+  <div class="abs" style="left:1450px;top:80px"><div data-make="papercut" data-size="300" data-seed="8" data-fold="8" data-color="#c8322b" data-fx="cut-in@0.6(dur=1) sway@1.8(deg=4)"></div></div>
+  <div class="abs" style="left:1100px;top:70px"><div data-make="papercut" data-size="150" data-seed="9" data-fold="6" data-color="#e3a83b" data-fx="paper-unfold@0.9 flutter@2.6"></div></div>
+  <div class="kanji paper red tilt-l" data-fx="paper-unfold@0.3 sparkle@1.1(n=8,dur=4,color=#ffe28a)">春</div>
+  <div class="head">万物 <span class="hl" data-fx="rotate-words@1.2(words=醒/绿/软,every=1.4)">发</span></div>
+  <div class="sub2"><span class="paper-tag" data-fx="stick-on@0.9(rot=-6)">立春 · 惊蛰</span></div>
+  <div class="abs" style="left:150px;top:410px"><div data-fx="jitter@1.8(dur=4.5)"><div class="fx-torn-shadow"><div class="paper strip teal" data-make="torn" data-fx="stick-on@1.5">雨水 · 清明 · 谷雨</div></div></div></div>
+</section>
+
+<!-- 3 夏 -->
+<section class="scene" id="summer" data-d="6.5" data-in="paper-slide(dir=right)">
+  <div data-make="hills" data-layers="4" data-seed="7" data-colors="#8cc3b8,#4a9187,#2f6b6e,#1f4a4d" data-fx="layer-rise@0 parallax@0.8(x=-140,dur=5.5)"></div>
+  <div class="abs" style="left:1400px;top:40px"><div data-make="papercut" data-size="380" data-seed="14" data-fold="12" data-color="#e3a83b" data-fx="paper-unfold@0.5 spin@1.2(deg=70,dur=5)"></div></div>
+  <div class="abs hang" style="left:1180px;top:0;height:120px"></div>
+  <div class="abs" style="left:1090px;top:110px"><div data-make="papercut" data-size="180" data-seed="17" data-fold="8" data-shape="circle" data-color="#c8322b" data-fx="stop-in@0.8 sway@1.8(deg=5,period=2)"></div></div>
+  <div class="kanji paper teal tilt-r" data-fx="peel-in@0.3(corner=tr) lift@3.2(dist=14) lift@4.2(down=1,dist=14)">夏</div>
+  <div class="head"><span data-fx="morph@1.0(words=蝉鸣/荷风/冰瓜,every=1.3)">日头</span></div>
+  <div class="abs" style="left:470px;top:290px;font-family:var(--fx-font-title);font-size:66px;color:#2f6b6e" data-fx="true-focus@1.6(every=1.0,blur=2)">光/落在/每一层/纸上</div>
+  <div class="abs" style="left:1420px;top:470px;width:320px;height:200px" data-fx="flip-swap@3.4"><div class="paper red center" style="height:200px;font-size:96px;font-family:var(--fx-font-title)">热</div><div class="paper mustard center" style="height:200px;font-size:96px;font-family:var(--fx-font-title)">凉</div></div>
+  <div class="abs" style="left:150px;top:430px"><div data-fx="jitter@1.8(dur=4.5)"><div class="fx-torn-shadow"><div class="paper strip mustard" data-make="torn" data-seed="9" data-fx="cut-in@1.4(dir=right)">小满 · 芒种 · 夏至</div></div></div></div>
+</section>
+
+<!-- 4 秋 -->
+<section class="scene" id="autumn" data-d="6.5" data-in="tear(dir=down)">
+  <div data-make="hills" data-layers="4" data-seed="12" data-colors="#f3d49a,#e8a84a,#d6782a,#a84c1f" data-fx="layer-rise@0 parallax@0.8(x=-120,dur=5.5)"></div>
+  <div class="abs" style="left:1420px;top:60px"><div data-make="papercut" data-size="360" data-seed="21" data-fold="12" data-shape="circle" data-color="#e3a83b" data-fx="cut-in@0.5(dur=1.2,dir=down) sway@1.8(deg=2)"></div></div>
+  <div id="leaves"></div>
+  <div class="kanji paper mustard tilt-l" data-fx="stick-on@0.3(rot=-10) confetti@1.4(n=40,colors=#c8322b/#e3a83b/#d6782a/#2f6b6e)">秋</div>
+  <div class="head" data-fx="retype@1.0(v=满山尽是新金,cps=6,del=8)">满山尽是旧色</div>
+  <div class="sub2"><span class="paper-tag" style="background:#d6782a" data-fx="stick-on@0.9(rot=6)">白露 · 寒露</span></div>
+  <div class="abs" style="left:150px;top:410px"><div data-fx="jitter@1.8(dur=4.5)"><div class="fx-torn-shadow"><div class="paper strip red" data-make="torn" data-seed="5" data-fx="paper-unfold@1.5(dir=right)">立秋 · 秋分 · 霜降</div></div></div></div>
+</section>
+
+<!-- 5 冬 -->
+<section class="scene" id="winter" data-d="7" data-in="paper-slide(dir=up)" style="background-color:#7f98aa">
+  <div data-make="hills" data-layers="4" data-seed="19" data-colors="#dbe4ea,#c3d1da,#a9bbc7,#f2f6f8" data-fx="layer-rise@0 parallax@0.8(x=-120,dur=6)"></div>
+  <div id="snow"></div>
+  <div class="kanji paper white tilt-r" data-fx="peel-in@0.3(corner=bl) sparkle@1.2(n=8,dur=5,color=#ffffff)">冬</div>
+  <div class="head" style="color:#fff;text-shadow:0 4px 0 rgba(40,60,80,.25)" data-fx="echo@0.9(n=4,dist=40)">雪落无声</div>
+  <div class="sub2"><span class="paper-tag" style="background:#4b6a80" data-fx="stick-on@0.8(rot=-6) hinge@-0.7">小雪 · 大雪</span></div>
+  <div class="abs" style="left:150px;top:440px;display:flex;gap:30px">
+    <span class="chip paper tilt-l" style="color:#4b6a80" data-fx="drop-bounce@1.2">雪</span>
+    <span class="chip paper tilt-r" style="color:#4b6a80" data-fx="drop-bounce@1.45">霜</span>
+    <span class="chip paper tilt-l" style="color:#4b6a80" data-fx="drop-bounce@1.7">寒</span>
+  </div>
+</section>
+
+<!-- 6 结尾 -->
+<section class="scene" id="end" data-d="5" data-in="tear(dir=right)">
+  <div data-make="hills" data-layers="4" data-seed="4" data-colors="#a9d08a,#2f6b6e,#e3a83b,#8ea3b3" data-fx="layer-rise@0 parallax@0.5(x=-100,dur=4.5)"></div>
+  <div class="abs" style="left:110px;top:60px"><div data-make="papercut" data-size="260" data-seed="5" data-color="#c8322b" data-fx="cut-in@0.3 sway@1.4(deg=3)"></div></div>
+  <div class="abs" style="left:1560px;top:60px"><div data-make="papercut" data-size="240" data-seed="11" data-fold="12" data-shape="circle" data-color="#2f6b6e" data-fx="paper-unfold@0.5 spin@1.2(deg=40,dur=3.5)"></div></div>
+  <div class="abs t-hero" style="left:0;right:0;top:230px;text-align:center;font-size:160px;color:#c8322b;line-height:1.15" data-fx="chars:pop-in@0.3(from=0.4,dur=0.5,ease=spring,stagger=0.08) confetti@1.4(n=50,colors=#c8322b/#2f6b6e/#e3a83b)">一张纸，<br>也能讲完一年</div>
+  <div class="abs" style="left:0;right:0;top:640px;display:flex;justify-content:center;gap:34px" data-fx="each:stick-on@1.1(stagger=0.18)">
+    <span class="chip paper" style="background:#78b86a;color:#fff">春</span>
+    <span class="chip paper teal">夏</span>
+    <span class="chip paper mustard">秋</span>
+    <span class="chip paper" style="background:#8ea3b3;color:#fff">冬</span>
+  </div>
+  <div class="abs t-mono" style="left:0;right:0;top:830px;text-align:center;font-size:40px;color:#2b2622" data-fx="blur-rise-in@1.8">motion-lib · theme-paper</div>
+</section>
+</div>
+
+<script>
+  /* 秋叶、雪花：用带种子的随机数生成，再用 extra 手写下落 */
+  var rn = FX.rand(77), host, i, d, f = [];
+  host = document.getElementById('leaves');
+  var lc = ['#c8322b', '#e3a83b', '#d6782a', '#a84c1f'];
+  for (i = 0; i < 14; i++) {
+    d = document.createElement('div'); d.className = 'leaf';
+    var sz = 60 + Math.floor(rn() * 50);
+    d.setAttribute('data-make', 'papercut'); d.setAttribute('data-size', sz); d.setAttribute('data-seed', 40 + i); d.setAttribute('data-fold', 6);
+    d.setAttribute('data-color', lc[i % 4]); d.style.left = (60 + Math.floor(rn() * 1750)) + 'px';
+    host.appendChild(d); f.push({ el: d, delay: i * 0.3, dur: 4 + rn() * 2, sway: (rn() - .5) * 240, rot: (rn() - .5) * 540 });
+  }
+  var snowF = [];
+  host = document.getElementById('snow');
+  for (i = 0; i < 30; i++) {
+    d = document.createElement('div'); d.className = 'snow';
+    var s2 = 40 + Math.floor(rn() * 60);
+    d.setAttribute('data-make', 'papercut'); d.setAttribute('data-size', s2); d.setAttribute('data-seed', 60 + i); d.setAttribute('data-fold', 6); d.setAttribute('data-shape', 'circle');
+    d.setAttribute('data-color', '#fbfdfe'); d.style.left = (30 + Math.floor(rn() * 1800)) + 'px';
+    host.appendChild(d); snowF.push({ el: d, delay: i * 0.17, dur: 4 + rn() * 2.4, sway: (rn() - .5) * 200, rot: (rn() - .5) * 360 });
+  }
+  FX.subtitles([
+    [1.9, 6.1, '一张纸，对折，再对折，{剪}几刀'],
+    [6.5, 12.5, '一道折痕松开，{嫩绿}从纸缝里钻出来'],
+    [13.0, 19.0, '日头剪得很圆，{蝉声}一层压着一层'],
+    [19.5, 25.5, '风裁下一片{金黄}，落在旧日子上'],
+    [26.0, 32.4, '雪是最小的剪纸，落完，世界只剩{一页白}'],
+    [33.0, 37.4, '一张纸，也能讲完{一年}']
+  ], { style: 'paper' });
+  FX.build({
+    extra: function (tl, at) {
+      f.forEach(function (o) {
+        tl.fromTo(o.el, { y: -140, rotation: 0 }, { y: 1250, x: o.sway, rotation: o.rot, duration: o.dur, ease: 'none' }, at('autumn', 0.2 + o.delay));
+      });
+      snowF.forEach(function (o) {
+        tl.fromTo(o.el, { y: -140, rotation: 0 }, { y: 1250, x: o.sway, rotation: o.rot, duration: o.dur, ease: 'none' }, at('winter', 0.2 + o.delay));
+      });
+    }
+  });
+</script>
+</body>
+</html>

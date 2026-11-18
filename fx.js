@@ -19,7 +19,7 @@
   var gsap = g.gsap;
   if (!gsap) { throw new Error('FX：请先加载 gsap.min.js'); }
 
-  var FX = (g.FX = { version: '1.0.0', fx: {}, trans: {}, make: {}, catalog: [] });
+  var FX = (g.FX = { version: '1.1.0', fx: {}, trans: {}, make: {}, catalog: [] });
 
   /* ───────────────────────────── 工具 ───────────────────────────── */
 
@@ -955,6 +955,584 @@
     el.style.width = (x0 - 1) * (s + gap) + 'px';
     el.style.height = 7 * (s + gap) + 'px';
     el.innerHTML = h;
+  };
+
+  /* ═══════════════════ v1.1 新增：文字 · 强调 · 镜头 · 剪纸 ═══════════════════
+   * 灵感来自 animate.css、Magic UI、React Bits 等开源动效库，
+   * 全部按「逐帧可 seek、结果可复现」重新实现：不用 CSS 动画，随机数一律带种子。 */
+
+  var NS = 'http://www.w3.org/2000/svg';
+  var slashList = function (s) { return String(s || '').split('/').map(function (x) { return x.trim(); }).filter(Boolean); };
+  var relPos = function (el) { if (getComputedStyle(el).position === 'static') el.style.position = 'relative'; };
+  var hostOf = function (c) { return (c.scene && c.scene.el) || STAGE; };          // 叠加物挂在所在场景里，跟着场景显隐
+  var svgEl = function (tag, attrs) { var e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach(function (k) { e.setAttribute(k, attrs[k]); }); return e; };
+  /** 关键帧里的 rotation / x / y / skew 用相对值，不破坏元素自己 CSS 里的旋转和位置 */
+  var ADD = { rotation: 1, rotationX: 1, rotationY: 1, x: 1, y: 1, xPercent: 1, yPercent: 1, skewX: 1, skewY: 1 };
+  function keyframesRel(frames, dur, ease) {
+    var cur = {}, last = 0, out = [];
+    frames.forEach(function (f) {
+      var v = { duration: Math.max(0.001, (f[0] - last) / 100 * dur), ease: ease || 'sine.inOut' };
+      Object.keys(f[1]).forEach(function (k) {
+        if (ADD[k]) { var to = f[1][k], from = cur[k] || 0; v[k] = rel(to - from); cur[k] = to; } else v[k] = f[1][k];
+      });
+      out.push(v); last = f[0];
+    });
+    return out;
+  }
+
+  /* ── 文字 ── */
+
+  def('shimmer', '文字', '流光字：一道高光从左到右扫过文字（ShinyText）。参数 color=高光色、n=扫几次、gap=两次间隔', function (c) {
+    c.els.forEach(function (el) {
+      var base = getComputedStyle(el).color, hi = c.o.color || '#ffffff', d = num(c.o.dur, 1.2), n = num(c.o.n, 1);
+      el.style.backgroundImage = 'linear-gradient(110deg,' + base + ' 0%,' + base + ' 40%,' + hi + ' 50%,' + base + ' 60%,' + base + ' 100%)';
+      el.style.backgroundSize = '250% 100%';
+      el.style.backgroundRepeat = 'no-repeat';
+      el.style.backgroundPosition = '100% 0';
+      el.style.webkitBackgroundClip = 'text'; el.style.backgroundClip = 'text';
+      el.style.color = 'transparent';
+      for (var i = 0; i < n; i++) {
+        c.tl.fromTo(el, { backgroundPosition: '100% 0' }, { backgroundPosition: '0% 0', duration: d, ease: EZ(c.o.ease, 'inout'), immediateRender: false }, c.t + i * (d + num(c.o.gap, 0.4)));
+      }
+    });
+  });
+
+  def('glitch', '文字', '故障字：红蓝错位 + 抖动 + 斜切，闪一小段后恢复（GlitchText）。参数 amp=错位像素、dur、seed。注意会把元素 x 归零，元素本身要移动时套一层外壳', function (c) {
+    var r = FX.rand(num(c.o.seed, 21)), a = num(c.o.amp, 8), d = num(c.o.dur, 0.6), step = 2 / 30;
+    c.els.forEach(function (el) {
+      for (var t = 0; t < d; t += step) {
+        var on = r() > 0.25, dx = (r() * 2 - 1) * a;
+        c.tl.set(el, on ? { x: dx * 0.6, skewX: (r() * 2 - 1) * a * 0.8, textShadow: dx.toFixed(1) + 'px 0 #ff2a6d,' + (-dx).toFixed(1) + 'px 0 #05d9e8' }
+                       : { x: 0, skewX: 0, textShadow: 'none' }, c.t + t);
+      }
+      c.tl.set(el, { x: 0, skewX: 0, textShadow: 'none' }, c.t + d);
+    });
+  });
+
+  function wordStack(el, list, clip) {
+    el.innerHTML = '';
+    el.style.display = 'inline-grid';
+    el.style.verticalAlign = 'bottom';
+    if (clip) el.style.overflow = 'hidden';
+    return list.map(function (w) {
+      var s = document.createElement('span');
+      s.textContent = w; s.style.gridArea = '1 / 1'; s.style.whiteSpace = 'nowrap'; s.style.display = 'block';
+      el.appendChild(s); return s;
+    });
+  }
+  def('rotate-words', '文字', '词语轮换：同一位置的词向上翻走、下一个词翻上来（WordRotate）。参数 words=乙/丙/丁（用 / 分隔，元素原文是第一个）、every=每个词停留秒数', function (c) {
+    c.els.forEach(function (el) {
+      var sp = wordStack(el, [el.textContent.trim()].concat(slashList(c.o.words)), true), every = num(c.o.every, 1.2), d = num(c.o.dur, 0.4);
+      sp.forEach(function (s, i) { gsap.set(s, { yPercent: i ? 100 : 0, opacity: i ? 0 : 1 }); });
+      for (var i = 1; i < sp.length; i++) {
+        var t = c.t + (i - 1) * every;
+        c.tl.to(sp[i - 1], { yPercent: -100, opacity: 0, duration: d, ease: 'power3.in' }, t);
+        c.tl.fromTo(sp[i], { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, duration: d, ease: 'power3.out', immediateRender: false }, t + d * 0.4);
+      }
+    });
+  });
+  def('morph', '文字', '模糊变形换词：旧词变虚散开，新词从模糊中聚拢（MorphingText）。参数 words=乙/丙、every', function (c) {
+    c.els.forEach(function (el) {
+      var sp = wordStack(el, [el.textContent.trim()].concat(slashList(c.o.words)), false), every = num(c.o.every, 1.4), d = num(c.o.dur, 0.5);
+      sp.forEach(function (s, i) { if (i) gsap.set(s, { opacity: 0 }); });
+      for (var i = 1; i < sp.length; i++) {
+        var t = c.t + (i - 1) * every;
+        c.tl.to(sp[i - 1], { opacity: 0, filter: 'blur(12px)', scale: 0.94, duration: d, ease: 'power2.in' }, t);
+        c.tl.fromTo(sp[i], { opacity: 0, filter: 'blur(12px)', scale: 1.08 }, { opacity: 1, filter: 'blur(0px)', scale: 1, duration: d, ease: 'power2.out', immediateRender: false }, t + d * 0.5);
+      }
+    });
+  });
+
+  def('retype', '文字', '删掉重打：把现有文字从后往前一个个删掉，再敲出新文字（TextType）。参数 v=新文字、cps=每秒打几个字、del=每秒删几个字', function (c) {
+    c.els.forEach(function (el) {
+      var A = splitChars(el), cps = num(c.o.cps, 16), del = num(c.o.del, cps * 1.8);
+      var B = Array.from(String(c.o.v || '')).map(function (ch) {
+        var s = document.createElement('span'); s.className = 'fx-ch'; s.textContent = ch === ' ' ? ' ' : ch; s.style.display = 'none'; el.appendChild(s); return s;
+      });
+      var nA = A.length, nB = B.length, tDel = nA / del, total = tDel + 0.15 + nB / cps, p = { k: 0 };
+      var paint = function () {
+        var gone = Math.min(nA, Math.floor(p.k * del)), typed = Math.max(0, Math.floor((p.k - tDel - 0.15) * cps));
+        A.forEach(function (s, i) { s.style.display = i < nA - gone ? '' : 'none'; });
+        B.forEach(function (s, i) { s.style.display = i < typed ? '' : 'none'; });
+      };
+      c.tl.to(p, { k: total, duration: total, ease: 'none', onUpdate: paint }, c.t);
+    });
+  });
+
+  def('true-focus', '文字', '逐词聚焦：一次只让一个词清晰，其余变虚，取景框跳到这个词上（TrueFocus）。中文用 / 分词（如 AI/不会/替代/你），英文按空格。参数 every、blur、color', function (c) {
+    c.els.forEach(function (el) {
+      var ws;
+      if (el.textContent.indexOf('/') >= 0) {
+        el.innerHTML = el.textContent.split('/').map(function (w) { return '<span class="fx-ch">' + w.trim() + '</span>'; }).join('<span class="fx-gap"> </span>');
+        ws = $$('.fx-ch', el);
+      } else ws = splitWords(el);
+      relPos(el);
+      var box = document.createElement('i'); box.className = 'fx-focus-box';
+      if (c.o.color) box.style.setProperty('--c', c.o.color);
+      el.appendChild(box);
+      var every = num(c.o.every, 0.8), b = num(c.o.blur, 5), d = num(c.o.dur, 0.3), pad = num(c.o.pad, 10);
+      ws.forEach(function (w, k) {
+        var t = c.t + k * every;
+        ws.forEach(function (x, j) { c.tl.to(x, { filter: 'blur(' + (j === k ? 0 : b) + 'px)', opacity: j === k ? 1 : 0.4, duration: d, ease: 'power2.out' }, t); });
+        var v = { left: w.offsetLeft - pad, top: w.offsetTop - pad, width: w.offsetWidth + pad * 2, height: w.offsetHeight + pad * 2, duration: k ? d : 0.001, ease: 'power3.out' };
+        if (!k) c.tl.fromTo(box, { opacity: 0 }, { opacity: 1, duration: d }, t);
+        c.tl.to(box, v, t);
+      });
+      if (c.o.end !== 0) {
+        var te = c.t + ws.length * every;
+        c.tl.to(ws, { filter: 'blur(0px)', opacity: 1, duration: d }, te);
+        c.tl.to(box, { opacity: 0, duration: d }, te);
+      }
+    });
+  });
+
+  def('split-flap', '文字', '翻牌机：每个字先快速翻过一串随机字符，再从左到右依次停在正确的字上（SplitFlap，机场航班牌）。入场用。参数 dur、stagger、chars=字符池', function (c) {
+    var pool = Array.from(c.o.chars || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), r = FX.rand(num(c.o.seed, 8));
+    c.els.forEach(function (el) {
+      var cs = splitChars(el), fin = cs.map(function (s) { return s.textContent; }), d = num(c.o.dur, 0.6), st = num(c.o.stagger, 0.08);
+      var total = d + st * cs.length, p = { v: 0 };
+      cs.forEach(function (s) { s.classList.add('fx-flap'); });
+      var noise = cs.map(function () { var a = []; for (var k = 0; k < 40; k++) a.push(pool[Math.floor(r() * pool.length)]); return a; });
+      var paint = function () {
+        cs.forEach(function (s, i) {
+          s.textContent = p.v >= d + st * i || /\s/.test(fin[i]) ? fin[i] : noise[i][Math.floor(p.v * 15 + i) % 40];
+        });
+      };
+      paint();
+      c.tl.to(p, { v: total, duration: total, ease: 'none', onUpdate: paint }, c.t);
+    });
+  });
+
+  def('stroke-in', '文字', '描边字：先沿一个方向画出空心描边，再把颜色灌满（StrokeText）。参数 w=描边粗细、color=描边色、hold=空心停留秒数', function (c) {
+    c.els.forEach(function (el) {
+      var col = getComputedStyle(el).color, w = num(c.o.w, 2), d = num(c.o.dur, 0.6);
+      el.style.webkitTextStroke = w + 'px ' + (c.o.color || col);
+      c.tl.fromTo(el, { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: d, ease: 'power2.inOut' }, c.t);
+      c.tl.fromTo(el, { color: 'rgba(0,0,0,0)' }, { color: col, duration: d * 0.8, ease: 'power1.out' }, c.t + d + num(c.o.hold, 0.3));
+    });
+  });
+
+  def('echo', '文字', '残影入场：几层半透明的拷贝拖在后面一起滑入，到位后残影散掉（EchoText）。参数 n=残影层数、dist、dir', function (c) {
+    c.els.forEach(function (el) {
+      relPos(el);
+      var n = num(c.o.n, 3), dist = num(c.o.dist, 140), dd = DIR[c.o.dir || 'right'] || DIR.right, d = num(c.o.dur, 0.7), html = el.innerHTML;
+      c.tl.from(el, { x: rel(dd[0] * dist), y: rel(dd[1] * dist), opacity: 0, duration: d, ease: 'expo.out' }, c.t);
+      for (var k = 1; k <= n; k++) {
+        var g = document.createElement('span'); g.className = 'fx-echo'; g.setAttribute('aria-hidden', 'true'); g.innerHTML = html; el.appendChild(g);
+        c.tl.fromTo(g, { x: dd[0] * dist * 0.4 * k, y: dd[1] * dist * 0.4 * k, opacity: 0.5 / k }, { x: 0, y: 0, opacity: 0, duration: d + 0.15 * k, ease: 'expo.out' }, c.t);
+      }
+    });
+  });
+
+  /* ── 入场 / 退场（animate.css 的经典款） ── */
+
+  def('light-speed-in', '入场', '光速入场：带着斜切从一侧高速冲进来，冲过头再回正（animate.css lightSpeedIn）。参数 dir=left|right（往哪边运动）、dist', function (c) {
+    var dd = (DIR[c.o.dir || 'left'] || DIR.left)[0] || 1, dist = num(c.o.dist, 700), d = num(c.o.dur, 0.6);
+    c.tl.from(c.els, { x: rel(dd * dist), opacity: 0, duration: d * 0.6, ease: 'power3.out', stagger: stag(c, 0.08) }, c.t);
+    gsap.set(c.els, { skewX: -30 * dd });
+    c.tl.to(c.els, { keyframes: [{ skewX: -30 * dd, duration: d * 0.55 }, { skewX: 18 * dd, duration: d * 0.18 }, { skewX: -6 * dd, duration: d * 0.14 }, { skewX: 0, duration: d * 0.13 }], ease: 'sine.out', stagger: stag(c, 0.08) }, c.t);
+  });
+  def('jack-in', '入场', '弹簧盒：从底部一点点弹出来，左右晃两下站稳（animate.css jackInTheBox）', function (c) {
+    var d = num(c.o.dur, 0.8);
+    gsap.set(c.els, { transformOrigin: '50% 100%' });
+    c.tl.from(c.els, { scale: 0.1, opacity: 0, duration: d * 0.6, ease: 'back.out(1.6)', stagger: stag(c, 0.1) }, c.t);
+    gsap.set(c.els, { rotation: '+=30' });
+    c.tl.to(c.els, { keyframes: keyframesRel([[50, { rotation: -40 }], [70, { rotation: -27 }], [100, { rotation: -30 }]], d), stagger: stag(c, 0.1) }, c.t);
+  });
+  def('hinge', '退场', '铰链掉落：左上角像钉了一颗钉子，晃两下后掉出画面（animate.css hinge）。参数 dist', function (c) {
+    var d = num(c.o.dur, 1.8), dist = num(c.o.dist, 800);
+    gsap.set(c.els, { transformOrigin: '0% 0%' });
+    c.tl.to(c.els, { keyframes: keyframesRel([[25, { rotation: 80 }], [50, { rotation: 60 }], [75, { rotation: 80 }], [100, { rotation: 60 }]], d * 0.8, 'power1.inOut'), stagger: stag(c, 0.1) }, c.t);
+    c.tl.to(c.els, { y: rel(dist), opacity: 0, duration: d * 0.2, ease: 'power2.in', stagger: stag(c, 0.1) }, c.t + d * 0.8);
+  });
+  def('fall-out', '退场', '文字掉落：每个字带着旋转往下掉出画面（FallingText），一般配 chars: 用。参数 dist、seed', function (c) {
+    var r = FX.rand(num(c.o.seed, 5)), dist = num(c.o.dist, 700), d = num(c.o.dur, 0.9);
+    c.els.map(function (e) { return [r(), e]; }).sort(function (a, b) { return a[0] - b[0]; }).forEach(function (p, i) {
+      c.tl.to(p[1], { y: rel(dist + r() * 200), x: rel((r() * 2 - 1) * 80), rotation: rel((r() * 2 - 1) * 90), opacity: 0, duration: d, ease: 'power2.in' }, c.t + i * num(c.o.stagger, 0.04));
+    });
+  });
+
+  /* ── 强调：animate.css 的「吸引注意」系列 ── */
+
+  function seeker(name, desc, frames, dur, origin) {
+    def(name, '强调', desc, function (c) {
+      if (origin) gsap.set(c.els, { transformOrigin: origin });
+      c.tl.to(c.els, { keyframes: keyframesRel(frames, num(c.o.dur, dur)), stagger: stag(c, 0.08) }, c.t);
+    });
+  }
+  seeker('tada', '欢呼：先缩一下，再放大着左右摇摆（animate.css tada）',
+    [[10, { scale: 0.9, rotation: -3 }], [20, { scale: 0.9, rotation: -3 }], [30, { scale: 1.1, rotation: 3 }], [40, { rotation: -3 }], [50, { rotation: 3 }], [60, { rotation: -3 }], [70, { rotation: 3 }], [80, { rotation: -3 }], [90, { rotation: 3 }], [100, { scale: 1, rotation: 0 }]], 1);
+  seeker('jello', '果冻：斜切着来回晃，幅度越来越小（animate.css jello）',
+    [[22, { skewX: -12.5, skewY: -12.5 }], [33, { skewX: 6.25, skewY: 6.25 }], [44, { skewX: -3.1, skewY: -3.1 }], [55, { skewX: 1.56, skewY: 1.56 }], [66, { skewX: -0.78, skewY: -0.78 }], [77, { skewX: 0.39, skewY: 0.39 }], [100, { skewX: 0, skewY: 0 }]], 0.9);
+  seeker('rubber-band', '橡皮筋：横向拉长、纵向压扁，来回弹几下（animate.css rubberBand）',
+    [[30, { scaleX: 1.25, scaleY: 0.75 }], [40, { scaleX: 0.75, scaleY: 1.25 }], [50, { scaleX: 1.15, scaleY: 0.85 }], [65, { scaleX: 0.95, scaleY: 1.05 }], [75, { scaleX: 1.05, scaleY: 0.95 }], [100, { scaleX: 1, scaleY: 1 }]], 1);
+  seeker('heartbeat', '心跳：连续两下放大（animate.css heartBeat）',
+    [[14, { scale: 1.3 }], [28, { scale: 1 }], [42, { scale: 1.3 }], [70, { scale: 1 }], [100, { scale: 1 }]], 1.3);
+  seeker('head-shake', '摇头：带一点 3D 转动的左右摇（否定、不对）（animate.css headShake）',
+    [[6.5, { x: -6, rotationY: -9 }], [18.5, { x: 5, rotationY: 7 }], [31.5, { x: -3, rotationY: -5 }], [43.5, { x: 2, rotationY: 3 }], [50, { x: 0, rotationY: 0 }], [100, { x: 0 }]], 1);
+  seeker('wobble', '摇晃：边平移边歪着来回晃（animate.css wobble）',
+    [[15, { xPercent: -25, rotation: -5 }], [30, { xPercent: 20, rotation: 3 }], [45, { xPercent: -15, rotation: -3 }], [60, { xPercent: 10, rotation: 2 }], [75, { xPercent: -5, rotation: -1 }], [100, { xPercent: 0, rotation: 0 }]], 1);
+
+  /* ── 强调：Magic UI / React Bits 系列 ── */
+
+  def('border-beam', '强调', '边框流光：一小段光沿着元素边框绕圈跑（BorderBeam / StarBorder）。参数 color、w=粗细、len=光带占周长比例、n=绕几圈、dur=每圈秒数、keep=1 跑完不消失', function (c) {
+    c.els.forEach(function (el) {
+      relPos(el);
+      var w = num(c.o.w, 3), rr = num(c.o.r, parseFloat(getComputedStyle(el).borderTopLeftRadius) || 12), W = el.offsetWidth, H = el.offsetHeight;
+      var svg = svgEl('svg', { width: W, height: H, 'class': 'fx-beam-border' }), rect = svgEl('rect', { x: w / 2, y: w / 2, width: W - w, height: H - w, rx: rr, fill: 'none', 'stroke-width': w, 'stroke-linecap': 'round' });
+      rect.style.stroke = c.o.color || 'var(--fx-accent)';
+      svg.style.color = c.o.color || 'var(--fx-accent)';
+      svg.appendChild(rect); el.appendChild(svg);
+      var per = 2 * (W - w + H - w) - (8 - 2 * Math.PI) * Math.min(rr, (W - w) / 2, (H - w) / 2), seg = per * num(c.o.len, 0.18);
+      rect.setAttribute('stroke-dasharray', seg.toFixed(1) + ' ' + (per - seg).toFixed(1));
+      var n = num(c.o.n, 2), d = num(c.o.dur, 1.6);
+      gsap.set(svg, { opacity: 0 });
+      c.tl.to(svg, { opacity: 1, duration: 0.2 }, c.t);
+      c.tl.fromTo(rect, { strokeDashoffset: 0 }, { strokeDashoffset: -per * n, duration: d * n, ease: 'none' }, c.t);
+      if (!c.o.keep) c.tl.to(svg, { opacity: 0, duration: 0.3 }, c.t + d * n - 0.3);
+    });
+  });
+
+  def('spotlight', '强调', '聚光灯：画面压暗，只留一个圆形亮区罩住目标；同一场景里再调一次，光圈会移到新目标（Spotlight）。写在要照的元素上，或 to=#id。参数 r=半径、dim=暗度 0~1、off=1 关灯', function (c) {
+    var sc = hostOf(c), ov = sc.__fxSpot, d = num(c.o.dur, 0.5);
+    if (!ov) { ov = document.createElement('div'); ov.className = 'fx-spot'; sc.appendChild(ov); sc.__fxSpot = ov; gsap.set(ov, { opacity: 0 }); }
+    if (c.o.dim) ov.style.setProperty('--a', c.o.dim);
+    if (c.o.off) { c.tl.to(ov, { opacity: 0, duration: d, ease: 'power1.out' }, c.t); return; }
+    var tg = c.o.to ? $(c.o.to) : c.el, R = FX.rect(tg);
+    if (!R) { console.warn('FX spotlight：找不到目标', c.o.to); return; }
+    var rad = num(c.o.r, Math.max(R.w, R.h) * 0.62 + 30);
+    if (!ov.__init) { ov.__init = 1; ov.style.setProperty('--x', R.cx + 'px'); ov.style.setProperty('--y', R.cy + 'px'); ov.style.setProperty('--r', rad + 'px'); }
+    c.tl.to(ov, { '--x': R.cx + 'px', '--y': R.cy + 'px', '--r': rad + 'px', opacity: 1, duration: d, ease: 'power3.inOut' }, c.t);
+  });
+
+  def('confetti', '强调', '撒彩纸：从元素中心炸开一把彩纸，抛起再落下（Confetti / ClickSpark）。参数 n、colors=色1/色2/色3、power=力度、seed', function (c) {
+    var sc = hostOf(c), r = FX.rand(num(c.o.seed, 12)), cols = slashList(c.o.colors);
+    if (!cols.length) cols = ['#ff5b56', '#ffd34d', '#4fc3f7', '#8453e8', '#3fbf5a', '#ff8fab'];
+    c.els.forEach(function (el) {
+      var R = FX.rect(el), n = num(c.o.n, 60), pw = num(c.o.power, 1), d = num(c.o.dur, 1.6), wrap = document.createElement('div');
+      wrap.className = 'fx-confetti'; sc.appendChild(wrap);
+      for (var i = 0; i < n; i++) {
+        var p = document.createElement('i'), ang = -Math.PI / 2 + (r() * 2 - 1) * 1.15, sp = (380 + r() * 460) * pw, w = 8 + r() * 10, tp = d * (0.3 + r() * 0.1);
+        p.style.cssText = 'left:' + R.cx.toFixed(1) + 'px;top:' + R.cy.toFixed(1) + 'px;width:' + w.toFixed(1) + 'px;height:' + (w * 0.45).toFixed(1) + 'px;background:' + cols[i % cols.length];
+        wrap.appendChild(p);
+        gsap.set(p, { opacity: 0 });
+        var vx = Math.cos(ang) * sp, vy = Math.sin(ang) * sp;
+        c.tl.set(p, { opacity: 1, x: 0, y: 0 }, c.t);
+        c.tl.to(p, { x: vx * 0.9, duration: d, ease: 'power1.out' }, c.t);
+        c.tl.to(p, { keyframes: [{ y: vy * 0.55, duration: tp, ease: 'power2.out' }, { y: vy * 0.55 + (650 + r() * 250) * pw, duration: d - tp, ease: 'power2.in' }] }, c.t);
+        c.tl.to(p, { rotation: (r() * 2 - 1) * 720, rotationX: r() * 720, duration: d, ease: 'none' }, c.t);
+        c.tl.to(p, { opacity: 0, duration: 0.3 }, c.t + d - 0.3);
+      }
+    });
+  });
+
+  def('sparkle', '强调', '闪烁星点：元素四周随机冒出小星星，一闪一闪（SparklesText）。参数 n、color、dur、seed', function (c) {
+    var r = FX.rand(num(c.o.seed, 18));
+    c.els.forEach(function (el) {
+      relPos(el);
+      var n = num(c.o.n, 10), d = num(c.o.dur, 2);
+      for (var i = 0; i < n; i++) {
+        var s = document.createElement('i'), size = 12 + r() * 16;
+        s.className = 'fx-star';
+        s.style.cssText = 'left:' + (-8 + r() * 108).toFixed(1) + '%;top:' + (-25 + r() * 140).toFixed(1) + '%;--s:' + size.toFixed(0) + 'px' + (c.o.color ? ';--c:' + c.o.color : '');
+        el.appendChild(s);
+        gsap.set(s, { scale: 0, rotation: 0 });
+        var t = c.t + r() * Math.max(0.1, d - 0.6);
+        c.tl.to(s, { keyframes: [{ scale: 1, rotation: 45, duration: 0.25, ease: 'back.out(3)' }, { scale: 0, rotation: 90, duration: 0.35, ease: 'power2.in' }] }, t);
+      }
+    });
+  });
+
+  def('orbit', '强调', '环绕：把容器的子元素均匀摆在一个圆上，绕中心转，子元素始终保持正立（OrbitingCircles）。写在容器上。参数 r=半径、turns=圈数、dur、reverse=1 反转', function (c) {
+    var kids = Array.prototype.slice.call(c.el.children), n = kids.length, rad = num(c.o.r, 180), turns = num(c.o.turns, 1) * (c.o.reverse ? -1 : 1), d = num(c.o.dur, c.sceneDur || 6);
+    relPos(c.el);
+    kids.forEach(function (k, i) {
+      var arm = document.createElement('div'); arm.className = 'fx-orbit-arm';
+      c.el.insertBefore(arm, k); arm.appendChild(k);
+      k.style.position = 'absolute'; k.style.left = '0'; k.style.top = '0';
+      var a0 = i / n * 360;
+      gsap.set(arm, { rotation: a0 });
+      gsap.set(k, { x: rad, rotation: -a0, xPercent: -50, yPercent: -50 });
+      c.tl.to(arm, { rotation: rel(360 * turns), duration: d, ease: 'none' }, c.t);
+      c.tl.to(k, { rotation: rel(-360 * turns), duration: d, ease: 'none' }, c.t);
+    });
+  });
+
+  def('beam', '强调', '连接光束：在两个元素之间画一条弧线，一团光沿线流过去（AnimatedBeam，适合画「A 把数据传给 B」）。写在起点元素上，to=#终点。参数 curve=弯曲度、color、n=流几次、dur', function (c) {
+    var sc = hostOf(c), b = FX.rect($(c.o.to)), a = FX.rect(c.el);
+    if (!b) { console.warn('FX beam：找不到终点', c.o.to); return; }
+    var mx = (a.cx + b.cx) / 2, my = (a.cy + b.cy) / 2, dx = b.cx - a.cx, dy = b.cy - a.cy, L0 = Math.hypot(dx, dy) || 1, cv = num(c.o.curve, 0.25);
+    var qx = mx - dy / L0 * L0 * cv, qy = my + dx / L0 * L0 * cv, dpath = 'M' + a.cx.toFixed(1) + ' ' + a.cy.toFixed(1) + ' Q' + qx.toFixed(1) + ' ' + qy.toFixed(1) + ' ' + b.cx.toFixed(1) + ' ' + b.cy.toFixed(1);
+    var svg = svgEl('svg', { 'class': 'fx-beam' }), base = svgEl('path', { d: dpath, fill: 'none', 'stroke-width': 3, 'stroke-linecap': 'round' }), glow = svgEl('path', { d: dpath, fill: 'none', 'stroke-width': 6, 'stroke-linecap': 'round' });
+    var col = c.o.color || 'var(--fx-accent)';
+    base.style.stroke = col; base.style.opacity = 0.25; glow.style.stroke = col; svg.style.color = col;
+    svg.appendChild(base); svg.appendChild(glow); sc.appendChild(svg);
+    var L = base.getTotalLength(), seg = L * 0.22, n = num(c.o.n, 2), d = num(c.o.dur, 1.1), gap = num(c.o.gap, 0.2);
+    glow.setAttribute('stroke-dasharray', seg.toFixed(1) + ' ' + (L + seg).toFixed(1));
+    c.tl.fromTo(base, { strokeDasharray: L + ' ' + L, strokeDashoffset: L }, { strokeDashoffset: 0, duration: 0.5, ease: 'power2.out' }, c.t);
+    gsap.set(glow, { strokeDashoffset: seg });
+    for (var k = 0; k < n; k++) c.tl.fromTo(glow, { strokeDashoffset: seg }, { strokeDashoffset: -L, duration: d, ease: 'power1.inOut', immediateRender: false }, c.t + 0.3 + k * (d + gap));
+  });
+
+  def('flip-swap', '强调', '翻面换内容：元素绕竖轴翻过去，背面换成第二个子元素再翻回来（翻牌、揭晓答案）。元素里放两个子元素：第一个是正面，第二个是背面。参数 axis=y|x', function (c) {
+    c.els.forEach(function (el) {
+      var kids = Array.prototype.slice.call(el.children).filter(function (k) { return !/(^|\s)fx-/.test(k.getAttribute('class') || ''); });
+      if (kids.length < 2) { console.warn('FX flip-swap：需要两个子元素（正面、背面）', el); return; }
+      var d = num(c.o.dur, 0.6), ax = c.o.axis === 'x' ? 'rotationX' : 'rotationY', a = {}, b = {}, e = {};
+      gsap.set(el, { transformPerspective: 1000 });
+      gsap.set(kids[1], { display: 'none' });
+      a[ax] = rel(90); a.duration = d / 2; a.ease = 'power2.in';
+      c.tl.to(el, a, c.t);
+      c.tl.set(kids[0], { display: 'none' }, c.t + d / 2);
+      c.tl.set(kids[1], { display: '' }, c.t + d / 2);
+      b[ax] = rel(-180); b.duration = 0.001;
+      c.tl.to(el, b, c.t + d / 2);
+      e[ax] = rel(90); e.duration = d / 2; e.ease = 'power2.out';
+      c.tl.to(el, e, c.t + d / 2 + 0.001);
+    });
+  });
+
+  /* ── 镜头 / 背景 ── */
+
+  def('meteors', '镜头', '流星雨：一根根斜着划过的光线（Meteors），写在铺满的背景层上。参数 n、angle=方向角度（默认 135 = 往左下）、color、dur、seed', function (c) {
+    var r = FX.rand(num(c.o.seed, 31)), n = num(c.o.n, 18), d = num(c.o.dur, c.sceneDur || 5), ang = num(c.o.angle, 135), rad = ang * Math.PI / 180;
+    var ux = Math.cos(rad), uy = Math.sin(rad), el = c.el;
+    relPos(el); el.style.overflow = 'hidden';
+    var W = el.offsetWidth || 1920, H = el.offsetHeight || 1080;
+    for (var i = 0; i < n; i++) {
+      var m = document.createElement('i'), len = 120 + r() * 160, travel = 700 + r() * 600, life = 0.9 + r() * 0.8;
+      m.className = 'fx-meteor';
+      m.style.cssText = 'left:' + (W * (0.15 + r() * 1.0)).toFixed(0) + 'px;top:' + (-H * 0.2 + r() * H * 0.6).toFixed(0) + 'px;width:' + len.toFixed(0) + 'px' + (c.o.color ? ';--c:' + c.o.color : '');
+      el.appendChild(m);
+      gsap.set(m, { rotation: ang, opacity: 0 });
+      var t = c.t + r() * Math.max(0.1, d - life);
+      c.tl.fromTo(m, { x: 0, y: 0 }, { x: ux * travel, y: uy * travel, duration: life, ease: 'none', immediateRender: false }, t);
+      c.tl.to(m, { keyframes: [{ opacity: 1, duration: life * 0.15 }, { opacity: 1, duration: life * 0.6 }, { opacity: 0, duration: life * 0.25 }] }, t);
+    }
+  });
+
+  def('marquee', '镜头', '跑马灯：一排内容无限循环地横向滚动（Marquee / LogoLoop）。写在一行的容器上，子元素会自动复制补满。参数 speed=每秒像素、reverse=1 反向', function (c) {
+    var el = c.el, d = num(c.o.dur, c.sceneDur || 6), sp = num(c.o.speed, 120) * (c.o.reverse ? -1 : 1);
+    el.style.overflow = 'hidden';
+    var track = document.createElement('div'); track.className = 'fx-marquee';
+    while (el.firstChild) track.appendChild(el.firstChild);
+    el.appendChild(track);
+    var gap = parseFloat(getComputedStyle(track).columnGap) || 0, unit = track.scrollWidth + gap, orig = Array.prototype.slice.call(track.children);
+    var copies = Math.ceil((el.offsetWidth || 1920) / Math.max(unit, 1)) + 1;
+    for (var k = 0; k < copies; k++) orig.forEach(function (n) { var cl = n.cloneNode(true); cl.setAttribute('aria-hidden', 'true'); track.appendChild(cl); });
+    c.tl.fromTo(track, { x: 0 }, { x: -sp * d, duration: d, ease: 'none', modifiers: { x: gsap.utils.unitize(function (x) { return gsap.utils.wrap(-unit, 0, parseFloat(x)); }) } }, c.t);
+  });
+
+  def('bg-scroll', '镜头', '背景图案滚动：让 background（网格、纹理、条纹）按速度持续平移，配 retro-grid 组件用。参数 x、y=每秒像素', function (c) {
+    var d = num(c.o.dur, c.sceneDur || 5);
+    c.els.forEach(function (el) {
+      var t = el.querySelector('.fx-grid-plane') || el;
+      c.tl.fromTo(t, { backgroundPosition: '0px 0px' }, { backgroundPosition: (num(c.o.x, 0) * d).toFixed(1) + 'px ' + (num(c.o.y, 60) * d).toFixed(1) + 'px', duration: d, ease: 'none' }, c.t);
+    });
+  });
+
+  def('parallax', '镜头', '视差：容器里的各层按前后顺序以不同速度平移（后面的层动得少、前面的层动得多），配 hills 层叠纸山用。写在容器上。参数 x、y=最前层的总位移、dur', function (c) {
+    var kids = Array.prototype.slice.call(c.el.children), n = kids.length, d = num(c.o.dur, c.sceneDur || 5);
+    kids.forEach(function (k, i) {
+      var f = (i + 1) / n;
+      c.tl.to(k, { x: rel(num(c.o.x, -120) * f), y: rel(num(c.o.y, 0) * f), duration: d, ease: EZ(c.o.ease, 'linear') }, c.t);
+    });
+  });
+
+  /* ── 剪纸 ── */
+
+  /** 锯齿边多边形：p=0 全部藏起，p=1 全部露出；dir 是露出的推进方向 */
+  function edgePoly(p, dir, jag, teeth, rnd) {
+    if (p >= 1) return 'none';
+    var e = p * (100 + jag * 2) - jag, pts = [], k;
+    var side = dir === 'right' || dir === 'left';
+    for (k = 0; k <= teeth; k++) {
+      var along = k / teeth * 100, off = e + (k % 2 ? rnd[k] * jag : -rnd[k] * jag * 0.3);
+      if (side) pts.push([dir === 'right' ? off : 100 - off, along]);
+      else pts.push([along, dir === 'down' ? off : 100 - off]);
+    }
+    if (dir === 'right') pts = [[-1, -1]].concat(pts).concat([[-1, 101]]);
+    else if (dir === 'left') pts = [[101, -1]].concat(pts).concat([[101, 101]]);
+    else if (dir === 'down') pts = [[-1, -1]].concat(pts).concat([[101, -1]]);
+    else pts = [[-1, 101]].concat(pts).concat([[101, 101]]);
+    return 'polygon(' + pts.map(function (q) { return q[0].toFixed(2) + '% ' + q[1].toFixed(2) + '%'; }).join(',') + ')';
+  }
+  FX.edgePoly = edgePoly;
+
+  def('paper-unfold', '剪纸', '纸张展开：像对折的纸从折痕处翻开摊平，带一点回弹。参数 dir=down|up|left|right（往哪边展开）', function (c) {
+    var o = { down: ['50% 0%', 'rotationX', -95], up: ['50% 100%', 'rotationX', 95], right: ['0% 50%', 'rotationY', 95], left: ['100% 50%', 'rotationY', -95] }[c.o.dir || 'down'] || ['50% 0%', 'rotationX', -95];
+    gsap.set(c.els, { transformOrigin: o[0], transformPerspective: num(c.o.persp, 1200) });
+    var from = { opacity: 0 }; from[o[1]] = o[2];
+    enter(c, from, { dur: 0.8, ease: 'back.out(1.3)', stagger: 0.12 });
+  });
+
+  def('cut-in', '剪纸', '剪刀剪开：沿一条锯齿边一刀一刀地把元素「剪」出来，逐格推进有剪纸感。参数 dir=right|left|down|up、teeth=锯齿数、jag=锯齿深度（%）、snips=剪几刀', function (c) {
+    var r = FX.rand(num(c.o.seed, 9)), dir = c.o.dir || 'right', teeth = num(c.o.teeth, 18), jag = num(c.o.jag, 6), d = num(c.o.dur, 0.9), snips = num(c.o.snips, 9);
+    c.els.forEach(function (el) {
+      var rnd = []; for (var k = 0; k <= teeth; k++) rnd.push(0.5 + r() * 0.5);
+      var p = { v: 0 }, paint = function () { el.style.clipPath = edgePoly(p.v, dir, jag, teeth, rnd); };
+      paint();
+      c.tl.to(p, { v: 1, duration: d, ease: c.o.ease ? EZ(c.o.ease) : 'steps(' + snips + ')', onUpdate: paint }, c.t);
+    });
+  });
+
+  def('peel-in', '剪纸', '卷角揭开：像贴纸从一个角翘起的状态落回原位按平。参数 corner=tl|tr|bl|br（从哪个角）', function (c) {
+    var m = { tl: ['0% 0%', 1, 1], tr: ['100% 0%', -1, 1], bl: ['0% 100%', 1, -1], br: ['100% 100%', -1, -1] }[c.o.corner || 'tl'] || ['0% 0%', 1, 1];
+    gsap.set(c.els, { transformOrigin: m[0], transformPerspective: 900 });
+    enter(c, { opacity: 0, rotationY: -70 * m[1], rotationX: 30 * m[2], rotation: rel(-8 * m[1]) }, { dur: 0.75, ease: 'back.out(1.4)', stagger: 0.12 });
+  });
+
+  def('layer-rise', '剪纸', '逐层升起：容器里的纸层从后往前依次从下方升起，越靠前升得越晚、越远（层叠纸山、纸片舞台）。写在容器上。参数 dist、stagger', function (c) {
+    var kids = Array.prototype.slice.call(c.el.children), dist = num(c.o.dist, 180), st = num(c.o.stagger, 0.15), d = num(c.o.dur, 0.8);
+    kids.forEach(function (k, i) { c.tl.from(k, { y: rel(dist + i * 60), duration: d + i * 0.08, ease: EZ(c.o.ease, 'back.out(1.2)') }, c.t + i * st); });
+  });
+
+  def('stick-on', '剪纸', '贴纸拍上：从镜头前方带着大投影拍到纸面上，落定时投影收紧（贴标签、贴照片）。参数 from=起始缩放、rot=起始歪斜角度', function (c) {
+    enter(c, { opacity: 0, scale: num(c.o.from, 1.35), rotation: rel(num(c.o.rot, -10)), boxShadow: '0px 40px 50px rgba(40,25,10,0.35)' }, { dur: 0.42, ease: 'back.out(2.2)', stagger: 0.1 });
+  });
+
+  def('stop-in', '剪纸', '定格入场：以每秒 12 格的定格动画节奏跳进来，每一格带一点随机歪斜（手工动画感）。参数 dist、steps=跳几格、fps、seed', function (c) {
+    var r = FX.rand(num(c.o.seed, 4)), fps = num(c.o.fps, 12), n = num(c.o.steps, 6), dist = num(c.o.dist, 80);
+    c.els.forEach(function (el, j) {
+      var t0 = c.t + j * num(c.o.stagger, 0.12);
+      gsap.set(el, { opacity: 0 });
+      for (var k = 0; k <= n; k++) {
+        var f = k / n, last = k === n;
+        c.tl.set(el, { opacity: k ? 1 : 0, y: last ? 0 : dist * (1 - f) * (1 - f), rotation: last ? 0 : (r() * 2 - 1) * 5, scale: last ? 1 : 0.85 + 0.15 * f }, t0 + k / fps);
+      }
+    });
+  });
+
+  def('jitter', '剪纸', '定格抖动：以每秒 12 格不停地微微歪动、挪动，像手工逐格拍出来的（boiling）。建议加在外层容器上，免得和入场动效抢位置。参数 amp=角度、px=位移、fps、dur', function (c) {
+    var r = FX.rand(num(c.o.seed, 6)), fps = num(c.o.fps, 12), d = num(c.o.dur, c.sceneDur || 3), a = num(c.o.amp, 1.2), px = num(c.o.px, 1.5);
+    c.els.forEach(function (el) {
+      for (var t = 0; t < d; t += 1 / fps) c.tl.set(el, { rotation: (r() * 2 - 1) * a, x: (r() * 2 - 1) * px, y: (r() * 2 - 1) * px }, c.t + t);
+      c.tl.set(el, { rotation: 0, x: 0, y: 0 }, c.t + d);
+    });
+  });
+
+  def('lift', '剪纸', '纸片抬起：往上浮起一点、投影变大变淡，像被手指捏起来；down=1 放回去。参数 dist', function (c) {
+    var dist = num(c.o.dist, 14), d = num(c.o.dur, 0.4);
+    c.tl.to(c.els, c.o.down
+      ? { y: rel(dist), scale: 1, boxShadow: '0px 8px 14px rgba(60,40,20,0.22)', duration: d, ease: 'power2.in', stagger: stag(c, 0.06) }
+      : { y: rel(-dist), scale: 1.03, boxShadow: '0px 28px 36px rgba(60,40,20,0.26)', duration: d, ease: 'power2.out', stagger: stag(c, 0.06) }, c.t);
+  });
+
+  def('flutter', '剪纸', '飘动：像纸片被风吹了一下，左右摆几下慢慢停住。参数 deg、n=摆几下、origin', function (c) {
+    var deg = num(c.o.deg, 8), n = num(c.o.n, 4), d = num(c.o.dur, 1.4), fr = [];
+    for (var i = 0; i < n; i++) fr.push([(i + 1) / (n + 1) * 100, { rotation: deg * (1 - i / n) * (i % 2 ? -1 : 1) }]);
+    fr.push([100, { rotation: 0 }]);
+    gsap.set(c.els, { transformOrigin: c.o.origin || '50% 0%' });
+    c.tl.to(c.els, { keyframes: keyframesRel(fr, d), stagger: stag(c, 0.1) }, c.t);
+  });
+
+  def('sway', '剪纸', '悬挂摇摆：挂着的东西（灯笼、吊牌、窗花）持续缓慢地左右摆。参数 deg、period=一个来回秒数、dur', function (c) {
+    var deg = num(c.o.deg, 4), period = num(c.o.period, 2.4), d = num(c.o.dur, c.sceneDur || 5);
+    gsap.set(c.els, { transformOrigin: c.o.origin || '50% 0%' });
+    c.els.forEach(function (el, i) {
+      c.tl.fromTo(el, { rotation: -deg }, { rotation: deg, duration: period / 2, ease: 'sine.inOut', yoyo: true, repeat: Math.max(1, Math.round(d / (period / 2))) - 1 }, c.t + i * 0.25);
+    });
+  });
+
+  /* ── 转场 ── */
+
+  defT('paper-slide', '抽纸：新的一页纸从一侧滑进来盖住旧页，边缘带投影，旧页稍微压暗。参数 dir=left|right|up|down', function (tl, t, prev, next, o) {
+    var d = num(o.dur, 0.6), dir = o.dir || 'left', ax = dir === 'left' || dir === 'right' ? 'xPercent' : 'yPercent', s = dir === 'left' || dir === 'up' ? 1 : -1;
+    var a = { boxShadow: '0px 0px 60px rgba(30,20,10,0.45)' }, b = { boxShadow: '0px 0px 0px rgba(30,20,10,0)', duration: d, ease: EZ(o.ease, 'power3.inOut') };
+    a[ax] = 100 * s; b[ax] = 0;
+    tl.fromTo(next, a, b, t);
+    if (prev) tl.to(prev, { filter: 'brightness(0.75)', scale: 0.97, duration: d, ease: 'power2.inOut' }, t);
+    return d;
+  });
+  defT('tear', '撕纸：新画面沿一条参差的撕裂边从一侧露出来（剪纸风换场景）。参数 dir=right|left|down|up、jag、teeth', function (tl, t, prev, next, o) {
+    var d = num(o.dur, 0.7), r = FX.rand(num(o.seed, 14)), teeth = num(o.teeth, 28), jag = num(o.jag, 5), dir = o.dir || 'right', rnd = [];
+    for (var k = 0; k <= teeth; k++) rnd.push(0.3 + r() * 0.7);
+    var p = { v: 0 }, paint = function () { next.style.clipPath = edgePoly(p.v, dir, jag, teeth, rnd); };
+    tl.to(p, { v: 1, duration: d, ease: EZ(o.ease, 'power2.inOut'), onUpdate: paint }, t);
+    return d;
+  });
+  defT('glitch-cut', '故障闪切：新画面带红蓝错位闪几下再稳定下来（科技感切换）', function (tl, t, prev, next, o) {
+    var d = num(o.dur, 0.24), fr = [[0, 40, 1], [0.04, 0, 0], [0.08, -24, 1], [0.12, 0, 0], [0.16, 12, 1], [d, 0, 1]];
+    fr.forEach(function (f) {
+      tl.set(next, { x: f[1], opacity: f[2], filter: f[1] ? 'drop-shadow(' + (f[1] * 0.3).toFixed(1) + 'px 0px 0px #ff2a6d) drop-shadow(' + (-f[1] * 0.3).toFixed(1) + 'px 0px 0px #05d9e8)' : 'none' }, t + f[0]);
+    });
+    return d;
+  });
+  defT('open', '开门：新画面从中间一条缝向两边拉开。参数 dir=x（左右拉开）|y（上下拉开）', function (tl, t, prev, next, o) {
+    var d = num(o.dur, 0.6), y = o.dir === 'y';
+    tl.fromTo(next, { clipPath: y ? 'inset(50% 0% 50% 0%)' : 'inset(0% 50% 0% 50%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: d, ease: EZ(o.ease, 'power3.inOut') }, t);
+    return d;
+  });
+
+  /* ── 组件生成器 ── */
+
+  var attr = function (el, k, d) { var v = el.getAttribute('data-' + k); return v === null || v === '' ? d : v; };
+
+  /** 环形文字：data-text、data-r=半径，配 spin 让它转起来 */
+  FX.make['circle-text'] = function (el) {
+    var ch = Array.from(attr(el, 'text', '')), n = ch.length || 1, r = num(attr(el, 'r'), 140);
+    el.classList.add('fx-circle-text');
+    el.style.width = el.style.height = r * 2 + 'px';
+    el.innerHTML = ch.map(function (c, i) { return '<span style="transform:translate(-50%,-50%) rotate(' + (i / n * 360).toFixed(2) + 'deg) translateY(' + -r + 'px)">' + c + '</span>'; }).join('');
+  };
+
+  /** 复古透视网格：data-cell=格子大小、data-color、data-angle=倾角，配 bg-scroll 让网格往前流动 */
+  FX.make['retro-grid'] = function (el) {
+    el.classList.add('fx-retro');
+    el.innerHTML = '<div class="fx-grid-plane" style="background-size:' + num(attr(el, 'cell'), 80) + 'px ' + num(attr(el, 'cell'), 80) + 'px;--c:' + attr(el, 'color', 'rgba(255,255,255,.35)') + ';transform:rotateX(' + num(attr(el, 'angle'), 65) + 'deg)"></div>';
+  };
+
+  /** 剪纸窗花：对称剪纸图案，每个 data-seed 都不一样。data-size、data-fold=几折（6/8/12）、data-shape=flower|circle|square、data-color */
+  var pcId = 0;
+  FX.make.papercut = function (el) {
+    var size = num(attr(el, 'size'), 320), fold = num(attr(el, 'fold'), 8), r = FX.rand(num(attr(el, 'seed'), 1)), color = attr(el, 'color', 'var(--fx-accent)');
+    var shape = attr(el, 'shape', 'flower'), R = size / 2, id = 'fxpc' + ++pcId, wedge = 360 / fold, base, holes = '', k;
+    if (shape === 'circle') base = '<circle r="' + (R * 0.97).toFixed(1) + '"/>';
+    else if (shape === 'square') base = '<rect x="' + (-R * 0.9) + '" y="' + (-R * 0.9) + '" width="' + R * 1.8 + '" height="' + R * 1.8 + '" rx="' + (R * 0.06).toFixed(1) + '"/>';
+    else {
+      base = '<circle r="' + (R * 0.8).toFixed(1) + '"/>';
+      for (k = 0; k < fold * 2; k++) { var a = k / (fold * 2) * Math.PI * 2; base += '<circle cx="' + (Math.cos(a) * R * 0.8).toFixed(1) + '" cy="' + (Math.sin(a) * R * 0.8).toFixed(1) + '" r="' + (R * Math.PI * 0.8 / (fold * 2) * 1.05).toFixed(1) + '"/>'; }
+    }
+    // 在一个扇区里随机放几种镂空形状，再左右镜像、绕圆心复制 fold 份
+    var motifs = [0.2, 0.36, 0.52, 0.68].map(function (rr) { return { kind: Math.floor(r() * 4), rad: rr * R, s: R * (0.045 + r() * 0.05), ang: wedge / 2 * (r() > 0.5 ? 1 : 0.45) }; });
+    var shapeAt = function (m, angDeg) {
+      var a = angDeg * Math.PI / 180, x = (Math.cos(a) * m.rad).toFixed(1), y = (Math.sin(a) * m.rad).toFixed(1), s = m.s, rot = angDeg.toFixed(1);
+      if (m.kind === 0) return '<circle cx="' + x + '" cy="' + y + '" r="' + s.toFixed(1) + '"/>';
+      if (m.kind === 1) return '<ellipse cx="' + x + '" cy="' + y + '" rx="' + (s * 1.7).toFixed(1) + '" ry="' + (s * 0.6).toFixed(1) + '" transform="rotate(' + rot + ' ' + x + ' ' + y + ')"/>';
+      if (m.kind === 2) return '<rect x="' + (x - s) + '" y="' + (y - s) + '" width="' + (s * 2).toFixed(1) + '" height="' + (s * 2).toFixed(1) + '" transform="rotate(' + (+rot + 45) + ' ' + x + ' ' + y + ')"/>';
+      return '<path d="M' + x + ' ' + (y - s * 1.5).toFixed(1) + ' Q' + (+x + s * 1.3).toFixed(1) + ' ' + y + ' ' + x + ' ' + (+y + s * 1.5).toFixed(1) + ' Q' + (x - s * 0.4).toFixed(1) + ' ' + y + ' ' + x + ' ' + (y - s * 1.5).toFixed(1) + 'Z" transform="rotate(' + rot + ' ' + x + ' ' + y + ')"/>';
+    };
+    for (k = 0; k < fold; k++) motifs.forEach(function (m) { holes += shapeAt(m, k * wedge + m.ang) + shapeAt(m, k * wedge - m.ang); });
+    holes += '<circle r="' + (R * 0.07).toFixed(1) + '"/>';
+    for (k = 0; k < fold * 2; k++) { var b = k / (fold * 2) * Math.PI * 2; holes += '<circle cx="' + (Math.cos(b) * R * 0.12).toFixed(1) + '" cy="' + (Math.sin(b) * R * 0.12).toFixed(1) + '" r="' + (R * 0.018).toFixed(1) + '"/>'; }
+    el.classList.add('fx-papercut');
+    el.innerHTML = '<svg width="' + size + '" height="' + size + '" viewBox="' + -R + ' ' + -R + ' ' + size + ' ' + size + '"><defs><mask id="' + id + '" maskUnits="userSpaceOnUse" x="' + -R + '" y="' + -R + '" width="' + size + '" height="' + size + '"><rect x="' + -R + '" y="' + -R + '" width="' + size + '" height="' + size + '" fill="#fff"/><g fill="#000">' + holes + '</g></mask></defs><g style="fill:' + color + '" mask="url(#' + id + ')">' + base + '</g></svg>';
+  };
+
+  /** 层叠纸山：data-layers=层数、data-colors=从后到前的颜色、data-seed。每层是一个子元素，配 layer-rise / parallax */
+  FX.make.hills = function (el) {
+    var n = num(attr(el, 'layers'), 4), cols = list(el, 'colors'), r = FX.rand(num(attr(el, 'seed'), 2)), W = 2000, H = 600, h = '';
+    if (!cols.length) cols = ['#b9d3c6', '#87b3a2', '#4f8a7b', '#2c5f55', '#1d4740'];
+    el.classList.add('fx-hills');
+    for (var i = 0; i < n; i++) {
+      var y0 = H * (0.18 + i * (0.62 / n)), amp = H * (0.12 - i * 0.015), f1 = 1 + r() * 2, f2 = 3 + r() * 3, ph1 = r() * 6.28, ph2 = r() * 6.28, d = 'M0 ' + H;
+      for (var x = 0; x <= W; x += 40) d += ' L' + x + ' ' + (y0 - amp * (0.65 * Math.sin(x / W * Math.PI * f1 + ph1) + 0.35 * Math.sin(x / W * Math.PI * f2 + ph2))).toFixed(1);
+      d += ' L' + W + ' ' + H + 'Z';
+      h += '<svg class="fx-hill" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none"><path d="' + d + '" style="fill:' + cols[Math.min(i, cols.length - 1)] + '"/></svg>';
+    }
+    el.innerHTML = h;
+  };
+
+  /** 毛边纸条：把元素的边剪成参差的撕纸边。data-edges=top,right,bottom,left（默认 top,bottom）、data-depth、data-teeth、data-seed。
+   *  clip-path 会裁掉阴影，要投影就在外面套一层 class="fx-torn-shadow" */
+  FX.make.torn = function (el) {
+    var edges = attr(el, 'edges', 'top,bottom'), r = FX.rand(num(attr(el, 'seed'), 3)), dp = num(attr(el, 'depth'), 6), n = num(attr(el, 'teeth'), 24), pts = [], i;
+    var has = function (s) { return edges.indexOf(s) >= 0; };
+    for (i = 0; i <= n; i++) pts.push([i / n * 100, has('top') ? r() * dp : 0]);
+    for (i = 1; i <= n; i++) pts.push([100 - (has('right') ? r() * dp * 0.5 : 0), i / n * 100]);
+    for (i = n - 1; i >= 0; i--) pts.push([i / n * 100, 100 - (has('bottom') ? r() * dp : 0)]);
+    for (i = n - 1; i >= 1; i--) pts.push([has('left') ? r() * dp * 0.5 : 0, i / n * 100]);
+    el.style.clipPath = 'polygon(' + pts.map(function (q) { return q[0].toFixed(2) + '% ' + q[1].toFixed(2) + '%'; }).join(',') + ')';
   };
 
   /* ═════════════════════════ 字幕 ═════════════════════════

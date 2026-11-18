@@ -4,6 +4,8 @@
 
 **HTML → 動画のための宣言型モーションライブラリです。** 要素に `data-fx="エフェクト名@秒数"` と 1 行書くだけで、トーク系の解説動画やテック解説動画でよく見るモーションが作れます。あとは [HyperFrames](https://hyperframes.heygen.com) でフレームごとに MP4 へレンダリングします。
 
+> **v1.1 の新機能**：エフェクト 40 種 + トランジション 4 種（`paper-slide` `tear` `glitch-cut` `open`）+ コンポーネントジェネレーター 5 個（`circle-text` `retro-grid` `papercut` `hills` `torn`）、新カテゴリー 2 つ（テキスト・切り紙）、4 つ目のスキン `theme-paper`（切り紙コラージュ）。animate.css、Magic UI、React Bits にインスピレーションを受けています。末尾の「クレジット」をご覧ください。
+
 [![motion-lib プロモーション動画](promo/cover.jpg)](promo/motion-lib-promo.mp4)
 
 > 上のプロモーション動画は、このライブラリで作られています。ソースは [`promo/index.html`](promo/index.html) です。
@@ -11,10 +13,10 @@
 <!-- STATS:START -->
 | | 数 |
 |---|---|
-| エフェクト | **76** 種（入場 24 · 退場 7 · 強調 24 · データ 6 · カメラ 7 · キャラクター 5 · コンポーネント 3） |
-| トランジション | **10** 種 |
-| コンポーネントジェネレーター | **9** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels`） |
-| スキン | **3** 種（白紫テック · 黒金シネマ · レトロピクセル） |
+| エフェクト | **116** 種（入場 26 · 退場 9 · 強調 37 · テキスト 9 · データ 6 · カメラ 11 · キャラクター 5 · 切り紙 10 · コンポーネント 3） |
+| トランジション | **14** 種 |
+| コンポーネントジェネレーター | **14** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn`） |
+| スキン | **4** 種（白紫テック · 黒金シネマ · レトロピクセル · 切り紙コラージュ） |
 <!-- STATS:END -->
 
 ## なぜ使うのか
@@ -42,15 +44,15 @@ motion-lib はすべてのエフェクトを**一時停止状態の 1 本の GSA
 ```
 motion-lib/
 ├── fx.js            ライブラリ本体：エフェクト、トランジション、コンポーネントジェネレーター、字幕、プレビュープレーヤー
-├── fx.css           基本スタイル、コンポーネントのスタイル、3 つのスキン
-├── fonts/           YouSheBiaoTiHei、Smiley Sans、Fusion Pixel（ライセンスは fonts/README.md）
+├── fx.css           基本スタイル、コンポーネントのスタイル、4 つのスキン
+├── fonts/           YouSheBiaoTiHei、Smiley Sans、Fusion Pixel、ZCOOL KuaiLe（ライセンスは fonts/README.md）
 ├── vendor/          GSAP 3.15（ローカルコピー）
 ├── new-project.sh   ライブラリを動画プロジェクトに組み込む（更新にも使う）
 ├── chrome-tall.sh   レンダリング用の Chrome ラッパー（下部の字幕が切れるのを防ぐ）
 ├── gen-readme.mjs   このファイルの数量表とエフェクトカタログを自動生成（node gen-readme.mjs）
 ├── demo/            デモページ：6 シーン、3 つのスキンすべてを使用
 ├── promo/           プロモーション動画のソース + 完成動画
-└── examples/        スキンごとに 1 本ずつの完全なサンプル + まとめ動画
+└── examples/        4 つのスキンごとに 1 本ずつの完全なサンプル + まとめ動画
 ```
 
 ## 動作環境
@@ -120,15 +122,16 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 
 ## サンプル動画
 
-3 つのスキンそれぞれに、完全なサンプルを 1 本ずつ用意しています（モーションのみ、ナレーションなし）。ソースは対応するディレクトリにあり、そのまま改造して使えます。
+4 つのスキンそれぞれに、完全なサンプルを 1 本ずつ用意しています（モーションのみ、ナレーションなし）。ソースは対応するディレクトリにあり、そのまま改造して使えます。
 
 | スキン | サンプル | ソース |
 |---|---|---|
 | 白紫テック `theme-violet` | [![violet](examples/violet/cover.jpg)](examples/violet/violet.mp4) | [`examples/violet/index.html`](examples/violet/index.html) |
 | 黒金シネマ `theme-gold` | [![gold](examples/gold/cover.jpg)](examples/gold/gold.mp4) | [`examples/gold/index.html`](examples/gold/index.html) |
 | レトロピクセル `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
+| 切り紙コラージュ `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
 
-3 本をまとめたもの：[`examples/showreel.mp4`](examples/showreel.mp4)。
+4 本をまとめたもの：[`examples/showreel.mp4`](examples/showreel.mp4)。
 
 ## 書き方
 
@@ -198,6 +201,11 @@ GSAP の元の名前を直接書くこともできます。例：`ease=power4.ou
 | `pixels` | `data-text="SKILL?"` `data-size` `data-colors` | `each:pixel-in(order=random)` | 5×7 ドットマトリクスのブロック文字 |
 | `wall` | `data-cols` `data-rows` `data-seed` | `drift` | 背景のカードの壁 |
 | `dust` | `data-n` `data-seed` | `drift`、`float` | 漂うパーティクル |
+| `circle-text` | `data-text` `data-r`（半径） | `spin`（文字の輪を回す） | 円形テキスト、バッジ、スタンプ |
+| `retro-grid` | `data-cell`（マスの大きさ）`data-color` `data-angle`（傾き） | `bg-scroll`（グリッドを手前へ流す） | レトロな遠近グリッドの背景 |
+| `papercut` | `data-size` `data-fold`（折り数：6 / 8 / 12）`data-shape`（`flower` `circle` `square`）`data-color` `data-seed` | `pop-in`、`spin`、`jitter` | 左右対称の切り紙（窓花）。seed ごとに違う模様になります |
+| `hills` | `data-layers`（層の数）`data-colors`（奥から手前への色）`data-seed` | `layer-rise`、`parallax` | 重なる紙の山。各層が子要素になります |
+| `torn` | `data-edges`（`top,right,bottom,left`、既定は `top,bottom`）`data-depth` `data-teeth` `data-seed` | `stick-on`、`rise-in` | 要素の縁をギザギザの破れ紙にします。`clip-path` は影も切り取るため、影が必要なら外側を `fx-torn-shadow` で包みます |
 
 ### 字幕
 
@@ -213,6 +221,7 @@ FX.subtitles([
 | `pill` | 黒い角丸のピル + 白文字 | 白紫テック |
 | `bar` | 半透明の黒いバー | レトロピクセル |
 | `plain` | 白文字 + 影、背景なし | 黒金シネマ |
+| `paper` | ベージュの破れ紙の帯 + 濃い色の文字 | 切り紙コラージュ |
 
 `pop: true` にすると、各字幕がふわっと浮かびながら現れます。デフォルトはハードカットで、トーク動画では通常ハードカットを使います。
 
@@ -236,11 +245,11 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 });
 ```
 
-> 第 2 引数はカタログで使うカテゴリーのキーです（`入场` 入場、`退场` 退場、`强调` 強調、`数据` データ、`镜头` カメラ、`角色` キャラクター、`组件` コンポーネント、`转场` トランジション）。この中国語のキーはそのまま使ってください。
+> 第 2 引数はカタログで使うカテゴリーのキーです（`入场` 入場、`退场` 退場、`强调` 強調、`数据` データ、`文字` テキスト、`镜头` カメラ、`角色` キャラクター、`剪纸` 切り紙、`组件` コンポーネント、`转场` トランジション）。この中国語のキーはそのまま使ってください。
 
 **3 つの絶対ルール**：CSS の animation / transition は使わない。`setTimeout` / `requestAnimationFrame` は使わない。ランダムが必要なときは `FX.rand(シード)` を使い、`Math.random` は使わない。
 
-## 3 つのスキン
+## 4 つのスキン
 
 ルート要素の class を 1 つ変えるだけで、動画全体のスタイルが変わります。
 
@@ -249,6 +258,7 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 | `theme-violet` | 白紫テック | 白 `#fdfdfd` / 暗 `#171719`（シーンに `dark` / `light` を付けて切り替え） | YouSheBiaoTiHei | 紫 `#8453e8` / 薄紫 `#d5befe` | AI ツール、効率化、ワークフロー解説 |
 | `theme-gold` | 黒金シネマ | 濃い青黒 `#080a0f` + ぼかした実写 + ビネット | 金のグラデーション斜体 | 金 `#e4b256`、赤 `#ff5b56` は下落にのみ使用 | 経済、業界分析、ランキング |
 | `theme-pixel` | レトロピクセル | ベージュのドット紙 `#efe9dc` | Fusion Pixel ピクセルフォント | 緑 `#9fe07a` · 赤 · 黄 | アニメ風ホスト、気軽な解説 |
+| `theme-paper` | 切り紙コラージュ | ベージュの紙 `#efe6d6` + 純 CSS の紙の質感 | ZCOOL KuaiLe（站酷快乐体） | 切り紙の赤 `#c8322b` · 青緑 `#2f6b6e` · からし色 `#e3a83b` | 文化、二十四節気、ライフスタイル、子ども向け科学、手作り感のあるブランド |
 
 色、フォント、角丸、字幕サイズはすべて `fx.css` の冒頭にある CSS 変数（`--fx-bg` `--fx-accent` `--fx-font-title` …）です。変数を変えれば独自のスキンを作れます。
 
@@ -263,6 +273,7 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 | コンポーネント | `fx-window`（mac ウィンドウ。`.pixel` を付けるとピクセルウィンドウ）`fx-chat`（チャットの吹き出し）`fx-check`（チェックリスト）`fx-cursor`（マウスカーソル）`pbar`（ピクセルのエネルギーバー）`fx-hbar`（横棒） |
 | 背景 | `bg-footage`（ぼかした実写）`vignette`（ビネット） |
 | キャラクター | `host`（立ち絵のコンテナ。中に複数の `[data-pose]` 画像を置き、`pose` / `lipsync` と併用） |
+| 切り紙 | `paper`（紙片。`.red` `.teal` `.mustard` `.ink` `.tilt-l` `.tilt-r` を追加可）`paper-tag`（破れ縁のラベル）`tape`（テープ）`fx-torn-shadow`（破れ縁の要素に影を付けるラッパー）`scene.paper-bg`（どのスキンでもシーンに紙の質感の背景を敷く）。新しい変数 `--fx-font-round`（丸ゴシック系フォント） |
 
 ## よくある質問
 
@@ -290,13 +301,23 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 - GSAP：GreenSock の [Standard License](https://gsap.com/standard-license) のもとで使用しています（商用利用を含め無料）。
 - フォント：[fonts/README.md](fonts/README.md) を参照してください。
 
+## クレジット
+
+v1.1 の新しいエフェクトとスキンは、次のオープンソースプロジェクトにインスピレーションを受けています。
+
+- [animate.css](https://github.com/animate-css/animate.css)（MIT）
+- [Magic UI](https://github.com/magicuidesign/magicui)（MIT）
+- [React Bits](https://github.com/DavidHDev/react-bits)（MIT + Commons Clause）
+
+これらは CSS アニメーションや React コンポーネントで、フレーム単位でレンダリングする仕組みからは制御できません。motion-lib は、シークでき結果が再現できるタイムラインのために対応するエフェクトを作り直しました。借りたのはアイデアとエフェクト名（カタログの括弧内の元の名前）だけで、**コードは一切コピーしていません**。
+
 <!-- CATALOG:START -->
-## エフェクトカタログ（エフェクト 76 種 + トランジション 10 種）
+## エフェクトカタログ（エフェクト 116 種 + トランジション 14 種）
 
 > このセクションは `node gen-readme.mjs` が `fx.js` から自動生成します。手で編集しないでください。
 > すべてのエフェクトで共通パラメーター `dur`（長さ）、`ease`（イージング）、`stagger`（時間差）が使えます。下の表には各エフェクト固有のパラメーターのみを載せています。
 
-### 入場 (24)
+### 入場 (26)
 
 要素が現れる方法です。デフォルトでは「入場前」の状態から要素本来の見た目に戻るため、要素自身に書いた CSS の位置や回転はそのまま保たれます。
 
@@ -326,8 +347,10 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 | `draw` | 線描き：SVG の線がパスに沿って描かれます（接続線、矢印、囲み、折れ線グラフ） |
 | `pixel-in` | ピクセル風の入場：4〜5 段階でとびとびに現れます（滑らかではありません）。each: と併用するとブロックで文字を組めます |
 | `scramble` | 文字化けデコード：各文字がまずランダムな文字（グレー）で点滅し、左から順に正しい文字（白）に確定します。パラメーター：dur、chars=ランダム文字のプール |
+| `light-speed-in` | 光速入場：斜めに変形しながら片側から猛スピードで飛び込み、行き過ぎてから元に戻ります（animate.css lightSpeedIn）。パラメーター：dir=left/right（動く向き）、dist |
+| `jack-in` | びっくり箱：下から少しずつ飛び出し、左右に2回揺れて落ち着きます（animate.css jackInTheBox） |
 
-### 退場 (7)
+### 退場 (9)
 
 要素が去る方法です。通常は `@-0.4`（シーン終了の 0.4 秒前）と書きます。
 
@@ -340,8 +363,10 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 | `scale-out` | 縮小 + フェードアウト。パラメーター：to=終了スケール（1 より大きいと拡大しながら消えます） |
 | `slide-out` | 片側へスライドアウト。パラメーター：dir |
 | `wipe-out` | マスクのワイプで消えます |
+| `hinge` | ちょうつがい落下：左上に釘を打ったように2回揺れてから、画面の外へ落ちます（animate.css hinge）。パラメーター：dist |
+| `fall-out` | 文字落下：1文字ずつ回転しながら画面の下へ落ちていきます（FallingText）。通常は chars: と組み合わせます。パラメーター：dist、seed |
 
-### 強調 (24)
+### 強調 (37)
 
 すでに画面にある要素に対して、ナレーションがその言葉に触れたタイミングで強調します。移動・色変更・内容の切り替えも含みます。
 
@@ -371,6 +396,35 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 | `cycle` | 子要素のハードカット切り替え：一度に 1 つだけ表示し、every 秒ごとに次へ切り替えます（サムネイルの絵が変わり続ける）。パラメーター：every、loop=1 でループ、stop=何枚目で止めるか |
 | `text` | 文字を新しい内容へハードカットで切り替えます（時計の表示変化、ラベルの書き換え）。パラメーター：v=新しい文字 |
 | `to` | 万能トゥイーン：GSAP のプロパティを直接書けます。例：to@2(x=120,scale=1.2,opacity=0.5,dur=0.6,ease=inout) |
+| `tada` | ターダ：いったん縮んでから、拡大しつつ左右に揺れます（animate.css tada） |
+| `jello` | ゼリー：斜めに変形しながら左右に揺れ、振れ幅がだんだん小さくなります（animate.css jello） |
+| `rubber-band` | ゴムバンド：横に伸びて縦につぶれ、何度か弾みます（animate.css rubberBand） |
+| `heartbeat` | ハートビート：続けて2回拡大します（animate.css heartBeat） |
+| `head-shake` | 首振り：少し3D回転を伴う左右の振り（否定・違うの表現）（animate.css headShake） |
+| `wobble` | ぐらぐら：平行移動しながら傾いて左右に揺れます（animate.css wobble） |
+| `border-beam` | 枠線ビーム：短い光の帯が要素の枠線に沿ってぐるりと走ります（BorderBeam / StarBorder）。パラメーター：color、w=太さ、len=光の帯が外周に占める割合、n=周回数、dur=1周の秒数、keep=1 で走り終えても消さない |
+| `spotlight` | スポットライト：画面を暗くし、ターゲットだけを円形の明るい領域で照らします。同じシーンでもう一度指定すると、光の輪が新しいターゲットへ移ります（Spotlight）。照らしたい要素に書くか、to=#id を指定します。パラメーター：r=半径、dim=暗さ 0~1、off=1 で消灯 |
+| `confetti` | 紙吹雪：要素の中心から紙吹雪をぱっと散らし、舞い上がってから落ちます（Confetti / ClickSpark）。パラメーター：n、colors=色1/色2/色3、power=勢い、seed |
+| `sparkle` | きらめき：要素のまわりにランダムに小さな星が現れ、ちかちか光ります（SparklesText）。パラメーター：n、color、dur、seed |
+| `orbit` | 周回：コンテナの子要素を円周上に等間隔に並べて中心のまわりを回します。子要素は常に正立のままです（OrbitingCircles）。コンテナに書きます。パラメーター：r=半径、turns=周回数、dur、reverse=1 で逆回り |
+| `beam` | 接続ビーム：2つの要素の間に弧を描き、光の玉が線に沿って流れます（AnimatedBeam、「A が B にデータを渡す」の表現に最適）。始点の要素に書き、to=#終点 を指定します。パラメーター：curve=曲がり具合、color、n=流す回数、dur |
+| `flip-swap` | 裏返して入れ替え：要素が縦軸まわりに裏返り、裏面に2つ目の子要素が現れ、また裏返って戻ります（カードめくり、答えの発表）。要素の中に子要素を2つ置き、1つ目が表、2つ目が裏です。パラメーター：axis=y/x |
+
+### テキスト (9)
+
+文字専用：流光、グリッチ、単語の入れ替え、消して打ち直し、パタパタ表示板、輪郭線、残像。
+
+| 名前 | 動作 / パラメーター |
+|---|---|
+| `shimmer` | 流光テキスト：ハイライトが文字の上を左から右へ走ります（ShinyText）。パラメーター：color=ハイライト色、n=走らせる回数、gap=1回ごとの間隔 |
+| `glitch` | グリッチ文字：赤青のズレ + 震え + 斜め変形を短時間走らせてから元に戻ります（GlitchText）。パラメーター：amp=ズレのピクセル数、dur、seed。要素の x を 0 に戻すため、要素自体を動かしたいときは外側にラッパーを1枚かぶせてください |
+| `rotate-words` | 単語ローテーション：同じ位置で単語が上へめくれて消え、次の単語がめくれて入ってきます（WordRotate）。パラメーター：words=B/C/D（/ 区切り。要素の元の文字が1つ目）、every=各単語の表示秒数 |
+| `morph` | モーフィング切り替え：古い単語がぼやけて散り、新しい単語がぼやけの中から集まってきます（MorphingText）。パラメーター：words=B/C、every |
+| `retype` | 消して打ち直し：今ある文字を後ろから1文字ずつ消し、そのあと新しい文字を打ち込みます（TextType）。パラメーター：v=新しい文字、cps=1秒あたりの入力文字数、del=1秒あたりの削除文字数 |
+| `true-focus` | 単語ごとのフォーカス：一度に1単語だけをくっきり見せ、残りはぼかし、フォーカス枠がその単語へ移ります（TrueFocus）。中国語は / で区切り（例：AI/不会/替代/你）、英語はスペース区切り。パラメーター：every、blur、color |
+| `split-flap` | パタパタ表示板：各文字がランダムな文字をいくつか素早くめくったあと、左から順に正しい文字で止まります（SplitFlap、空港の発着案内板）。入場用です。パラメーター：dur、stagger、chars=文字プール |
+| `stroke-in` | 輪郭文字：まず一方向へ中空の輪郭線を描き、そのあと色で塗りつぶします（StrokeText）。パラメーター：w=線の太さ、color=線の色、hold=中空のまま止める秒数 |
+| `echo` | 残像入場：半透明のコピーが何枚か後ろに尾を引きながら一緒に滑り込み、定位置に着くと残像が消えます（EchoText）。パラメーター：n=残像の枚数、dist、dir |
 
 ### データ (6)
 
@@ -385,7 +439,7 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 | `ring` | リング進捗：data-make="ring" と併用します。パラメーター：from、to（0〜1） |
 | `wave-live` | 波形の跳ね：data-make="wave" と併用します。各バーがシード値に従ってランダムに上下します。パラメーター：dur、seed |
 
-### カメラ (7)
+### カメラ (11)
 
 コンテナ全体に作用します。ズームイン、パン、3D 傾き、シェイク。
 
@@ -398,6 +452,10 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 | `tilt` | 3D の傾きで配置し、ゆっくり回します（浮かぶ UI カード）。パラメーター：rx、ry=開始角度、rx2、ry2=終了角度 |
 | `drift` | 背景のゆっくりしたドリフト（ぼかしたカードの壁、パーティクル層）。パラメーター：x、y、rot、dur |
 | `cam-shake` | カメラの揺れ（強い衝撃、エラー） |
+| `meteors` | 流星群：斜めに走る光の筋です（Meteors）。全面に敷いた背景レイヤーに書きます。パラメーター：n、angle=向きの角度（既定 135 = 左下へ）、color、dur、seed |
+| `marquee` | マーキー：1行分の内容が横へ無限ループでスクロールします（Marquee / LogoLoop）。1行のコンテナに書くと、子要素が自動で複製されて幅を埋めます。パラメーター：speed=1秒あたりのピクセル数、reverse=1 で逆方向 |
+| `bg-scroll` | 背景パターンのスクロール：background（グリッド、テクスチャ、ストライプ）を一定の速さで平行移動させ続けます。retro-grid コンポーネントと組み合わせます。パラメーター：x、y=1秒あたりのピクセル数 |
+| `parallax` | 視差：コンテナ内の各レイヤーが前後の順に違う速さで平行移動します（奥ほど動きが小さく、手前ほど大きい）。hills の重なった紙の山と組み合わせます。コンテナに書きます。パラメーター：x、y=最前面レイヤーの総移動量、dur |
 
 ### キャラクター (5)
 
@@ -411,6 +469,23 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 | `hop` | その場で跳ねます（驚き、喜び）。パラメーター：h=高さ、n=回数 |
 | `walk` | 歩いて移動：水平移動 + 一歩ごとの弾み。パラメーター：x=移動量、または to=#ターゲット、steps=歩数。ピクセルキャラクターには ease=steps(8) を追加します |
 
+### 切り紙 (10)
+
+切り紙・ペーパークラフト風のコラージュ：広げる、切り開く、破る、貼る、レイヤーを順に持ち上げるなどに加え、毎秒12コマのコマ撮りの手作り感も出せます。`theme-paper` スキンと最も相性がよいですが、どのスキンでも使えます。
+
+| 名前 | 動作 / パラメーター |
+|---|---|
+| `paper-unfold` | 紙の展開：二つ折りの紙が折り目から開いて平らに広がります。少しだけ弾み戻ります。パラメーター：dir=down/up/left/right（広がる向き） |
+| `cut-in` | ハサミで切り出し：ギザギザの縁に沿って1回ずつ「切って」要素を出していきます。コマ送りで進むので切り紙らしさが出ます。パラメーター：dir=right/left/down/up、teeth=ギザギザの数、jag=ギザギザの深さ（%）、snips=切る回数 |
+| `peel-in` | 角めくり戻し：角が浮いたシールが元の位置に落ちて押さえつけられます。パラメーター：corner=tl/tr/bl/br（どの角か） |
+| `layer-rise` | レイヤー順に上昇：コンテナ内の紙のレイヤーが奥から手前へ順に下から上がってきます。手前ほど遅く、遠くから上がります（重なる紙の山、紙の舞台）。コンテナに書きます。パラメーター：dist、stagger |
+| `stick-on` | シールをぺたっ：カメラの手前から大きな影を伴って紙面に貼りつき、定位置で影が引き締まります（ラベルや写真を貼る表現）。パラメーター：from=開始時の拡大率、rot=開始時の傾き角 |
+| `stop-in` | コマ撮り入場：毎秒12コマのコマ撮りのリズムで跳び込み、各コマに少しランダムな傾きが付きます（手作りアニメの質感）。パラメーター：dist、steps=跳ぶ回数、fps、seed |
+| `jitter` | コマ撮りの震え：毎秒12コマで絶えずわずかに傾いたり動いたりし、手作業でコマ撮りしたような質感になります（boiling）。入場系の動効と位置を奪い合わないよう、外側のコンテナに付けるのがおすすめです。パラメーター：amp=角度、px=移動量、fps、dur |
+| `lift` | 紙を持ち上げる：少し上に浮き、影が大きく薄くなって、指でつまみ上げたように見えます。down=1 で元に戻します。パラメーター：dist |
+| `flutter` | ひらひら：風に吹かれた紙のように左右に何度か揺れ、ゆっくり静止します。パラメーター：deg、n=揺れる回数、origin |
+| `sway` | 吊り下げ揺れ：吊るしたもの（ランタン、下げ札、窓飾り）がゆっくり左右に揺れ続けます。パラメーター：deg、period=1往復の秒数、dur |
+
 ### コンポーネント (3)
 
 `data-make` で生成したコンポーネントと組み合わせて使います。
@@ -421,7 +496,7 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 | `chapter` | チャプター進捗バー：data-make="chapters" と併用します。ハイライトブロックが第 i チャプター（1 始まり）へスライドします |
 | `check` | チェックリストのチェック：.fx-check コンポーネントと併用します。チェックマークが描かれ、文字がくっきりします |
 
-### トランジション (10)
+### トランジション (14)
 
 **後ろ側の**シーンに書きます：`<section class="scene" data-in="blur-cross(dur=0.5)">`。
 
@@ -437,4 +512,8 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 | `flash` | 白（または任意の色）へのフラッシュ切り替え：重要な一文やチャプターの冒頭に使います。パラメーター：color |
 | `dip` | ブラックアウト：いったん暗くなってから明るくなります（話題の切り替え）。パラメーター：color |
 | `pixelate` | ピクセル溶解：ブロックがランダムな順で画面を覆い、その後散ります（ピクセル風のシーン切り替え）。パラメーター：cols、color |
+| `paper-slide` | 紙の引き出し：新しい紙が片側から滑り込んで古い紙に重なり、縁に影が付き、古い紙は少し暗くなります。パラメーター：dir=left/right/up/down |
+| `tear` | 紙を破る：新しい画面がギザギザの破れ目に沿って片側から現れます（切り紙風のシーン切り替え）。パラメーター：dir=right/left/down/up、jag、teeth |
+| `glitch-cut` | グリッチカット：新しい画面が赤青のズレを伴って数回ちらつき、そのあと安定します（テック感のある切り替え） |
+| `open` | 扉が開く：新しい画面が中央の細い隙間から左右（または上下）へ開きます。パラメーター：dir=x（左右に開く）/y（上下に開く） |
 <!-- CATALOG:END -->

@@ -23,7 +23,7 @@
   .lib-card i { height: 8px; border-radius: 4px; background: #d0d0d8; }
   .tr { font-family: var(--fx-font-mono); font-size: 120px; font-weight: 700; color: #fff; }
   .tr small { display: block; font-family: var(--fx-font-title); font-size: 48px; font-weight: 400; margin-top: 18px; opacity: .8; }
-  .skin { position: relative; width: 520px; height: 620px; border-radius: 22px; overflow: hidden; padding: 44px 40px; display: flex; flex-direction: column; gap: 26px; }
+  .skin { position: relative; width: 400px; height: 620px; border-radius: 22px; overflow: hidden; padding: 44px 40px; display: flex; flex-direction: column; gap: 26px; }
   .skin .lab { position: absolute; left: 40px; bottom: 32px; font-family: var(--fx-font-mono); font-size: 24px; }
   .term { font-family: var(--fx-font-mono); font-size: 34px; line-height: 1.9; color: #e8e8ee; }
   .term .p { color: #9fe07a; }
@@ -46,7 +46,7 @@
     <div class="col center"><span class="t-num accent" style="font-size:220px" data-fx="count@0.2(dur=1.2)" id="nFx">76</span><span class="t-h3">种动效</span></div>
     <div class="col center"><span class="t-num" style="font-size:220px" data-fx="count@0.35(dur=1.2)" id="nTr">10</span><span class="t-h3">种转场</span></div>
     <div class="col center"><span class="t-num" style="font-size:220px" data-fx="count@0.5(dur=1.2)" id="nMk">9</span><span class="t-h3">个组件生成器</span></div>
-    <div class="col center"><span class="t-num" style="font-size:220px" data-fx="count@0.65(dur=1.2)">3</span><span class="t-h3">套皮肤</span></div>
+    <div class="col center"><span class="t-num" style="font-size:220px" data-fx="count@0.65(dur=1.2)">4</span><span class="t-h3">套皮肤</span></div>
   </div>
   <div class="t-small" style="font-size:30px;margin-top:70px" data-fx="fade-in@1.8">GSAP 时间线驱动 · 逐帧可 seek · 每次渲染结果一致</div>
 </section>
@@ -139,6 +139,34 @@ FX.build();</div>
   </div>
 </section>
 
+<!-- 7b 文字（v1.1） -->
+<section class="scene dark" id="p7b" data-d="5.5" data-in="glitch-cut">
+  <div class="hd" data-fx="slide-in@0.05(dir=right,dist=40)"><span class="u">文字</span><span class="n" data-cat="文字">9</span><span class="u">种</span><span class="d">shimmer · glitch · rotate-words · morph · retype · true-focus · split-flap …</span></div>
+  <div class="tiles" data-fx="each:scale-in@0.1(from=0.9,dur=0.4,stagger=0.04)">
+    <div class="tile"><span class="big" data-fx="shimmer@0.5(color=#d5befe,n=2,dur=1)">流光文字</span><span class="nm">shimmer</span></div>
+    <div class="tile"><span class="big" data-fx="glitch@0.8(dur=0.8) glitch@3(dur=0.5)">故障字</span><span class="nm">glitch</span></div>
+    <div class="tile"><span class="big">更<span style="color:#d5befe" data-fx="rotate-words@1(words=好/稳/美,every=1.1)">快</span></span><span class="nm">rotate-words</span></div>
+    <div class="tile"><span class="big" data-fx="morph@1.1(words=灵感/动效/成片,every=1.3)">想法</span><span class="nm">morph</span></div>
+    <div class="tile"><span class="big" style="font-size:56px" data-fx="retype@1(v=做成动效)">写成文字</span><span class="nm">retype</span></div>
+    <div class="tile"><span class="big" style="font-size:54px" data-fx="true-focus@0.8(every=0.9)">AI/不会/替代/你</span><span class="nm">true-focus</span></div>
+    <div class="tile"><span class="big" style="font-size:54px" data-fx="split-flap@0.6(stagger=0.12)">GATE 08</span><span class="nm">split-flap</span></div>
+    <div class="tile"><span class="big" style="font-size:84px;color:#d5befe" data-fx="stroke-in@0.8">描边</span><span class="nm">stroke-in</span></div>
+  </div>
+</section>
+
+<!-- 7c 剪纸（v1.1） -->
+<section class="scene theme-paper" id="p7c" data-d="6" data-in="tear(dur=0.6)">
+  <div data-make="hills" data-layers="4" data-seed="3" data-fx="layer-rise@0.1 parallax@0.9(x=-140,dur=5)"></div>
+  <div class="hd" style="color:#2b2622" data-fx="stop-in@0.2"><span class="u">剪纸</span><span class="n" style="color:#c8322b" data-cat="剪纸">10</span><span class="u">种</span><span class="d" style="color:#8a7d6b">paper-unfold · cut-in · peel-in · stick-on · stop-in · jitter · layer-rise …</span></div>
+  <div class="abs" style="left:1250px;top:250px" data-make="papercut" data-size="260" data-seed="5" data-fx="cut-in@0.6(dur=1.1) sway@1.8(deg=3)"></div>
+  <div class="abs" style="left:1580px;top:380px" data-make="papercut" data-size="200" data-seed="11" data-fold="12" data-shape="circle" data-color="#2f6b6e" data-fx="paper-unfold@0.9 spin@1.8(deg=60,dur=4)"></div>
+  <div class="abs paper red tilt-l" style="left:130px;top:280px;width:300px" data-fx="paper-unfold@1.2">纸张展开</div>
+  <div class="abs paper teal" style="left:470px;top:300px;width:300px" data-fx="peel-in@1.6(corner=tr) lift@3(dist=16) lift@4(down=1,dist=16)">卷角揭开</div>
+  <div class="abs paper mustard tilt-r" style="left:810px;top:280px;width:300px" data-fx="stick-on@2 flutter@3.6">贴纸拍上</div>
+  <div class="abs fx-torn-shadow" style="left:300px;top:470px"><div class="paper ink" data-make="torn" style="padding:18px 60px;font-size:44px" data-fx="jitter@2.4(dur=3.5)">毛边纸条 · 定格抖动</div></div>
+  <span class="abs paper-tag" style="left:1290px;top:560px" data-fx="stick-on@2.6(rot=8)">剪纸窗花</span>
+</section>
+
 <!-- 8 转场连切 -->
 <section class="scene center" id="t1" data-d="0.85" data-in="blur-cross(dur=0.35)" style="background:#8453e8"><div class="tr">blur-cross<small>模糊交叉</small></div></section>
 <section class="scene center" id="t2" data-d="0.85" data-in="zoom-through(dur=0.4)" style="background:#171719"><div class="tr">zoom-through<small>缩放穿越</small></div></section>
@@ -146,21 +174,23 @@ FX.build();</div>
 <section class="scene center" id="t4" data-d="0.85" data-in="wipe(dir=right,dur=0.4)" style="background:#fdfdfd"><div class="tr" style="color:#020202">wipe<small>擦除</small></div></section>
 <section class="scene center" id="t5" data-d="0.85" data-in="iris(dur=0.45)" style="background:#2d0590"><div class="tr">iris<small>圆形扩散</small></div></section>
 <section class="scene center" id="t6" data-d="0.85" data-in="flash(dur=0.3)" style="background:#171719"><div class="tr">flash<small>闪白</small></div></section>
+<section class="scene center" id="t6b" data-d="0.85" data-in="glitch-cut" style="background:#171719"><div class="tr">glitch-cut<small>故障闪切</small></div></section>
+<section class="scene center theme-paper" id="t6c" data-d="0.85" data-in="tear(dur=0.45)"><div class="tr" style="color:#c8322b">tear<small style="color:#2b2622">撕纸</small></div></section>
 <section class="scene center theme-pixel" id="t7" data-d="1.1" data-in="pixelate(cols=24,dur=0.6)"><div class="tr" style="color:#1d1b19">pixelate<small>像素溶解</small></div><div class="t-h3" style="margin-top:30px" data-fx="fade-in@0.3">共 <span data-cat="转场">10</span> 种转场</div></section>
 
-<!-- 9 三套皮肤 -->
+<!-- 9 四套皮肤 -->
 <section class="scene dark" id="p9" data-d="5.5" data-in="blur-cross(dur=0.4)">
-  <div class="hd" data-fx="slide-in@0.05(dir=right,dist=40)"><span class="n">3</span><span class="u">套皮肤</span><span class="d">换一个 class，整片换风格</span></div>
+  <div class="hd" data-fx="slide-in@0.05(dir=right,dist=40)"><span class="n">4</span><span class="u">套皮肤</span><span class="d">换一个 class，整片换风格</span></div>
   <div class="abs row" style="left:120px;top:280px;gap:40px;align-items:stretch" data-fx="each:flip-in@0.3(stagger=0.18)">
     <div class="skin theme-violet" style="background:#fdfdfd;color:#020202">
-      <div class="t-h2" style="font-size:64px;color:#020202">做热点<span style="color:#8453e8">最难</span>的</div>
+      <div class="t-h2" style="font-size:50px;color:#020202">做热点<span style="color:#8453e8">最难</span>的</div>
       <div class="card" style="padding:24px"><div class="t-num" style="font-size:110px;color:#8453e8">402</div><div style="font-weight:800;font-size:28px">个组件</div></div>
       <span class="pill" style="align-self:flex-start;background:#020202;color:#fff">黑胶囊字幕</span>
       <span class="lab" style="color:#8453e8">.theme-violet</span>
     </div>
     <div class="skin theme-gold" style="background:radial-gradient(120% 90% at 50% 0%, #1a2236 0%, #080a0f 70%);color:#f8f8f8">
       <div class="t-en">annual capex</div>
-      <div class="t-title" style="font-size:110px">7,000</div>
+      <div class="t-title" style="font-size:92px">7,000</div>
       <div class="row" style="gap:14px"><div class="card" style="padding:18px 22px;font-size:26px">芯片</div><div class="card hot" style="padding:18px 22px;font-size:26px">算力</div></div>
       <div class="red" style="font-size:60px">-17%</div>
       <span class="lab" style="color:#e4b256">.theme-gold</span>
@@ -169,6 +199,13 @@ FX.build();</div>
       <div class="fx-window"><div class="fx-win-bar">Skill.exe</div><div class="fx-win-body col" style="gap:14px"><span class="ptag">写周报</span><span class="t-pixel" style="font-size:30px">装太多反而选不中</span></div></div>
       <div class="row" style="gap:20px;align-items:flex-end"><div class="pbar" style="height:150px;width:46px"><i style="height:70%"></i></div><span class="ptag" style="background:#9fe07a">像素风</span></div>
       <span class="lab">.theme-pixel</span>
+    </div>
+    <div class="skin theme-paper scene-like" style="background-color:#efe6d6;color:#2b2622;overflow:hidden">
+      <div data-make="hills" data-layers="3" data-seed="8" style="height:45%"></div>
+      <div data-make="papercut" data-size="150" data-seed="5"></div>
+      <div class="paper red tilt-l" style="align-self:flex-start;font-size:32px;padding:14px 22px">剪纸拼贴</div>
+      <span class="paper-tag" style="align-self:flex-start;font-size:26px">站酷快乐体</span>
+      <span class="lab" style="color:#c8322b;z-index:2">.theme-paper</span>
     </div>
   </div>
 </section>
@@ -198,8 +235,8 @@ FX.build();</div>
   <div class="row" style="gap:20px;margin-top:50px" data-fx="each:pop-in@1.0(stagger=0.1)">
     <span class="pill accent" style="font-size:36px"><span data-cat="all">76</span> 动效</span>
     <span class="pill ghost" style="font-size:36px;color:#fdfdfd"><span data-cat="转场">10</span> 转场</span>
-    <span class="pill ghost" style="font-size:36px;color:#fdfdfd">9 组件</span>
-    <span class="pill ghost" style="font-size:36px;color:#fdfdfd">3 皮肤</span>
+    <span class="pill ghost" style="font-size:36px;color:#fdfdfd"><span id="nMk2">9</span> 组件</span>
+    <span class="pill ghost" style="font-size:36px;color:#fdfdfd">4 皮肤</span>
   </div>
   <div class="pill" style="margin-top:60px;background:#fdfdfd;color:#020202;font-size:40px;padding:16px 40px" data-fx="pop-in@1.6 sheen@2.1">★ Star on GitHub</div>
 </section>
@@ -215,6 +252,7 @@ FX.build();</div>
     document.getElementById('nFx').textContent = n;
     document.getElementById('nTr').textContent = c['转场'];
     document.getElementById('nMk').textContent = Object.keys(FX.make).length;
+    document.getElementById('nMk2').textContent = Object.keys(FX.make).length;
   })();
   FX.build();
 </script>
