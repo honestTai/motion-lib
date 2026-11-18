@@ -19,7 +19,7 @@
   var gsap = g.gsap;
   if (!gsap) { throw new Error('FX：请先加载 gsap.min.js'); }
 
-  var FX = (g.FX = { version: '1.1.0', fx: {}, trans: {}, make: {}, catalog: [] });
+  var FX = (g.FX = { version: '1.2.0', fx: {}, trans: {}, make: {}, catalog: [] });
 
   /* ───────────────────────────── 工具 ───────────────────────────── */
 

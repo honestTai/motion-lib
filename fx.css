@@ -307,6 +307,20 @@ html, body { width: var(--fx-w); height: var(--fx-h); overflow: hidden; backgrou
   clip-path: polygon(0 6%, 4% 0, 12% 4%, 25% 0, 40% 5%, 55% 0, 70% 4%, 85% 0, 96% 5%, 100% 1%, 100% 94%, 95% 100%, 82% 96%, 66% 100%, 50% 95%, 34% 100%, 18% 96%, 5% 100%, 0 95%); }
 .fx-subs[data-style="paper"] .fx-sub em { color: var(--fx-accent); }
 
+/* ═════════════ 皮肤 5：space（深空粒子，配 fx-particles.js） ═════════════ */
+.fx-space { position: absolute; inset: 0; pointer-events: none; }
+.fx-space > canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.theme-space {
+  --fx-bg: #061226; --fx-ink: #eef6ff; --fx-sub: #8fa9c9; --fx-line: rgba(255,255,255,.1);
+  --fx-card: rgba(14,30,62,.72); --fx-card-ink: #eef6ff; --fx-card-r: 16px; --fx-card-shadow: 0 20px 60px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
+  --fx-accent: #6fd3ff; --fx-accent-2: #ff8a4d; --fx-marker: rgba(111,211,255,.3);
+}
+.theme-space .scene, .scene.space-bg { background: radial-gradient(120% 100% at 50% 40%, #0d2a55 0%, #061226 55%, #02060f 100%); color: var(--fx-ink); }
+.theme-space .scene.overlay, .theme-space .scene.clear { background: none; }
+.theme-space .t-hero, .theme-space .t-title, .t-glow { text-shadow: 0 0 24px rgba(111,211,255,.55), 0 0 70px rgba(111,211,255,.3); }
+.theme-space .t-en { color: rgba(238,246,255,.55); letter-spacing: .42em; }
+.theme-space .fx-subs[data-style="plain"] .fx-sub span { font-family: var(--fx-font-body); font-weight: 600; font-size: 38px; text-shadow: 0 2px 10px rgba(0,0,0,.8); }
+
 /* ───────────── 预览播放器（?play，仅预览，不参与渲染） ───────────── */
 .fx-playing, .fx-playing body { width: 100vw; height: 100vh; background: #0b0b0d; }
 .fx-playing [data-composition-id] { position: absolute; top: 0; left: 0; }

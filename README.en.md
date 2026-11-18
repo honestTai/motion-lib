@@ -4,6 +4,8 @@
 
 **A declarative motion library for HTML → video.** Write one line, `data-fx="effect-name@seconds"`, on an element to get the motion you see in talking-head explainers and tech videos, then render it frame by frame to MP4 with [HyperFrames](https://hyperframes.heygen.com).
 
+> **New in v1.2**: the optional particle module `fx-particles.js` (8 particle effects: starfield, nebula, vortex, black hole, energy orb, explosion, particle text, particle stream) + a 5th theme, `theme-space` (deep-space particles).
+>
 > **New in v1.1**: 40 effects + 4 transitions (`paper-slide` `tear` `glitch-cut` `open`) + 5 component generators (`circle-text` `retro-grid` `papercut` `hills` `torn`); 2 new categories, Text and Papercut; a 4th theme, `theme-paper` (papercut collage). Inspired by animate.css, Magic UI and React Bits; see Credits at the bottom.
 
 [![motion-lib promo](promo/cover.jpg)](promo/motion-lib-promo.mp4)
@@ -13,10 +15,10 @@
 <!-- STATS:START -->
 | | Count |
 |---|---|
-| Effects | **116** (Enter 26 · Exit 9 · Emphasis 37 · Text 9 · Data 6 · Camera 11 · Character 5 · Papercut 10 · Components 3) |
+| Effects | **124** (Enter 26 · Exit 9 · Emphasis 37 · Text 9 · Data 6 · Camera 11 · Character 5 · Papercut 10 · Particles 8 · Components 3) |
 | Transitions | **14** |
-| Component generators | **14** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn`) |
-| Skins | **4** themes (violet tech · black-gold cinema · retro pixel · papercut collage) |
+| Component generators | **15** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `space`) |
+| Skins | **5** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles) |
 <!-- STATS:END -->
 
 ## Why use it
@@ -44,7 +46,8 @@ motion-lib schedules every effect onto **one paused GSAP timeline**. You only de
 ```
 motion-lib/
 ├── fx.js            the library: effects, transitions, component generators, subtitles, preview player
-├── fx.css           base styles, component styles, four themes
+├── fx.css           base styles, component styles, five themes
+├── fx-particles.js  optional particle module (space, vortex, black hole, explosion, particle text)
 ├── fonts/           YouSheBiaoTiHei, Smiley Sans, Fusion Pixel, ZCOOL KuaiLe (licenses in fonts/README.md)
 ├── vendor/          GSAP 3.15 (a local copy)
 ├── new-project.sh   install the library into a video project (also used to update)
@@ -52,7 +55,7 @@ motion-lib/
 ├── gen-readme.mjs   generates the count table and effect catalog in this file (node gen-readme.mjs)
 ├── demo/            demo page: 6 scenes using the first three themes
 ├── promo/           promo source + final video
-└── examples/        one full example per theme (four in all) + a showreel
+└── examples/        one full example per theme (five in all) + a showreel
 ```
 
 ## Requirements
@@ -108,6 +111,9 @@ mkdir my-video
 </html>
 ```
 
+> For particle effects, add one more line after `fx.js`: `<script src="lib/fx-particles.js"></script>` (`new-project.sh` already copies it into `lib/`).
+
+
 **3. Preview, snapshot, render**
 
 ```bash
@@ -122,7 +128,7 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 
 ## Examples
 
-Each of the four themes has a full example (motion only, no voice-over). The source is in the matching directory, ready to adapt:
+Each of the five themes has a full example (motion only, no voice-over). The source is in the matching directory, ready to adapt:
 
 | Theme | Example | Source |
 |---|---|---|
@@ -130,8 +136,9 @@ Each of the four themes has a full example (motion only, no voice-over). The sou
 | Black-gold cinema `theme-gold` | [![gold](examples/gold/cover.jpg)](examples/gold/gold.mp4) | [`examples/gold/index.html`](examples/gold/index.html) |
 | Retro pixel `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
 | Papercut collage `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
+| Deep-space particles `theme-space` | [![space](examples/space/cover.jpg)](examples/space/space.mp4) | [`examples/space/index.html`](examples/space/index.html) |
 
-All four combined: [`examples/showreel.mp4`](examples/showreel.mp4).
+All five combined: [`examples/showreel.mp4`](examples/showreel.mp4).
 
 ## Syntax
 
@@ -206,6 +213,7 @@ Let the library generate repetitive DOM, then pair it with the matching effect:
 | `papercut` | `data-size` `data-fold` (number of folds: 6 / 8 / 12) `data-shape` (`flower` `circle` `square`) `data-color` `data-seed` | `pop-in`, `spin`, `jitter` | Symmetric paper-cut window flowers; every seed gives a different pattern |
 | `hills` | `data-layers` (number of layers) `data-colors` (colors from back to front) `data-seed` | `layer-rise`, `parallax` | Layered paper hills; each layer is a child element |
 | `torn` | `data-edges` (`top,right,bottom,left`, default `top,bottom`) `data-depth` `data-teeth` `data-seed` | `stick-on`, `rise-in` | Cuts an element's edges into a ragged torn-paper strip; `clip-path` clips shadows, so wrap it in `fx-torn-shadow` if you want one |
+| `space` | particle effects go in `data-fx` (needs `fx-particles.js`) | `nebula` `starfield` `vortex` `blackhole` `form-text` and other Particles effects | A canvas container: one canvas, each particle effect is a layer |
 
 ### Subtitles
 
@@ -224,6 +232,25 @@ FX.subtitles([
 | `paper` | Beige torn-paper strip + dark text | Papercut collage |
 
 With `pop: true` each subtitle floats up gently as it appears; the default is a hard cut, which is what talking-head videos usually use.
+
+### Particles (fx-particles.js)
+
+An optional module with canvas (Canvas 2D) particles: starfield, nebula, vortex, black hole, energy orb, explosion, particle text and particle stream. Load it after `fx.js`, then write:
+
+```html
+<script src="lib/fx-particles.js"></script>
+
+<div class="layer" data-make="space"
+     data-fx="nebula@0 starfield@0(speed=0.15) vortex@1 form-text@4(text=HELLO)"></div>
+<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, SPACE</h1>
+```
+
+- One `data-make="space"` is one canvas; every particle effect written on it is a layer, stacked **bottom to top** in the order written (above: the nebula is at the bottom, the text on top). The heading is a normal DOM element sitting over the canvas.
+- Common parameters: `dur` (how long this layer lasts, default until the scene ends), `fade` / `out` (fade in / out seconds), `x` / `y` (center position in percent), `seed`.
+- Color lists are separated with `/`, e.g. `colors=#6fd3ff/#ff8a4d`.
+- `form-text` has three different times: `dur` is the length of the whole layer, `conv` is how long the gathering takes, and `start` is how long the particles drift first. It samples the theme's title font, so Chinese and English both work.
+- The canvas is a normal element, so you can add other effects to it as usual, e.g. `to@3(scale=1.3)` for a push-in.
+- Like the rest of the library it is frame-exact: every frame is a pure function of time, and randomness is seeded. Note that perspective is **simulated** on a 2D canvas; it is not real 3D (WebGL).
 
 ### Hand-written extras
 
@@ -249,7 +276,7 @@ FX.register('spin-in', '入场', 'Spin in', c => {
 
 **Three hard rules**: no CSS animation / transition; no `setTimeout` / `requestAnimationFrame`; for randomness use `FX.rand(seed)`, never `Math.random`.
 
-## Four themes
+## Five themes
 
 Change one class on the root element to restyle the whole video:
 
@@ -259,6 +286,7 @@ Change one class on the root element to restyle the whole video:
 | `theme-gold` | Black-gold cinema | Deep blue-black `#080a0f` + blurred footage + vignette | Gold gradient italic | Gold `#e4b256`; red `#ff5b56` only for declines | Finance, industry analysis, rankings |
 | `theme-pixel` | Retro pixel | Beige halftone paper `#efe9dc` | Fusion Pixel font | Green `#9fe07a` · red · yellow | Anime hosts, light-hearted explainers |
 | `theme-paper` | Papercut collage | Beige paper `#efe6d6` + pure-CSS paper grain | ZCOOL KuaiLe | Paper red `#c8322b` · teal `#2f6b6e` · mustard `#e3a83b` | Culture, solar terms, lifestyle, kids' science, handmade-feel brands |
+| `theme-space` | Deep-space particles | Deep blue `#061226` (radial gradient) | Default title font, with a built-in cyan glow (also usable alone as `.t-glow`) | Cyan `#6fd3ff` · orange `#ff8a4d` | Tech, science explainers, space, launch-event openers, concept films; pair subtitles with `{style:'plain'}`; there is also `.scene.space-bg` |
 
 All colors, fonts, corner radii and subtitle sizes are CSS variables at the top of `fx.css` (`--fx-bg` `--fx-accent` `--fx-font-title` …). Change the variables to build your own theme.
 
@@ -295,6 +323,9 @@ Gradient text made with `background-clip:text` (such as the gold text in the gol
 **Want to sync with a voice-over?**
 Use the voice-over timestamps to fill each scene's `data-t` / `data-d` and the times in `FX.subtitles`. Effect times are all relative to the start of the scene, so they don't need to change.
 
+**Particles not showing up?**
+Check that `lib/fx-particles.js` is loaded (after `fx.js`), and that the particle effects are written on an element with `data-make="space"`; on any other element they draw nothing.
+
 ## License
 
 - Code: [MIT](LICENSE). Third-party notes: [NOTICE](NOTICE).
@@ -312,7 +343,7 @@ The new effects and theme in v1.1 were inspired by these open-source projects:
 Those projects are CSS animations or React components, which a frame-by-frame renderer cannot drive. motion-lib re-implements the corresponding effects for a seekable, reproducible timeline. We borrowed only the ideas and effect names (the original names in parentheses in the catalog) and **did not copy any of their code**.
 
 <!-- CATALOG:START -->
-## Effect catalog (116 effects + 14 transitions)
+## Effect catalog (124 effects + 14 transitions)
 
 > This section is generated from `fx.js` by `node gen-readme.mjs`. Do not edit it by hand.
 > All effects accept the common parameters `dur` (duration), `ease` (easing) and `stagger`; the tables below list only each effect's own parameters.
@@ -485,6 +516,21 @@ Papercut / paper-craft collage style: unfold, cut open, tear, stick on, layers r
 | `lift` | Paper lift: floats up slightly while the shadow grows larger and fainter, as if pinched up by a finger; down=1 puts it back. Param: dist |
 | `flutter` | Flutter: like a paper caught by a gust, it swings side to side a few times and slowly settles. Params: deg, n=number of swings, origin |
 | `sway` | Hanging sway: hanging things (lanterns, tags, window flowers) keep swaying slowly left and right. Params: deg, period=seconds per swing, dur |
+
+### Particles (8)
+
+Canvas particles; requires loading the extra `fx-particles.js`. Write them on a canvas container made with `data-make="space"`: each effect is one layer of the canvas, stacked from bottom to top in the order written. Common parameters: `dur` (how long this layer lasts), `fade` / `out` (fade in / out seconds), `x` / `y` (center position in percent), `seed`.
+
+| Name | What it does / parameters |
+|---|---|
+| `starfield` | Starfield: stars fly toward the camera from far away (with speed=0 it is a static twinkling sky). Params: n, speed, streak=trail length (1 or more makes a warp-speed beam), size, colors=color1/color2 |
+| `nebula` | Nebula: a few large soft clouds of colored haze drift slowly; use it as the bottom-most background. Params: n=number of clouds, colors, alpha=density |
+| `vortex` | Particle vortex: particles surge from the center toward the camera along spiral arms, with glowing streamlines (a space-time tunnel). Params: arms=number of arms, n, speed, twist=number of turns, spin=overall rotation speed, r=outer radius, colors (alternate per arm), lines=0 turns streamlines off |
+| `blackhole` | Black hole: black disc + glowing halo + tilted accretion disk; particles orbit faster on the inner ring and slower on the outer one, and the near half passes in front of the hole. Params: r=hole radius, tilt=how flattened the disk is, rot=tilt angle, n, speed, c1=inner color, c2=outer color |
+| `orb` | Energy orb: a glowing sphere built from triangular shards, slowly spinning with a bright core; it can gather from scattered shards into a sphere, or blow apart. Params: r=radius, detail=subdivision (1=80 shards, 2=320 shards), gap=gap between shards, spin, in=gather seconds, explode=second at which it blows apart, c1=lit-face color, c2=dark-face color, edge=outline color, core=core color |
+| `burst` | Explosion: a cloud of particles and triangular shards blows out from the center with a white flash and a shockwave ring, slowing down until it fades away. Params: n, power=force, shards=share of shards 0~1, life=duration in seconds, colors, ring=0 turns the shockwave off, flash=0 turns the flash off |
+| `form-text` | Particle text: tumbling little squares fly in from all sides and assemble a line of text (Chinese or English). Params: text, size=font size, font, weight, color, n=max particle count, start=how long they drift first, conv=gather seconds, glow=0 turns the text halo off, spacing=letter spacing in px |
+| `stream` | Particle stream: trailing points of light flow sideways across the frame along wavy streamlines (data flow, signals). Params: n, speed, amp=wave amplitude, waves=number of waves across, tail=trail length, colors, reverse=1 reverses direction |
 
 ### Components (3)
 

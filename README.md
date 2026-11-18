@@ -4,6 +4,8 @@
 
 **HTML → 视频的声明式动效库。** 在元素上写一行 `data-fx="动效名@秒数"`，就能做出知识口播、科技解说这类视频里常见的动效，再用 [HyperFrames](https://hyperframes.heygen.com) 逐帧渲染成 MP4。
 
+> **v1.2 新增**：可选粒子模块 `fx-particles.js`（8 个粒子动效：星空、星云、旋涡、黑洞、能量球、爆炸、粒子聚字、粒子流）+ 第 5 套皮肤 `theme-space`（深空粒子）。
+>
 > **v1.1 新增**：40 种动效 + 4 个转场（`paper-slide` `tear` `glitch-cut` `open`）+ 5 个组件生成器（`circle-text` `retro-grid` `papercut` `hills` `torn`）；2 个新分类「文字」「剪纸」；第 4 套皮肤 `theme-paper`（剪纸拼贴）。灵感来自 animate.css、Magic UI、React Bits，见文末「致谢」。
 
 [![motion-lib 宣传片](promo/cover.jpg)](promo/motion-lib-promo.mp4)
@@ -13,10 +15,10 @@
 <!-- STATS:START -->
 | | 数量 |
 |---|---|
-| 动效 | **116** 种（入场 26 · 退场 9 · 强调 37 · 文字 9 · 数据 6 · 镜头 11 · 角色 5 · 剪纸 10 · 组件 3） |
+| 动效 | **124** 种（入场 26 · 退场 9 · 强调 37 · 文字 9 · 数据 6 · 镜头 11 · 角色 5 · 剪纸 10 · 粒子 8 · 组件 3） |
 | 转场 | **14** 种 |
-| 组件生成器 | **14** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn`） |
-| 皮肤 | **4** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴） |
+| 组件生成器 | **15** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `space`） |
+| 皮肤 | **5** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴 · 深空粒子） |
 <!-- STATS:END -->
 
 ## 为什么要用它
@@ -44,7 +46,8 @@ motion-lib 把所有动效都排进**一条暂停的 GSAP 时间线**，你只�
 ```
 motion-lib/
 ├── fx.js            动效库本体：动效、转场、组件生成器、字幕、预览播放器
-├── fx.css           基础样式、组件样式、四套皮肤
+├── fx.css           基础样式、组件样式、五套皮肤
+├── fx-particles.js  可选的粒子模块（宇宙、旋涡、黑洞、爆炸、粒子聚字）
 ├── fonts/           优设标题黑、得意黑、Fusion Pixel 像素字体、站酷快乐体（许可见 fonts/README.md）
 ├── vendor/          GSAP 3.15（本地一份）
 ├── new-project.sh   把库装进一个视频项目（也用来更新）
@@ -52,7 +55,7 @@ motion-lib/
 ├── gen-readme.mjs   从 fx.js 自动生成本文的数量表和动效目录（node gen-readme.mjs）
 ├── demo/            演示页：6 个场景，三套皮肤都用到
 ├── promo/           宣传片源码 + 成片
-└── examples/        四套皮肤各一条完整示例片 + 合集
+└── examples/        五套皮肤各一条完整示例片 + 合集
 ```
 
 ## 环境要求
@@ -108,6 +111,9 @@ mkdir my-video
 </html>
 ```
 
+> 要用粒子动效时，在 `fx.js` 后面多加一行：`<script src="lib/fx-particles.js"></script>`（`new-project.sh` 已经把它拷进 `lib/` 了）。
+
+
 **3. 预览、截帧、出片**
 
 ```bash
@@ -122,7 +128,7 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 
 ## 示例片
 
-四套皮肤各做了一条完整示例（纯动效、无配音），源码就在对应目录里，可以直接改着用：
+五套皮肤各做了一条完整示例（纯动效、无配音），源码就在对应目录里，可以直接改着用：
 
 | 皮肤 | 示例 | 源码 |
 |---|---|---|
@@ -130,8 +136,9 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 | 黑金电影 `theme-gold` | [![gold](examples/gold/cover.jpg)](examples/gold/gold.mp4) | [`examples/gold/index.html`](examples/gold/index.html) |
 | 像素复古 `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
 | 剪纸拼贴 `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
+| 深空粒子 `theme-space` | [![space](examples/space/cover.jpg)](examples/space/space.mp4) | [`examples/space/index.html`](examples/space/index.html) |
 
-四条合在一起：[`examples/showreel.mp4`](examples/showreel.mp4)。
+五条合在一起：[`examples/showreel.mp4`](examples/showreel.mp4)。
 
 ## 写法
 
@@ -206,6 +213,7 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 | `papercut` | `data-size` `data-fold`（几折：6 / 8 / 12）`data-shape`（`flower` `circle` `square`）`data-color` `data-seed` | `pop-in`、`spin`、`jitter` | 对称剪纸窗花，每个 seed 图案都不同 |
 | `hills` | `data-layers`（层数）`data-colors`（从后到前的颜色）`data-seed` | `layer-rise`、`parallax` | 层叠纸山；每层是一个子元素 |
 | `torn` | `data-edges`（`top,right,bottom,left`，默认 `top,bottom`）`data-depth` `data-teeth` `data-seed` | `stick-on`、`rise-in` | 把元素的边剪成毛边纸条；`clip-path` 会裁掉阴影，要投影请在外面套一层 `fx-torn-shadow` |
+| `space` | `data-fx` 里写粒子动效（需加载 `fx-particles.js`） | `nebula` `starfield` `vortex` `blackhole` `form-text` 等「粒子」类 | 画布容器：一块画布，每个粒子动效是一层 |
 
 ### 字幕
 
@@ -224,6 +232,25 @@ FX.subtitles([
 | `paper` | 米色毛边纸条 + 深色字 | 剪纸拼贴 |
 
 `pop: true` 时每句字幕会轻轻上浮出现；默认是硬切，口播视频一般就是硬切。
+
+### 粒子（fx-particles.js）
+
+可选模块，画布（Canvas 2D）粒子：星空、星云、旋涡、黑洞、能量球、爆炸、粒子聚字、粒子流。在 `fx.js` 之后加载，再写：
+
+```html
+<script src="lib/fx-particles.js"></script>
+
+<div class="layer" data-make="space"
+     data-fx="nebula@0 starfield@0(speed=0.15) vortex@1 form-text@4(text=HELLO)"></div>
+<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, SPACE</h1>
+```
+
+- 一个 `data-make="space"` 就是一块画布；写在它上面的每个粒子动效是一层，按书写顺序**从下往上**叠（上例：星云在最底，聚字在最上）。上面的标题是普通 DOM 元素，叠在画布之上。
+- 通用参数：`dur`（这一层持续多久，默认到场景结束）、`fade` / `out`（淡入淡出秒数）、`x` / `y`（中心位置百分比）、`seed`。
+- 颜色列表用 `/` 分隔，例如 `colors=#6fd3ff/#ff8a4d`。
+- `form-text` 里要分清三个时间：`dur` 是整层时长，`conv` 是聚拢用多久，`start` 是先飘多久。它用皮肤的标题字体取样，中英文都行。
+- 画布是普通元素，可以照常加别的动效，比如 `to@3(scale=1.3)` 做推近。
+- 和主库一样逐帧可复现：每一帧都是时间的纯函数，随机带种子。注意这是用 2D 画布**模拟**透视，不是真 3D（WebGL）。
 
 ### 手写补充
 
@@ -247,7 +274,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 
 **三条硬规则**：不用 CSS animation / transition；不用 `setTimeout` / `requestAnimationFrame`；要随机就用 `FX.rand(种子)`，不用 `Math.random`。
 
-## 四套皮肤
+## 五套皮肤
 
 在根元素上换一个 class，整片换风格：
 
@@ -257,6 +284,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `theme-gold` | 黑金电影 | 深蓝黑 `#080a0f` + 模糊实拍 + 暗角 | 金色渐变斜体 | 金 `#e4b256`，红 `#ff5b56` 只给下跌 | 财经、行业分析、榜单 |
 | `theme-pixel` | 像素复古 | 米色网点纸 `#efe9dc` | Fusion Pixel 像素字 | 绿 `#9fe07a` · 红 · 黄 | 动漫主持人、轻松科普 |
 | `theme-paper` | 剪纸拼贴 | 米色纸底 `#efe6d6` + 纯 CSS 纸纹 | 站酷快乐体 ZCOOL KuaiLe | 剪纸红 `#c8322b` · 青 `#2f6b6e` · 芥黄 `#e3a83b` | 文化、节气、生活方式、儿童科普、手作感品牌 |
+| `theme-space` | 深空粒子 | 深蓝底 `#061226`（径向渐变） | 默认标题字，自带青色发光（也可单独用 `.t-glow`） | 青 `#6fd3ff` · 橙 `#ff8a4d` | 科技、科普、宇宙、发布会片头、概念片；字幕配 `{style:'plain'}`；另有 `.scene.space-bg` |
 
 所有颜色、字体、圆角、字幕尺寸都是 `fx.css` 顶部的 CSS 变量（`--fx-bg` `--fx-accent` `--fx-font-title` …），改变量就能做自己的皮肤。
 
@@ -293,6 +321,9 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 **想和配音对齐？**
 用配音的时间戳填每个场景的 `data-t` / `data-d` 和 `FX.subtitles` 的时间即可。动效时间都是相对场景开头的，不用改。
 
+**粒子没出来？**
+检查是否加载了 `lib/fx-particles.js`（在 `fx.js` 之后），以及粒子动效是否写在 `data-make="space"` 的元素上；写在别的元素上不会有任何画面。
+
 ## 许可
 
 - 代码：[MIT](LICENSE)；第三方组件说明见 [NOTICE](NOTICE)。
@@ -310,7 +341,7 @@ v1.1 的新动效和皮肤受到下面这些开源项目的启发：
 这些项目是 CSS 动画或 React 组件，渲染器无法逐帧控制。本库按「逐帧可 seek、结果可复现」的需求重新实现了相应的效果：只借用了它们的创意和效果名称（说明里括号中的原名），**没有复制它们的代码**。
 
 <!-- CATALOG:START -->
-## 动效目录（116 种动效 + 14 种转场）
+## 动效目录（124 种动效 + 14 种转场）
 
 > 这一节由 `node gen-readme.mjs` 从 `fx.js` 自动生成，不要手改。
 > 所有动效都支持通用参数 `dur`（时长）、`ease`（缓动）、`stagger`（错峰）；下表只列各自特有的参数。
@@ -483,6 +514,21 @@ v1.1 的新动效和皮肤受到下面这些开源项目的启发：
 | `lift` | 纸片抬起：往上浮起一点、投影变大变淡，像被手指捏起来；down=1 放回去。参数 dist |
 | `flutter` | 飘动：像纸片被风吹了一下，左右摆几下慢慢停住。参数 deg、n=摆几下、origin |
 | `sway` | 悬挂摇摆：挂着的东西（灯笼、吊牌、窗花）持续缓慢地左右摆。参数 deg、period=一个来回秒数、dur |
+
+### 粒子（8）
+
+画布粒子，需要额外加载 `fx-particles.js`。写在 `data-make="space"` 的画布容器上，每个动效是画布里的一层，按书写顺序从下往上叠。通用参数：`dur`（这一层持续多久）、`fade` / `out`（淡入淡出秒数）、`x` / `y`（中心位置百分比）、`seed`。
+
+| 名字 | 作用 / 参数 |
+|---|---|
+| `starfield` | 星空：星星从远处朝镜头飞来（speed=0 时是静止闪烁的星空）。参数 n、speed、streak=拖尾长度（给 1 以上就是跃迁光束）、size、colors=色1/色2 |
+| `nebula` | 星云：几大团柔和的彩色光雾缓慢漂移，垫在最底层当背景。参数 n=光团数、colors、alpha=浓度 |
+| `vortex` | 粒子旋涡：粒子沿螺旋臂从中心涌向镜头，带发光的流线（时空隧道）。参数 arms=旋臂数、n、speed、twist=拧几圈、spin=整体旋转速度、r=外圈半径、colors（按旋臂交替）、lines=0 关掉流线 |
+| `blackhole` | 黑洞：黑色圆盘 + 发光光环 + 倾斜的吸积盘，粒子内圈转得快、外圈转得慢，前半圈会从黑洞前面掠过。参数 r=黑洞半径、tilt=吸积盘压扁程度、rot=倾斜角度、n、speed、c1=内圈色、c2=外圈色 |
+| `orb` | 能量球：由三角碎片拼成的发光球体，缓慢自转、内核发光；可以从散落的碎片聚拢成球，也可以炸开。参数 r=半径、detail=细分（1=80 片，2=320 片）、gap=碎片间隙、spin、in=聚拢秒数、explode=第几秒炸开、c1=亮面色、c2=暗面色、edge=描边色、core=内核色 |
+| `burst` | 爆炸：一团粒子和三角碎片从中心炸开，带白闪和冲击波光环，越飞越慢最后消散。参数 n、power=力度、shards=碎片占比 0~1、life=持续秒数、colors、ring=0 关掉冲击波、flash=0 关掉白闪 |
+| `form-text` | 粒子聚字：散落翻滚的小方块从四面八方飞来，拼成一行字（中英文都行）。参数 text=文字、size=字号、font、weight、color、n=最多多少粒、start=先飘多久、conv=聚拢秒数、glow=0 关掉字的光晕、spacing=字间距像素 |
+| `stream` | 粒子流：一条条带拖尾的光点沿着起伏的流线横向穿过画面（数据流、信号）。参数 n、speed、amp=起伏幅度、waves=横向有几个波、tail=拖尾长度、colors、reverse=1 反向 |
 
 ### 组件（3）
 

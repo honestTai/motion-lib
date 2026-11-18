@@ -4,6 +4,8 @@
 
 **HTML → 影片的宣告式動效庫。** 在元素上寫一行 `data-fx="動效名@秒數"`，就能做出知識口播、科技解說這類影片裡常見的動效，再用 [HyperFrames](https://hyperframes.heygen.com) 逐格渲染成 MP4。
 
+> **v1.2 新增**：選用的粒子模組 `fx-particles.js`（8 個粒子動效：星空、星雲、漩渦、黑洞、能量球、爆炸、粒子聚字、粒子流）+ 第 5 套外觀主題 `theme-space`（深空粒子）。
+>
 > **v1.1 新增**：40 種動效 + 4 個轉場（`paper-slide` `tear` `glitch-cut` `open`）+ 5 個元件產生器（`circle-text` `retro-grid` `papercut` `hills` `torn`）；2 個新分類「文字」「剪紙」；第 4 套外觀主題 `theme-paper`（剪紙拼貼）。靈感來自 animate.css、Magic UI、React Bits，見文末「致謝」。
 
 [![motion-lib 宣傳片](promo/cover.jpg)](promo/motion-lib-promo.mp4)
@@ -13,10 +15,10 @@
 <!-- STATS:START -->
 | | 數量 |
 |---|---|
-| 動效 | **116** 種（入場 26 · 退場 9 · 強調 37 · 文字 9 · 資料 6 · 鏡頭 11 · 角色 5 · 剪紙 10 · 元件 3） |
+| 動效 | **124** 種（入場 26 · 退場 9 · 強調 37 · 文字 9 · 資料 6 · 鏡頭 11 · 角色 5 · 剪紙 10 · 粒子 8 · 元件 3） |
 | 轉場 | **14** 種 |
-| 元件產生器 | **14** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn`） |
-| 外觀主題 | **4** 套（白紫科技 · 黑金電影 · 像素復古 · 剪紙拼貼） |
+| 元件產生器 | **15** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `space`） |
+| 外觀主題 | **5** 套（白紫科技 · 黑金電影 · 像素復古 · 剪紙拼貼 · 深空粒子） |
 <!-- STATS:END -->
 
 ## 為什麼要用它
@@ -44,7 +46,8 @@ motion-lib 把所有動效都排進**一條暫停的 GSAP 時間軸**，你只�
 ```
 motion-lib/
 ├── fx.js            動效庫本體：動效、轉場、元件產生器、字幕、預覽播放器
-├── fx.css           基礎樣式、元件樣式、四套外觀主題
+├── fx.css           基礎樣式、元件樣式、五套外觀主題
+├── fx-particles.js  選用的粒子模組（宇宙、漩渦、黑洞、爆炸、粒子聚字）
 ├── fonts/           優設標題黑、得意黑、Fusion Pixel 像素字型、站酷快樂體（授權見 fonts/README.md）
 ├── vendor/          GSAP 3.15（本機一份）
 ├── new-project.sh   把動效庫裝進一個影片專案（也用來更新）
@@ -52,7 +55,7 @@ motion-lib/
 ├── gen-readme.mjs   從 fx.js 自動產生本文的數量表和動效目錄（node gen-readme.mjs）
 ├── demo/            示範頁：6 個場景，三套外觀主題都用到
 ├── promo/           宣傳片原始碼 + 成片
-└── examples/        四套外觀主題各一支完整範例片 + 合輯
+└── examples/        五套外觀主題各一支完整範例片 + 合輯
 ```
 
 ## 環境需求
@@ -108,6 +111,9 @@ mkdir my-video
 </html>
 ```
 
+> 要用粒子動效時，在 `fx.js` 後面多加一行：`<script src="lib/fx-particles.js"></script>`（`new-project.sh` 已經把它複製進 `lib/` 了）。
+
+
 **3. 預覽、截圖、輸出成片**
 
 ```bash
@@ -122,7 +128,7 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 
 ## 範例片
 
-四套外觀主題各做了一支完整範例（純動效、無配音），原始碼就在對應目錄裡，可以直接拿來改：
+五套外觀主題各做了一支完整範例（純動效、無配音），原始碼就在對應目錄裡，可以直接拿來改：
 
 | 外觀主題 | 範例 | 原始碼 |
 |---|---|---|
@@ -130,8 +136,9 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 | 黑金電影 `theme-gold` | [![gold](examples/gold/cover.jpg)](examples/gold/gold.mp4) | [`examples/gold/index.html`](examples/gold/index.html) |
 | 像素復古 `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
 | 剪紙拼貼 `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
+| 深空粒子 `theme-space` | [![space](examples/space/cover.jpg)](examples/space/space.mp4) | [`examples/space/index.html`](examples/space/index.html) |
 
-四支合在一起：[`examples/showreel.mp4`](examples/showreel.mp4)。
+五支合在一起：[`examples/showreel.mp4`](examples/showreel.mp4)。
 
 ## 寫法
 
@@ -206,6 +213,7 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 | `papercut` | `data-size` `data-fold`（幾摺：6 / 8 / 12）`data-shape`（`flower` `circle` `square`）`data-color` `data-seed` | `pop-in`、`spin`、`jitter` | 對稱剪紙窗花，每個 seed 圖案都不同 |
 | `hills` | `data-layers`（層數）`data-colors`（從後到前的顏色）`data-seed` | `layer-rise`、`parallax` | 層疊紙山；每層是一個子元素 |
 | `torn` | `data-edges`（`top,right,bottom,left`，預設 `top,bottom`）`data-depth` `data-teeth` `data-seed` | `stick-on`、`rise-in` | 把元素的邊剪成毛邊紙條；`clip-path` 會裁掉陰影，要投影請在外面套一層 `fx-torn-shadow` |
+| `space` | 在 `data-fx` 裡寫粒子動效（需載入 `fx-particles.js`） | `nebula` `starfield` `vortex` `blackhole` `form-text` 等「粒子」類 | 畫布容器：一塊畫布，每個粒子動效是一層 |
 
 ### 字幕
 
@@ -224,6 +232,25 @@ FX.subtitles([
 | `paper` | 米色毛邊紙條 + 深色字 | 剪紙拼貼 |
 
 `pop: true` 時每句字幕會輕輕上浮出現；預設是硬切，口播影片通常就是硬切。
+
+### 粒子（fx-particles.js）
+
+選用模組，畫布（Canvas 2D）粒子：星空、星雲、漩渦、黑洞、能量球、爆炸、粒子聚字、粒子流。在 `fx.js` 之後載入，再這樣寫：
+
+```html
+<script src="lib/fx-particles.js"></script>
+
+<div class="layer" data-make="space"
+     data-fx="nebula@0 starfield@0(speed=0.15) vortex@1 form-text@4(text=HELLO)"></div>
+<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, SPACE</h1>
+```
+
+- 一個 `data-make="space"` 就是一塊畫布；寫在它上面的每個粒子動效是一層，依書寫順序**由下往上**疊（上例：星雲在最底，聚字在最上）。上面的標題是一般 DOM 元素，疊在畫布之上。
+- 通用參數：`dur`（這一層持續多久，預設到場景結束）、`fade` / `out`（淡入淡出秒數）、`x` / `y`（中心位置百分比）、`seed`。
+- 顏色清單用 `/` 分隔，例如 `colors=#6fd3ff/#ff8a4d`。
+- `form-text` 要分清三個時間：`dur` 是整層時長，`conv` 是聚攏要多久，`start` 是先飄多久。它會用外觀主題的標題字型取樣，中英文都行。
+- 畫布是一般元素，可以照常加其他動效，例如 `to@3(scale=1.3)` 做推近。
+- 和主庫一樣逐幀可重現：每一幀都是時間的純函數，隨機帶種子。請注意這是用 2D 畫布**模擬**透視，不是真 3D（WebGL）。
 
 ### 手寫補充
 
@@ -249,7 +276,7 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 
 **三條硬規則**：不使用 CSS animation / transition；不使用 `setTimeout` / `requestAnimationFrame`；要隨機就用 `FX.rand(種子)`，不要用 `Math.random`。
 
-## 四套外觀主題
+## 五套外觀主題
 
 在根元素上換一個 class，整支影片就換風格：
 
@@ -259,6 +286,7 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 | `theme-gold` | 黑金電影 | 深藍黑 `#080a0f` + 模糊實拍 + 暗角 | 金色漸層斜體 | 金 `#e4b256`，紅 `#ff5b56` 只用於下跌 | 財經、產業分析、排行榜 |
 | `theme-pixel` | 像素復古 | 米色網點紙 `#efe9dc` | Fusion Pixel 像素字 | 綠 `#9fe07a` · 紅 · 黃 | 動漫主持人、輕鬆科普 |
 | `theme-paper` | 剪紙拼貼 | 米色紙底 `#efe6d6` + 純 CSS 紙紋 | 站酷快樂體 ZCOOL KuaiLe | 剪紙紅 `#c8322b` · 青 `#2f6b6e` · 芥黃 `#e3a83b` | 文化、節氣、生活風格、兒童科普、手作感品牌 |
+| `theme-space` | 深空粒子 | 深藍底 `#061226`（放射漸層） | 預設標題字，自帶青色發光（也可單獨用 `.t-glow`） | 青 `#6fd3ff` · 橙 `#ff8a4d` | 科技、科普、宇宙、發表會片頭、概念片；字幕搭配 `{style:'plain'}`；另有 `.scene.space-bg` |
 
 所有顏色、字型、圓角、字幕尺寸都是 `fx.css` 最上方的 CSS 變數（`--fx-bg` `--fx-accent` `--fx-font-title` …），改變數就能做出自己的外觀主題。
 
@@ -295,6 +323,9 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 **想和配音對齊？**
 用配音的時間戳記填入每個場景的 `data-t` / `data-d` 和 `FX.subtitles` 的時間即可。動效時間都是相對場景開頭的，不用修改。
 
+**粒子沒出來？**
+檢查是否載入了 `lib/fx-particles.js`（要在 `fx.js` 之後），以及粒子動效是否寫在 `data-make="space"` 的元素上；寫在別的元素上不會有任何畫面。
+
 ## 授權
 
 - 程式碼：[MIT](LICENSE)；第三方元件說明見 [NOTICE](NOTICE)。
@@ -312,7 +343,7 @@ v1.1 的新動效和外觀主題受到下列開源專案的啟發：
 這些專案是 CSS 動畫或 React 元件，渲染器無法逐格控制。本動效庫依照「逐格可 seek、結果可重現」的需求重新實作了對應的效果：只借用了它們的創意和效果名稱（說明裡括號中的原名），**沒有複製它們的程式碼**。
 
 <!-- CATALOG:START -->
-## 動效目錄（116 種動效 + 14 種轉場）
+## 動效目錄（124 種動效 + 14 種轉場）
 
 > 本節由 `node gen-readme.mjs` 從 `fx.js` 自動產生，請勿手動修改。
 > 所有動效都支援通用參數 `dur`（時長）、`ease`（緩動）、`stagger`（錯峰）；下表只列出各自特有的參數。
@@ -485,6 +516,21 @@ v1.1 的新動效和外觀主題受到下列開源專案的啟發：
 | `lift` | 紙片抬起：往上浮起一點、投影變大變淡，像被手指捏起來；down=1 放回去。參數 dist |
 | `flutter` | 飄動：像紙片被風吹了一下，左右擺幾下慢慢停住。參數 deg、n=擺幾下、origin |
 | `sway` | 懸掛搖擺：掛著的東西（燈籠、吊牌、窗花）持續緩慢地左右擺。參數 deg、period=一個來回秒數、dur |
+
+### 粒子 (8)
+
+畫布（Canvas 2D）粒子，需要額外載入 `fx-particles.js`。寫在 `data-make="space"` 的畫布容器上，每個動效是畫布裡的一層，依書寫順序由下往上疊。通用參數：`dur`（這一層持續多久）、`fade` / `out`（淡入淡出秒數）、`x` / `y`（中心位置百分比）、`seed`。
+
+| 名稱 | 作用 / 參數 |
+|---|---|
+| `starfield` | 星空：星星從遠處朝鏡頭飛來（speed=0 時是靜止閃爍的星空）。參數 n、speed、streak=拖尾長度（給 1 以上就是躍遷光束）、size、colors=色1/色2 |
+| `nebula` | 星雲：幾大團柔和的彩色光霧緩慢漂移，墊在最底層當背景。參數 n=光團數、colors、alpha=濃度 |
+| `vortex` | 粒子漩渦：粒子沿螺旋臂從中心湧向鏡頭，帶發光的流線（時空隧道）。參數 arms=旋臂數、n、speed、twist=扭幾圈、spin=整體旋轉速度、r=外圈半徑、colors（依旋臂交替）、lines=0 關掉流線 |
+| `blackhole` | 黑洞：黑色圓盤 + 發光光環 + 傾斜的吸積盤，粒子內圈轉得快、外圈轉得慢，前半圈會從黑洞前面掠過。參數 r=黑洞半徑、tilt=吸積盤壓扁程度、rot=傾斜角度、n、speed、c1=內圈色、c2=外圈色 |
+| `orb` | 能量球：由三角碎片拼成的發光球體，緩慢自轉、內核發光；可以從散落的碎片聚攏成球，也可以炸開。參數 r=半徑、detail=細分（1=80 片，2=320 片）、gap=碎片間隙、spin、in=聚攏秒數、explode=第幾秒炸開、c1=亮面色、c2=暗面色、edge=描邊色、core=內核色 |
+| `burst` | 爆炸：一團粒子和三角碎片從中心炸開，帶白閃和衝擊波光環，越飛越慢最後消散。參數 n、power=力道、shards=碎片占比 0~1、life=持續秒數、colors、ring=0 關掉衝擊波、flash=0 關掉白閃 |
+| `form-text` | 粒子聚字：散落翻滾的小方塊從四面八方飛來，拼成一行字（中英文都行）。參數 text=文字、size=字級、font、weight、color、n=最多多少粒、start=先飄多久、conv=聚攏秒數、glow=0 關掉字的光暈、spacing=字距像素 |
+| `stream` | 粒子流：一條條帶拖尾的光點沿著起伏的流線橫向穿過畫面（資料流、訊號）。參數 n、speed、amp=起伏幅度、waves=橫向有幾個波、tail=拖尾長度、colors、reverse=1 反向 |
 
 ### 元件 (3)
 

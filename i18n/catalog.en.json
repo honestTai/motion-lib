@@ -39,6 +39,10 @@
     "剪纸": {
       "title": "Papercut",
       "intro": "Papercut / paper-craft collage style: unfold, cut open, tear, stick on, layers rising one by one, plus a handmade stop-motion feel at 12 fps. Pairs best with the `theme-paper` skin, but works with any skin."
+    },
+    "粒子": {
+      "title": "Particles",
+      "intro": "Canvas particles; requires loading the extra `fx-particles.js`. Write them on a canvas container made with `data-make=\"space\"`: each effect is one layer of the canvas, stacked from bottom to top in the order written. Common parameters: `dur` (how long this layer lasts), `fade` / `out` (fade in / out seconds), `x` / `y` (center position in percent), `seed`."
     }
   },
   "stats": {
@@ -50,7 +54,7 @@
     "makers": "Component generators",
     "makersLine": "**{n}** ({list})",
     "skins": "Skins",
-    "skinsLine": "**4** themes (violet tech · black-gold cinema · retro pixel · papercut collage)"
+    "skinsLine": "**5** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles)"
   },
   "catalog": {
     "heading": "Effect catalog ({nFx} effects + {nTrans} transitions)",
@@ -189,6 +193,14 @@
     "转场/paper-slide": "Paper pull: a new sheet slides in from one side over the old one, with a shadow along the edge and the old sheet slightly darkened. Param: dir=left|right|up|down",
     "转场/tear": "Paper tear: the new scene is revealed from one side along a jagged torn edge (papercut-style scene change). Params: dir=right|left|down|up, jag, teeth",
     "转场/glitch-cut": "Glitch cut: the new scene flickers a few times with a red/blue split, then stabilizes (tech-style cut)",
-    "转场/open": "Doors open: the new scene opens outward from a slit in the middle. Param: dir=x (opens left/right)|y (opens up/down)"
+    "转场/open": "Doors open: the new scene opens outward from a slit in the middle. Param: dir=x (opens left/right)|y (opens up/down)",
+    "粒子/starfield": "Starfield: stars fly toward the camera from far away (with speed=0 it is a static twinkling sky). Params: n, speed, streak=trail length (1 or more makes a warp-speed beam), size, colors=color1/color2",
+    "粒子/nebula": "Nebula: a few large soft clouds of colored haze drift slowly; use it as the bottom-most background. Params: n=number of clouds, colors, alpha=density",
+    "粒子/vortex": "Particle vortex: particles surge from the center toward the camera along spiral arms, with glowing streamlines (a space-time tunnel). Params: arms=number of arms, n, speed, twist=number of turns, spin=overall rotation speed, r=outer radius, colors (alternate per arm), lines=0 turns streamlines off",
+    "粒子/blackhole": "Black hole: black disc + glowing halo + tilted accretion disk; particles orbit faster on the inner ring and slower on the outer one, and the near half passes in front of the hole. Params: r=hole radius, tilt=how flattened the disk is, rot=tilt angle, n, speed, c1=inner color, c2=outer color",
+    "粒子/orb": "Energy orb: a glowing sphere built from triangular shards, slowly spinning with a bright core; it can gather from scattered shards into a sphere, or blow apart. Params: r=radius, detail=subdivision (1=80 shards, 2=320 shards), gap=gap between shards, spin, in=gather seconds, explode=second at which it blows apart, c1=lit-face color, c2=dark-face color, edge=outline color, core=core color",
+    "粒子/burst": "Explosion: a cloud of particles and triangular shards blows out from the center with a white flash and a shockwave ring, slowing down until it fades away. Params: n, power=force, shards=share of shards 0~1, life=duration in seconds, colors, ring=0 turns the shockwave off, flash=0 turns the flash off",
+    "粒子/form-text": "Particle text: tumbling little squares fly in from all sides and assemble a line of text (Chinese or English). Params: text, size=font size, font, weight, color, n=max particle count, start=how long they drift first, conv=gather seconds, glow=0 turns the text halo off, spacing=letter spacing in px",
+    "粒子/stream": "Particle stream: trailing points of light flow sideways across the frame along wavy streamlines (data flow, signals). Params: n, speed, amp=wave amplitude, waves=number of waves across, tail=trail length, colors, reverse=1 reverses direction"
   }
 }

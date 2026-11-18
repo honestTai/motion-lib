@@ -8,9 +8,14 @@ import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const win = { gsap: {} };
 new Function("window", fs.readFileSync(path.join(here, "fx.js"), "utf8"))(win);
+// 可选的粒子模块也算进目录（它需要一点浏览器环境，这里给个最小替身）
+{
+  const fake = () => ({ getContext: () => new Proxy({}, { get: () => () => ({ data: [0, 0, 0, 0], addColorStop() {} }) }), width: 0, height: 0 });
+  new Function("window", "document", fs.readFileSync(path.join(here, "fx-particles.js"), "utf8"))(win, { createElement: fake });
+}
 const { catalog, make } = win.FX;
 
-const ORDER = ["入场", "退场", "强调", "文字", "数据", "镜头", "角色", "剪纸", "组件", "转场"];
+const ORDER = ["入场", "退场", "强调", "文字", "数据", "镜头", "角色", "剪纸", "粒子", "组件", "转场"];
 const WHAT = {
   入场: "元素出现的方式。默认从「入场前」状态回到元素本来的样子，所以元素自己写的 CSS 位置、旋转都会保留。",
   退场: "元素离开的方式。一般写成 `@-0.4`（场景结束前 0.4 秒）。",
@@ -20,6 +25,7 @@ const WHAT = {
   镜头: "作用在一整个容器上：推近、平移、3D 倾斜、震动。",
   角色: "给立绘 / 小人用：换姿势、口型、点头、跳、走。",
   剪纸: "剪纸 / 纸艺拼贴风：展开、剪开、撕开、贴上、逐层升起，以及每秒 12 格的定格手工感。和 `theme-paper` 皮肤最配，但任何皮肤都能用。",
+  粒子: "画布粒子，需要额外加载 `fx-particles.js`。写在 `data-make=\"space\"` 的画布容器上，每个动效是画布里的一层，按书写顺序从下往上叠。通用参数：`dur`（这一层持续多久）、`fade` / `out`（淡入淡出秒数）、`x` / `y`（中心位置百分比）、`seed`。",
   组件: "配合 `data-make` 生成的组件使用。",
   转场: "写在**后一个**场景上：`<section class=\"scene\" data-in=\"blur-cross(dur=0.5)\">`。",
 };
@@ -38,7 +44,7 @@ function zh() {
 | 动效 | **${nFx}** 种（${breakdown}） |
 | 转场 | **${nTrans}** 种 |
 | 组件生成器 | **${makers.length}** 个（${makers.map((k) => "`" + k + "`").join(" ")}） |
-| 皮肤 | **4** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴） |`;
+| 皮肤 | **5** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴 · 深空粒子） |`;
   let cat = `## 动效目录（${nFx} 种动效 + ${nTrans} 种转场）
 
 > 这一节由 \`node gen-readme.mjs\` 从 \`fx.js\` 自动生成，不要手改。

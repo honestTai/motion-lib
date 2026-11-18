@@ -4,6 +4,8 @@
 
 **HTML → 動画のための宣言型モーションライブラリです。** 要素に `data-fx="エフェクト名@秒数"` と 1 行書くだけで、トーク系の解説動画やテック解説動画でよく見るモーションが作れます。あとは [HyperFrames](https://hyperframes.heygen.com) でフレームごとに MP4 へレンダリングします。
 
+> **v1.2 の新機能**：オプションのパーティクルモジュール `fx-particles.js`（パーティクルエフェクト 8 種：星空、星雲、渦、ブラックホール、エネルギーボール、爆発、パーティクル文字、パーティクルの流れ）と、5 つ目のスキン `theme-space`（深宇宙パーティクル）。
+>
 > **v1.1 の新機能**：エフェクト 40 種 + トランジション 4 種（`paper-slide` `tear` `glitch-cut` `open`）+ コンポーネントジェネレーター 5 個（`circle-text` `retro-grid` `papercut` `hills` `torn`）、新カテゴリー 2 つ（テキスト・切り紙）、4 つ目のスキン `theme-paper`（切り紙コラージュ）。animate.css、Magic UI、React Bits にインスピレーションを受けています。末尾の「クレジット」をご覧ください。
 
 [![motion-lib プロモーション動画](promo/cover.jpg)](promo/motion-lib-promo.mp4)
@@ -13,10 +15,10 @@
 <!-- STATS:START -->
 | | 数 |
 |---|---|
-| エフェクト | **116** 種（入場 26 · 退場 9 · 強調 37 · テキスト 9 · データ 6 · カメラ 11 · キャラクター 5 · 切り紙 10 · コンポーネント 3） |
+| エフェクト | **124** 種（入場 26 · 退場 9 · 強調 37 · テキスト 9 · データ 6 · カメラ 11 · キャラクター 5 · 切り紙 10 · パーティクル 8 · コンポーネント 3） |
 | トランジション | **14** 種 |
-| コンポーネントジェネレーター | **14** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn`） |
-| スキン | **4** 種（白紫テック · 黒金シネマ · レトロピクセル · 切り紙コラージュ） |
+| コンポーネントジェネレーター | **15** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `space`） |
+| スキン | **5** 種（白紫テック · 黒金シネマ · レトロピクセル · 切り紙コラージュ · 深宇宙パーティクル） |
 <!-- STATS:END -->
 
 ## なぜ使うのか
@@ -44,7 +46,8 @@ motion-lib はすべてのエフェクトを**一時停止状態の 1 本の GSA
 ```
 motion-lib/
 ├── fx.js            ライブラリ本体：エフェクト、トランジション、コンポーネントジェネレーター、字幕、プレビュープレーヤー
-├── fx.css           基本スタイル、コンポーネントのスタイル、4 つのスキン
+├── fx.css           基本スタイル、コンポーネントのスタイル、5 つのスキン
+├── fx-particles.js  オプションのパーティクルモジュール（宇宙、渦、ブラックホール、爆発、パーティクル文字）
 ├── fonts/           YouSheBiaoTiHei、Smiley Sans、Fusion Pixel、ZCOOL KuaiLe（ライセンスは fonts/README.md）
 ├── vendor/          GSAP 3.15（ローカルコピー）
 ├── new-project.sh   ライブラリを動画プロジェクトに組み込む（更新にも使う）
@@ -52,7 +55,7 @@ motion-lib/
 ├── gen-readme.mjs   このファイルの数量表とエフェクトカタログを自動生成（node gen-readme.mjs）
 ├── demo/            デモページ：6 シーン、3 つのスキンすべてを使用
 ├── promo/           プロモーション動画のソース + 完成動画
-└── examples/        4 つのスキンごとに 1 本ずつの完全なサンプル + まとめ動画
+└── examples/        5 つのスキンごとに 1 本ずつの完全なサンプル + まとめ動画
 ```
 
 ## 動作環境
@@ -108,6 +111,9 @@ mkdir my-video
 </html>
 ```
 
+> パーティクルエフェクトを使うときは、`fx.js` の後ろに 1 行追加します：`<script src="lib/fx-particles.js"></script>`（`new-project.sh` が `lib/` にコピー済みです）。
+
+
 **3. プレビュー、フレームの書き出し、レンダリング**
 
 ```bash
@@ -122,7 +128,7 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 
 ## サンプル動画
 
-4 つのスキンそれぞれに、完全なサンプルを 1 本ずつ用意しています（モーションのみ、ナレーションなし）。ソースは対応するディレクトリにあり、そのまま改造して使えます。
+5 つのスキンそれぞれに、完全なサンプルを 1 本ずつ用意しています（モーションのみ、ナレーションなし）。ソースは対応するディレクトリにあり、そのまま改造して使えます。
 
 | スキン | サンプル | ソース |
 |---|---|---|
@@ -130,8 +136,9 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 | 黒金シネマ `theme-gold` | [![gold](examples/gold/cover.jpg)](examples/gold/gold.mp4) | [`examples/gold/index.html`](examples/gold/index.html) |
 | レトロピクセル `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
 | 切り紙コラージュ `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
+| 深宇宙パーティクル `theme-space` | [![space](examples/space/cover.jpg)](examples/space/space.mp4) | [`examples/space/index.html`](examples/space/index.html) |
 
-4 本をまとめたもの：[`examples/showreel.mp4`](examples/showreel.mp4)。
+5 本をまとめたもの：[`examples/showreel.mp4`](examples/showreel.mp4)。
 
 ## 書き方
 
@@ -206,6 +213,7 @@ GSAP の元の名前を直接書くこともできます。例：`ease=power4.ou
 | `papercut` | `data-size` `data-fold`（折り数：6 / 8 / 12）`data-shape`（`flower` `circle` `square`）`data-color` `data-seed` | `pop-in`、`spin`、`jitter` | 左右対称の切り紙（窓花）。seed ごとに違う模様になります |
 | `hills` | `data-layers`（層の数）`data-colors`（奥から手前への色）`data-seed` | `layer-rise`、`parallax` | 重なる紙の山。各層が子要素になります |
 | `torn` | `data-edges`（`top,right,bottom,left`、既定は `top,bottom`）`data-depth` `data-teeth` `data-seed` | `stick-on`、`rise-in` | 要素の縁をギザギザの破れ紙にします。`clip-path` は影も切り取るため、影が必要なら外側を `fx-torn-shadow` で包みます |
+| `space` | `data-fx` にパーティクルエフェクトを書きます（`fx-particles.js` が必要） | `nebula` `starfield` `vortex` `blackhole` `form-text` などの「パーティクル」系 | キャンバスコンテナ：1 枚のキャンバスで、各パーティクルエフェクトが 1 レイヤー |
 
 ### 字幕
 
@@ -224,6 +232,25 @@ FX.subtitles([
 | `paper` | ベージュの破れ紙の帯 + 濃い色の文字 | 切り紙コラージュ |
 
 `pop: true` にすると、各字幕がふわっと浮かびながら現れます。デフォルトはハードカットで、トーク動画では通常ハードカットを使います。
+
+### パーティクル（fx-particles.js）
+
+キャンバス（Canvas 2D）のパーティクルを使えるオプションモジュールです：星空、星雲、渦、ブラックホール、エネルギーボール、爆発、パーティクル文字、パーティクルの流れ。`fx.js` の後に読み込み、次のように書きます。
+
+```html
+<script src="lib/fx-particles.js"></script>
+
+<div class="layer" data-make="space"
+     data-fx="nebula@0 starfield@0(speed=0.15) vortex@1 form-text@4(text=HELLO)"></div>
+<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, SPACE</h1>
+```
+
+- `data-make="space"` 1 つが 1 枚のキャンバスです。その上に書いた各パーティクルエフェクトが 1 レイヤーになり、書いた順に**下から上へ**重なります（上の例では星雲が最下層、文字が最上層）。上の見出しは通常の DOM 要素で、キャンバスの上に重なります。
+- 共通パラメーター：`dur`（このレイヤーの長さ。デフォルトはシーン終了まで）、`fade` / `out`（フェードイン・アウトの秒数）、`x` / `y`（中心位置のパーセント）、`seed`。
+- 色のリストは `/` で区切ります。例：`colors=#6fd3ff/#ff8a4d`。
+- `form-text` には 3 つの時間があります。`dur` はレイヤー全体の長さ、`conv` は集まるのにかかる時間、`start` は最初に漂う時間です。スキンのタイトルフォントから形を取るので、中国語・英語のどちらも使えます。
+- キャンバスは通常の要素なので、他のエフェクトもそのまま付けられます。たとえば `to@3(scale=1.3)` でゆっくり寄れます。
+- 本体と同じく、フレームごとに再現できます。どのフレームも時間の純粋関数で、乱数にはシードが付きます。なお、遠近は 2D キャンバスで**擬似的に**表現しており、本物の 3D（WebGL）ではありません。
 
 ### 手書きでの補足
 
@@ -249,7 +276,7 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 
 **3 つの絶対ルール**：CSS の animation / transition は使わない。`setTimeout` / `requestAnimationFrame` は使わない。ランダムが必要なときは `FX.rand(シード)` を使い、`Math.random` は使わない。
 
-## 4 つのスキン
+## 5 つのスキン
 
 ルート要素の class を 1 つ変えるだけで、動画全体のスタイルが変わります。
 
@@ -259,6 +286,7 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 | `theme-gold` | 黒金シネマ | 濃い青黒 `#080a0f` + ぼかした実写 + ビネット | 金のグラデーション斜体 | 金 `#e4b256`、赤 `#ff5b56` は下落にのみ使用 | 経済、業界分析、ランキング |
 | `theme-pixel` | レトロピクセル | ベージュのドット紙 `#efe9dc` | Fusion Pixel ピクセルフォント | 緑 `#9fe07a` · 赤 · 黄 | アニメ風ホスト、気軽な解説 |
 | `theme-paper` | 切り紙コラージュ | ベージュの紙 `#efe6d6` + 純 CSS の紙の質感 | ZCOOL KuaiLe（站酷快乐体） | 切り紙の赤 `#c8322b` · 青緑 `#2f6b6e` · からし色 `#e3a83b` | 文化、二十四節気、ライフスタイル、子ども向け科学、手作り感のあるブランド |
+| `theme-space` | 深宇宙パーティクル | 濃紺 `#061226`（放射グラデーション） | 標準のタイトルフォント。シアンの発光つき（`.t-glow` 単体でも使えます） | シアン `#6fd3ff` · オレンジ `#ff8a4d` | テック、科学解説、宇宙、発表会のオープニング、コンセプト映像。字幕は `{style:'plain'}` と組み合わせます。`.scene.space-bg` もあります |
 
 色、フォント、角丸、字幕サイズはすべて `fx.css` の冒頭にある CSS 変数（`--fx-bg` `--fx-accent` `--fx-font-title` …）です。変数を変えれば独自のスキンを作れます。
 
@@ -295,6 +323,9 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 **ナレーションと合わせたいのですが。**
 ナレーションのタイムスタンプを使って、各シーンの `data-t` / `data-d` と `FX.subtitles` の時間を設定してください。エフェクトの時間はすべてシーンの冒頭からの相対値なので、変更は不要です。
 
+**パーティクルが表示されません。**
+`lib/fx-particles.js` が（`fx.js` の後に）読み込まれているか、パーティクルエフェクトが `data-make="space"` の要素に書かれているかを確認してください。それ以外の要素に書いても何も描画されません。
+
 ## ライセンス
 
 - コード：[MIT](LICENSE)。サードパーティについては [NOTICE](NOTICE) を参照してください。
@@ -312,7 +343,7 @@ v1.1 の新しいエフェクトとスキンは、次のオープンソースプ
 これらは CSS アニメーションや React コンポーネントで、フレーム単位でレンダリングする仕組みからは制御できません。motion-lib は、シークでき結果が再現できるタイムラインのために対応するエフェクトを作り直しました。借りたのはアイデアとエフェクト名（カタログの括弧内の元の名前）だけで、**コードは一切コピーしていません**。
 
 <!-- CATALOG:START -->
-## エフェクトカタログ（エフェクト 116 種 + トランジション 14 種）
+## エフェクトカタログ（エフェクト 124 種 + トランジション 14 種）
 
 > このセクションは `node gen-readme.mjs` が `fx.js` から自動生成します。手で編集しないでください。
 > すべてのエフェクトで共通パラメーター `dur`（長さ）、`ease`（イージング）、`stagger`（時間差）が使えます。下の表には各エフェクト固有のパラメーターのみを載せています。
@@ -485,6 +516,21 @@ v1.1 の新しいエフェクトとスキンは、次のオープンソースプ
 | `lift` | 紙を持ち上げる：少し上に浮き、影が大きく薄くなって、指でつまみ上げたように見えます。down=1 で元に戻します。パラメーター：dist |
 | `flutter` | ひらひら：風に吹かれた紙のように左右に何度か揺れ、ゆっくり静止します。パラメーター：deg、n=揺れる回数、origin |
 | `sway` | 吊り下げ揺れ：吊るしたもの（ランタン、下げ札、窓飾り）がゆっくり左右に揺れ続けます。パラメーター：deg、period=1往復の秒数、dur |
+
+### パーティクル (8)
+
+キャンバス（Canvas 2D）のパーティクルです。別ファイル `fx-particles.js` の読み込みが必要です。`data-make="space"` のキャンバスコンテナに書き、各エフェクトはキャンバスの 1 レイヤーとして、書いた順に下から上へ重なります。共通パラメーター：`dur`（このレイヤーの長さ）、`fade` / `out`（フェードイン・アウトの秒数）、`x` / `y`（中心位置のパーセント）、`seed`。
+
+| 名前 | 動作 / パラメーター |
+|---|---|
+| `starfield` | 星空：星が遠くからカメラに向かって飛んできます（speed=0 なら静止してまたたく星空）。パラメーター：n、speed、streak=尾の長さ（1 以上でワープ光線になります）、size、colors=色1/色2 |
+| `nebula` | 星雲：やわらかな色つきの光の霧が大きな塊になってゆっくり漂います。最下層の背景に敷きます。パラメーター：n=光の塊の数、colors、alpha=濃さ |
+| `vortex` | パーティクルの渦：パーティクルが螺旋の腕に沿って中心からカメラへ湧き出し、光る流線を伴います（時空トンネル）。パラメーター：arms=腕の数、n、speed、twist=ねじれの回数、spin=全体の回転速度、r=外周の半径、colors（腕ごとに交互）、lines=0 で流線を消す |
+| `blackhole` | ブラックホール：黒い円盤 + 光るリング + 傾いた降着円盤。内側ほど速く外側ほどゆっくり回り、手前側の半周はブラックホールの前を通過します。パラメーター：r=ブラックホールの半径、tilt=降着円盤のつぶれ具合、rot=傾き角度、n、speed、c1=内側の色、c2=外側の色 |
+| `orb` | エネルギーボール：三角形の破片でできた光る球体で、ゆっくり自転し、核が光ります。散らばった破片が集まって球になることも、弾け飛ぶこともできます。パラメーター：r=半径、detail=分割数（1=80 枚、2=320 枚）、gap=破片の隙間、spin、in=集まる秒数、explode=何秒目に弾けるか、c1=明るい面の色、c2=暗い面の色、edge=輪郭の色、core=核の色 |
+| `burst` | 爆発：パーティクルと三角形の破片が中心から弾け飛び、白いフラッシュと衝撃波のリングを伴い、だんだん減速して消えていきます。パラメーター：n、power=勢い、shards=破片の割合 0~1、life=持続秒数、colors、ring=0 で衝撃波を消す、flash=0 でフラッシュを消す |
+| `form-text` | パーティクル文字：回転しながら散らばった小さな四角が四方から飛んできて、1 行の文字（中国語・英語どちらも可）を組み上げます。パラメーター：text=文字、size=文字サイズ、font、weight、color、n=最大粒数、start=最初に漂う長さ、conv=集まる秒数、glow=0 で文字のにじみを消す、spacing=字間（px） |
+| `stream` | パーティクルの流れ：尾を引く光の点が、うねる流線に沿って画面を横切ります（データの流れ、信号）。パラメーター：n、speed、amp=うねりの幅、waves=横方向の波の数、tail=尾の長さ、colors、reverse=1 で逆向き |
 
 ### コンポーネント (3)
 
