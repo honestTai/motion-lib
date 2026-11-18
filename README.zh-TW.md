@@ -1,22 +1,47 @@
-# motion-lib
+<div align="center">
+
+<img src="docs/hero-banner.svg" width="100%" alt="motion-lib — HTML → 影片的宣告式動效庫" />
+
+<br />
 
 [简体中文](README.md) · **繁體中文** · [English](README.en.md) · [日本語](README.ja.md)
 
-**HTML → 影片的宣告式動效庫。** 在元素上寫一行 `data-fx="動效名@秒數"`，就能做出知識口播、科技解說這類影片裡常見的動效，再用 [HyperFrames](https://hyperframes.heygen.com) 逐格渲染成 MP4。
+[![License: MIT](https://img.shields.io/badge/License-MIT-8453e8?style=flat-square)](LICENSE)
+[![Effects](https://img.shields.io/badge/Effects-153-6fd3ff?style=flat-square)](#動效目錄153-種動效--20-種轉場)
+[![Transitions](https://img.shields.io/badge/Transitions-20-e4b256?style=flat-square)](#轉場-20)
+[![3D & VRM](https://img.shields.io/badge/3D_&_VRM-three.js_+_IK-68e6b2?style=flat-square)](#1-真-3d-二次元口播角色fx-vrmjs)
+[![Zero Build](https://img.shields.io/badge/Build-Zero_Bundler-2ea043?style=flat-square)](#快速開始)
+[![Sponsor: HRouter](https://img.shields.io/badge/Sponsor-HRouter.net-a8ff57?style=flat-square&labelColor=0b1a13)](https://hrouter.net/)
 
-> **v1.5 新增**：選用的真 3D 二次元角色模組 `fx-vrm.js`（基於 `@pixiv/three-vrm` MIT 標準：支援任意 `.vrm` 3D 模型與 `.vrma` 動捕片段，內建 MToon 賽璐璐描邊著色、解析式雙骨 3D IK `FX.ik3d`、6 節脊柱相位波、自動鎖骨連動、13 套全身口播姿態、五元音口型同步 `aa/ih/ou/ee/oh`、2× 超採樣抗鋸齒與決定性 60Hz `SpringBone` 頭髮/裙擺物理；儲存庫內附兩套 CC0 公共領域模型 `assets/shino.vrm` 與 `assets/vita.vrm`）。
->
-> **v1.4 新增**：選用的 2D 柔性骨骼與軟蒙皮模組 `fx-rig.js`（雙骨 IK `FX.ik2` + RubberHose 連續貝茲無接縫軟袖管 `FX.hose` + 宣告式 `[data-bone]` / `[data-follow]`）+ 6 種新轉場（`shatter` `diagonal-split` `blinds` `crt-off` `portal-spin` `halftone`）+ 6 種新動效（`circuit` `overload` `scan` `callout` `scatter-out` `toggle`）+ `switches` 開關元件。
->
-> **v1.3 新增**：選用的 3D 模組 `fx-3d.js`（真 3D 場景：星系、能量球、隧道、黑洞、城市飛行、點陣球、立體粒子字等 12 個動效，帶輝光和可程式化攝影機）。
->
-> **v1.2 新增**：選用的粒子模組 `fx-particles.js`（8 個粒子動效：星空、星雲、漩渦、黑洞、能量球、爆炸、粒子聚字、粒子流）+ 第 5 套外觀主題 `theme-space`（深空粒子）。
->
-> **v1.1 新增**：40 種動效 + 4 個轉場（`paper-slide` `tear` `glitch-cut` `open`）+ 5 個元件產生器（`circle-text` `retro-grid` `papercut` `hills` `torn`）；2 個新分類「文字」「剪紙」；第 4 套外觀主題 `theme-paper`（剪紙拼貼）。靈感來自 animate.css、Magic UI、React Bits，見文末「致謝」。
+[快速開始](#-快速開始) · [主題畫廊](#-主題與-3d-範例畫廊) · [AI 批次出片](#-ai-批次產生影片工作流) · [核心寫法](#-核心寫法) · [2D 軟骨骼 & 3D VRM](#-進階視覺與角色模組) · [動效全目錄](#動效目錄153-種動效--20-種轉場)
 
-[![motion-lib 宣傳片](promo/cover.jpg)](promo/motion-lib-promo.mp4)
+</div>
 
-> 上面的宣傳片就是用這個動效庫寫的，原始碼在 [`promo/index.html`](promo/index.html)。
+---
+
+<!-- HROUTER SPONSOR BANNER -->
+<div align="center">
+  <a href="https://hrouter.net/" target="_blank" rel="noopener">
+    <img src="docs/hrouter-zh.svg" width="100%" alt="HRouter — 一把 API Key 接 Claude / GPT / Gemini / Grok" />
+  </a>
+</div>
+
+> ⚡ **官方算力合作夥伴 [HRouter](https://hrouter.net/)**：**一把 API Key 直連 Claude / GPT / Gemini / Grok**。無需分別訂閱昂貴月費，餘額即時到帳、消費逐筆可查、用多少付多少。原生相容 **[Claude Code](https://hrouter.net/docs/claude-code/)**、**[Codex](https://hrouter.net/docs/codex/)**、**[Gemini CLI](https://hrouter.net/docs/gemini-cli/)** 與生圖生影片 API —— 讓大模型一句話直接寫出 `data-fx` 分鏡，全自動批次出片！👉 **[官網 hrouter.net](https://hrouter.net/)** · **[模型與即時價格](https://hrouter.net/models/)** · **[快速接入教學](https://hrouter.net/docs/index/)**
+
+---
+
+## 🎬 實機效果預覽
+
+**HTML → 影片的宣告式動效庫。** 在一般 DOM 元素上寫一行 `data-fx="動效名@秒數"`，就能做出知識口播、科技解說、數據榜單、深空粒子與真 3D 二次元角色影片，再用 [HyperFrames](https://hyperframes.heygen.com) 逐格決定性渲染成 1080p / 60fps MP4。
+
+<div align="center">
+  <a href="promo/motion-lib-promo.mp4">
+    <img src="docs/promo-preview.gif" width="100%" alt="motion-lib 實機宣傳片動效預覽" />
+  </a>
+  <p>
+    <sub>▲ 實機渲染預覽（點擊觀看完整高畫質宣傳片 <a href="promo/motion-lib-promo.mp4"><code>promo/motion-lib-promo.mp4</code></a> · 原始碼 <a href="promo/index.html"><code>promo/index.html</code></a> · 六片合輯 <a href="examples/showreel.mp4"><code>examples/showreel.mp4</code></a>）</sub>
+  </p>
+</div>
 
 <!-- STATS:START -->
 | | 數量 |
@@ -27,14 +52,29 @@
 | 外觀主題 | **5** 套（白紫科技 · 黑金電影 · 像素復古 · 剪紙拼貼 · 深空粒子） |
 <!-- STATS:END -->
 
-## 為什麼要用它
+<details open>
+<summary><b>✨ 版本更新亮點（v1.4 全新升級：真 3D VRM 口播角色 + 2D 軟管骨骼 IK + 12 種新特效/轉場）</b></summary>
+<br />
 
-用 HTML 做影片，難的不是排版，是動效：
+- **v1.4 新增（3D 角色 & 2D 軟骨骼 & 科技轉場）**：
+  - **真 3D 二次元角色模組 [`fx-vrm.js`](fx-vrm.js)**：基於 `@pixiv/three-vrm`（MIT），內建解析式雙骨 3D IK 求解器 `FX.ik3d`、跨模型身高/臂展自動重導向、6 節脊柱相位波、鎖骨自動連動、13 套口播姿態、C¹ 五元音口型同步（`aa/ih/ou/ee/oh`）、MToon 賽璐璐描邊、2× 超採樣抗鋸齒與連續 60Hz `SpringBone` 頭髮/裙擺物理；內附兩套 Pixiv 官方 **CC0 公共領域**模型 `assets/shino.vrm` 與 `assets/vita.vrm`。
+  - **2D 柔性骨骼與連續軟袖管模組 [`fx-rig.js`](fx-rig.js)**：通用雙骨 IK `FX.ik2` + RubberHose 連續貝茲無接縫軟蒙皮 `FX.hose` + 宣告式 `[data-bone]` / `[data-follow]` / `[data-hose]`，適用於任意自訂 SVG 角色。
+  - **12 種新特效與轉場**：新增 6 種轉場（`shatter` `diagonal-split` `blinds` `crt-off` `portal-spin` `halftone`）+ 6 種動效（`circuit` `overload` `scan` `callout` `scatter-out` `toggle`）+ `switches` 開關元件。
+- **v1.3 新增**：WebGL 真 3D 場景模組 [`fx-3d.js`](fx-3d.js)（12 個 3D 動效、Bloom 輝光與可程式化攝影機 `cam3d` / `orbit3d`）。
+- **v1.2 新增**：Canvas 2D 粒子模組 [`fx-particles.js`](fx-particles.js) + 第 5 套外觀主題 `theme-space`（深空粒子）。
+- **v1.1 新增**：40 種動效 + 4 個轉場 + 5 個元件產生器 + 「文字」「剪紙」分類 + `theme-paper`（剪紙拼貼）。
 
-- **渲染器是「跳到第 N 格 → 截圖」**。CSS animation、`setTimeout`、`Math.random` 都不受它控制，渲染出來要嘛不動，要嘛每次都不一樣。
-- 手寫 GSAP 時間軸，一支一分鐘的影片就要算幾百個時間點。
+</details>
 
-motion-lib 把所有動效都排進**一條暫停的 GSAP 時間軸**，你只需要宣告「哪個元素、什麼動效、第幾秒」：
+---
+
+## 💡 為什麼要用它（架構原理）
+
+<div align="center">
+  <img src="docs/pipeline.svg" width="100%" alt="motion-lib 決定性渲染流水線" />
+</div>
+
+無頭渲染器的運作方式是**「跳到第 N 格 → 截圖」**——原生 CSS `animation`、`setTimeout`、`Math.random()` 不受影格時鐘控制。`motion-lib` 將所有 DOM、Canvas 粒子、WebGL 3D 攝影機與 VRM 骨骼物理統一排進**唯一一條暫停的 GSAP 主時間軸**：
 
 ```html
 <h1 data-fx="blur-rise-in@0.2">做熱點最難的是什麼？</h1>
@@ -42,371 +82,135 @@ motion-lib 把所有動效都排進**一條暫停的 GSAP 時間軸**，你只�
 <ul data-fx="each:pop-in@1(stagger=0.1)"> <li>晶片</li><li>算力</li><li>大模型</li> </ul>
 ```
 
-- **逐格可 seek**：任意跳到哪一格，畫面都和依序播放時一致，每次渲染結果相同。
-- **隨機也可重現**：需要隨機效果的地方（粒子、亂碼、波形）一律使用帶種子的 `FX.rand(seed)`。
-- **不依賴網路**：GSAP 和字型都打包在儲存庫裡。
-- **零建置**：一個 `fx.js`、一個 `fx.css`，不需要 npm / 打包工具。
+- 🎯 **任意影格精準可 Seek**：跳到任何一格，畫面與依序播放完全一致，多核心平行渲染零閃爍。
+- 🎲 **帶種子可重現隨機**：粒子、亂碼、波形與眨眼一律使用 `FX.rand(seed)`。
+- 📦 **100% 離線自包含 & 零建置**：GSAP、three.js、three-vrm、字型與 CC0 模型皆內建於儲存庫中，無需 npm 打包。
 
-## 目錄結構
+---
 
-```
-motion-lib/
-├── fx.js            動效庫本體：動效、轉場、元件產生器、字幕、預覽播放器
-├── fx.css           基礎樣式、元件樣式、五套外觀主題
-├── fx-particles.js  選用的粒子模組（宇宙、漩渦、黑洞、爆炸、粒子聚字）
-├── fx-3d.js         選用的 3D 模組（真 3D 場景、輝光、可程式化攝影機；需要 three.js）
-├── fx-rig.js        選用的 2D 柔性骨骼與連續貝茲軟蒙皮模組（適用於任意自訂 SVG 角色）
-├── fx-vrm.js        選用的真 3D 二次元 VRM 角色模組（FX.ik3d、MToon 賽璐璐、五元音口型與頭髮物理）
-├── assets/          內建 CC0 1.0 公共領域 3D 二次元範例模型（shino.vrm、vita.vrm）
-├── fonts/           優設標題黑、得意黑、Fusion Pixel 像素字型、站酷快樂體（授權見 fonts/README.md）
-├── vendor/          GSAP 3.15、three.js r187（three-fx.min.js）、@pixiv/three-vrm 3.5（three-vrm.min.js）
-├── new-project.sh   把動效庫裝進一個影片專案（也用來更新）
-├── chrome-tall.sh   渲染用 Chrome 包裝（避免成片底部字幕被截掉）
-├── gen-readme.mjs   從 fx.js 自動產生本文的數量表和動效目錄（node gen-readme.mjs）
-├── demo/            示範頁：6 個場景，三套外觀主題都用到
-├── promo/           宣傳片原始碼 + 成片
-└── examples/        五套外觀主題各一支完整範例片 + 一支真 3D 範例 + 合輯
-```
+## 🎨 主題與 3D 範例畫廊
 
-## 環境需求
+<table>
+  <tr>
+    <td width="33%" align="center">
+      <a href="examples/violet/violet.mp4"><img src="examples/violet/cover.jpg" width="100%" alt="theme-violet" /></a><br />
+      <b>白紫科技</b> <code>theme-violet</code><br />
+      <sub><a href="examples/violet/violet.mp4">▶ 觀看成片</a> · <a href="examples/violet/index.html">查看原始碼</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/gold/gold.mp4"><img src="examples/gold/cover.jpg" width="100%" alt="theme-gold" /></a><br />
+      <b>黑金電影</b> <code>theme-gold</code><br />
+      <sub><a href="examples/gold/gold.mp4">▶ 觀看成片</a> · <a href="examples/gold/index.html">查看原始碼</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/pixel/pixel.mp4"><img src="examples/pixel/cover.jpg" width="100%" alt="theme-pixel" /></a><br />
+      <b>像素復古</b> <code>theme-pixel</code><br />
+      <sub><a href="examples/pixel/pixel.mp4">▶ 觀看成片</a> · <a href="examples/pixel/index.html">查看原始碼</a></sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="33%" align="center">
+      <a href="examples/paper/paper.mp4"><img src="examples/paper/cover.jpg" width="100%" alt="theme-paper" /></a><br />
+      <b>剪紙拼貼</b> <code>theme-paper</code><br />
+      <sub><a href="examples/paper/paper.mp4">▶ 觀看成片</a> · <a href="examples/paper/index.html">查看原始碼</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/space/space.mp4"><img src="examples/space/cover.jpg" width="100%" alt="theme-space" /></a><br />
+      <b>深空粒子</b> <code>theme-space</code><br />
+      <sub><a href="examples/space/space.mp4">▶ 觀看成片</a> · <a href="examples/space/index.html">查看原始碼</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/three/three.mp4"><img src="examples/three/cover.jpg" width="100%" alt="fx-3d.js" /></a><br />
+      <b>真 3D 場景</b> <code>fx-3d.js</code><br />
+      <sub><a href="examples/three/three.mp4">▶ 觀看成片</a> · <a href="examples/three/index.html">查看原始碼</a></sub>
+    </td>
+  </tr>
+</table>
 
-- Node.js 18+（使用 `npx hyperframes`）
-- FFmpeg
-- Google Chrome（macOS 預設位置；其他位置請設定環境變數 `REAL_CHROME`）
-- 第一次執行 `npx hyperframes` 會自動下載 CLI
+---
 
-## 快速開始
+## 🚀 快速開始
 
-**1. 建立專案**
-
-```bash
-mkdir my-video
-./new-project.sh my-video        # 把 fx.js / fx.css / 字型 / GSAP 複製到 my-video/lib/
-```
-
-> HyperFrames 只能讀取專案目錄裡的檔案，所以動效庫是**複製進**專案，而不是用 `../` 引用。動效庫更新後，在同一個專案上再執行一次這個指令即可。
-> 儲存庫裡的 `demo/` 和 `promo/` 也一樣，第一次開啟前請先執行 `./new-project.sh demo`、`./new-project.sh promo`。
-
-**2. 撰寫 `my-video/index.html`**
-
-```html
-<!doctype html>
-<html lang="zh-TW">
-<head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="lib/fx.css">
-  <script src="lib/vendor/gsap.min.js"></script>
-  <script src="lib/fx.js"></script>
-</head>
-<body>
-<div id="root" class="theme-violet" data-composition-id="main" data-width="1920" data-height="1080">
-
-  <section class="scene dark center" data-d="3.5">
-    <h1 class="t-title" data-fx="mask-rise@0.2">全自動剪輯 <span class="accent">Skill</span></h1>
-    <p class="t-body" data-fx="rise-in@0.6 marker@1.4">看完這集，你也可以</p>
-  </section>
-
-  <section class="scene light" data-d="4" data-in="blur-cross">
-    <div class="abs" style="left:200px;top:300px;width:1200px;height:400px"
-         data-make="bars" data-values="3,8,21,40,26,12" data-hi="4"
-         data-fx="each:grow-y@0.3(stagger=0.05)"></div>
-  </section>
-
-</div>
-<script>
-  FX.subtitles([[0.2, 3.4, '看完這集，你也可以'], [3.5, 7.4, '播放集中在{開播後}幾小時']], { style: 'pill' });
-  FX.build();
-</script>
-</body>
-</html>
-```
-
-> 要用粒子動效時，在 `fx.js` 後面多加一行：`<script src="lib/fx-particles.js"></script>`（`new-project.sh` 已經把它複製進 `lib/` 了）。
->
-> 要用 3D 動效時，在 `fx.js` 前後各加一個腳本，見下面的「3D 場景」一節（`new-project.sh` 已經把 `fx-3d.js` 和 `vendor/three-fx.min.js` 複製進 `lib/` 了）。
-
-
-**3. 預覽、截圖、輸出成片**
+**環境需求**：Node.js 18+、FFmpeg、Google Chrome（非預設路徑可設 `REAL_CHROME`）。
 
 ```bash
+# 1. 建立專案並安裝執行庫至 my-video/lib/
+mkdir my-video && ./new-project.sh my-video
+
+# 2. 預覽、抽格檢查與輸出 1080p MP4
 cd my-video
-open "index.html?play"                       # 瀏覽器預覽：空白鍵播放，←/→ 逐格，↑/↓ 跳場景
-npx hyperframes snapshot --at 1,3,5          # 截幾格檢查
+open "index.html?play"                       # 空白鍵播放，←/→ 逐格，↑/↓ 跳場景
+npx hyperframes snapshot --at 1,3,5
 HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
   npx hyperframes render -o out.mp4 --experimental-fast-capture=false
 ```
 
-> 輸出成片時一定要帶 `chrome-tall.sh`。本機完整版 Chrome 無頭渲染時，可視高度比視窗矮約 90px，成片底部（字幕）會被截掉。這個腳本會把視窗加高。
+---
 
-## 範例片
+## 🤖 AI 批次產生影片工作流
 
-五套外觀主題各做了一支完整範例（純動效、無配音），原始碼就在對應目錄裡，可以直接拿來改：
+推薦搭配 **[HRouter (hrouter.net)](https://hrouter.net/)** 一把 API Key 接入 **Claude Code / Codex / Gemini CLI**，按量計費驅動自動化產片：
 
-| 外觀主題 | 範例 | 原始碼 |
-|---|---|---|
-| 白紫科技 `theme-violet` | [![violet](examples/violet/cover.jpg)](examples/violet/violet.mp4) | [`examples/violet/index.html`](examples/violet/index.html) |
-| 黑金電影 `theme-gold` | [![gold](examples/gold/cover.jpg)](examples/gold/gold.mp4) | [`examples/gold/index.html`](examples/gold/index.html) |
-| 像素復古 `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
-| 剪紙拼貼 `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
-| 深空粒子 `theme-space` | [![space](examples/space/cover.jpg)](examples/space/space.mp4) | [`examples/space/index.html`](examples/space/index.html) |
-| 真 3D 場景 `fx-3d.js` | [![three](examples/three/cover.jpg)](examples/three/three.mp4) | [`examples/three/index.html`](examples/three/index.html) |
-
-六支合在一起：[`examples/showreel.mp4`](examples/showreel.mp4)。
-
-## 寫法
-
-### 場景 `<section class="scene">`
-
-一個場景就是一個鏡頭。場景之間依序首尾相接。
-
-| 寫法 | 含義 |
-|---|---|
-| `data-d="4"` | 時長 4 秒 |
-| `data-t="12.5"` | 指定開始時間（不寫就緊接上一個場景） |
-| `data-in="blur-cross(dur=0.5)"` | 用什麼轉場進入這個場景，見「轉場」 |
-| `class="scene dark"` / `"scene light"` | 單一場景切換深色 / 淺色底 |
-| `class="scene overlay"` | 疊加層：不佔順序，和其他場景同時顯示（角標、常駐進度條） |
-
-根元素必須帶有 `data-composition-id="main"`、`data-width`、`data-height`，總時長會自動算出來。
-
-### 動效 `data-fx="[目標:]名稱@時間(參數)"`
-
-一個元素可以寫多個動效，用空格隔開：`data-fx="rise-in@0.2 pulse@1.5 fade-out@-0.3"`。
-
-| 部分 | 寫法 | 含義 |
-|---|---|---|
-| 時間 | `@1.2` | 場景開始後 1.2 秒 |
-| | `@+0.3` | 比同一元素上的前一個動效晚 0.3 秒 |
-| | `@-0.4` | 場景結束前 0.4 秒（做退場） |
-| 目標 | （不寫） | 元素本身 |
-| | `each:` | 每個子元素，自動錯峰（卡片組、清單、長條） |
-| | `chars:` / `words:` / `lines:` | 拆成單字 / 詞 / 行（依 `<br>`）再做動效 |
-| 參數 | `dur=0.8` | 時長（秒） |
-| | `ease=spring` | 緩動，見下表 |
-| | `stagger=0.1` | 錯峰間隔（搭配 `each:` / `chars:`） |
-| | `order=center` | 錯峰順序：`start` `end` `center` `edges` |
-| | 其他 | 各動效自己的參數，見「動效目錄」 |
-
-**緩動別名**
-
-| 別名 | 等於 | 手感 |
-|---|---|---|
-| `out`（預設） | `power3.out` | 急起緩停，最通用 |
-| `soft` | `power2.out` | 柔和 |
-| `snap` | `expo.out` | 極快衝到定位，再慢慢停穩 |
-| `sharp` | `power4.out` | 比 out 更俐落 |
-| `inout` | `power3.inOut` | 兩頭慢中間快，鏡頭運動用 |
-| `in` | `power2.in` | 越來越快，退場用 |
-| `spring` | `back.out(1.7)` | 輕微過衝回彈 |
-| `bounce` | `back.out(2.8)` | 明顯過衝 |
-| `elastic` | `elastic.out(1,0.55)` | 彈簧 |
-| `drop` | `bounce.out` | 落地彈跳 |
-| `linear` | `none` | 等速 |
-| `pixel` | `steps(5)` | 階梯式（像素風） |
-
-也可以直接寫 GSAP 原名，如 `ease=power4.out`、`ease=steps(8)`、`ease=elastic.out(1,0.5)`。
-
-### 元件產生器 `data-make="名稱"`
-
-重複的 DOM 交給動效庫產生，再搭配對應的動效：
-
-| 名稱 | 屬性 | 搭配的動效 | 用途 |
-|---|---|---|---|
-| `bars` | `data-values` `data-labels` `data-hi="2,3"` `data-max` | `each:grow-y` | 長條圖 / 直方圖 |
-| `line` | `data-values` `data-w` `data-h` `data-smooth` | `draw` | 折線 / 曲線 |
-| `ring` | `data-size` `data-stroke` `data-dash` | `ring(to=0.7)` | 圓環進度、倒數計時 |
-| `wave` | `data-n` `data-seed` | `each:grow-y`、`wave-live` | 音訊波形 |
-| `steps` | `data-labels="選題,寫稿,配音"` | `step(i=2)` | 步驟導覽膠囊 |
-| `chapters` | `data-labels` | `chapter(i=3)` | 頂部章節進度條 |
-| `pixels` | `data-text="SKILL?"` `data-size` `data-colors` | `each:pixel-in(order=random)` | 5×7 點陣方塊字 |
-| `wall` | `data-cols` `data-rows` `data-seed` | `drift` | 背景卡片牆 |
-| `dust` | `data-n` `data-seed` | `drift`、`float` | 漂浮粒子 |
-| `circle-text` | `data-text` `data-r`（半徑） | `spin`（讓文字環轉起來） | 環形文字、徽章、印章 |
-| `retro-grid` | `data-cell`（格子大小）`data-color` `data-angle`（傾角） | `bg-scroll`（讓網格往前流動） | 復古透視網格背景 |
-| `papercut` | `data-size` `data-fold`（幾摺：6 / 8 / 12）`data-shape`（`flower` `circle` `square`）`data-color` `data-seed` | `pop-in`、`spin`、`jitter` | 對稱剪紙窗花，每個 seed 圖案都不同 |
-| `hills` | `data-layers`（層數）`data-colors`（從後到前的顏色）`data-seed` | `layer-rise`、`parallax` | 層疊紙山；每層是一個子元素 |
-| `torn` | `data-edges`（`top,right,bottom,left`，預設 `top,bottom`）`data-depth` `data-teeth` `data-seed` | `stick-on`、`rise-in` | 把元素的邊剪成毛邊紙條；`clip-path` 會裁掉陰影，要投影請在外面套一層 `fx-torn-shadow` |
-| `space` | 在 `data-fx` 裡寫粒子動效（需載入 `fx-particles.js`） | `nebula` `starfield` `vortex` `blackhole` `form-text` 等「粒子」類 | 畫布容器：一塊畫布，每個粒子動效是一層 |
-| `stage3d` | `data-bloom`（輝光強度，0 關閉）`data-threshold` `data-radius` `data-bg` `data-fog` `data-fov` `data-cam` `data-look` `data-light` | `stars3d` `galaxy3d` `orb3d` `cam3d` `orbit3d` 等「3D」類 | 3D 舞台：一塊 WebGL 畫布 + 一台攝影機（需載入 `three-fx.min.js` 和 `fx-3d.js`） |
-
-### 字幕
-
-```js
-FX.subtitles([
-  [開始秒, 結束秒, '文字，{大括號}裡的詞會變強調色'],
-  …
-], { style: 'pill', pop: false });
+```bash
+export ANTHROPIC_BASE_URL="https://hrouter.net"
+export ANTHROPIC_AUTH_TOKEN="sk-你的-HRouter-Key"
+claude "參考 motion-lib/README.zh-TW.md 與 fx-vrm.js，把 script.md 改寫成 60fps 口播影片 index.html 並渲染 MP4"
 ```
 
-| `style` | 樣子 | 搭配外觀主題 |
-|---|---|---|
-| `pill` | 黑色圓角膠囊 + 白字 | 白紫科技 |
-| `bar` | 半透明黑條 | 像素復古 |
-| `plain` | 白字 + 描影，無底 | 黑金電影 |
-| `paper` | 米色毛邊紙條 + 深色字 | 剪紙拼貼 |
+---
 
-`pop: true` 時每句字幕會輕輕上浮出現；預設是硬切，口播影片通常就是硬切。
+## 📐 核心寫法
 
-### 粒子（fx-particles.js）
+- **場景 `<section class="scene">`**：`data-d="4"`（時長）、`data-t="12.5"`（起始秒）、`data-in="blur-cross(dur=0.5)"`（轉場）、`class="scene overlay"`（常駐疊加層）。
+- **動效 `data-fx="[目標:]名稱@時間(參數)"`**：支援 `@1.2` / `@+0.3` / `@-0.4`，目標支援 `each:` / `chars:` / `words:` / `lines:`，參數支援 `dur`、`ease`（`out` `soft` `snap` `sharp` `inout` `in` `spring` `bounce` `elastic` `drop` `linear` `pixel`）、`stagger`、`order`。
+- **17 個元件產生器 `data-make`**：`bars`、`line`、`ring`、`wave`、`steps`、`chapters`、`switches`（搭配 `toggle(i=1/2,on=1)`）、`pixels`、`wall`、`dust`、`circle-text`、`retro-grid`、`papercut`、`hills`、`torn`、`space`、`stage3d`。
+- **字幕 `FX.subtitles([[起, 迄, '文字與{重點詞}']], { style: 'pill' | 'bar' | 'plain' | 'paper' })`**。
 
-選用模組，畫布（Canvas 2D）粒子：星空、星雲、漩渦、黑洞、能量球、爆炸、粒子聚字、粒子流。在 `fx.js` 之後載入，再這樣寫：
+---
 
-```html
-<script src="lib/fx-particles.js"></script>
+## 🌟 進階視覺與角色模組
 
-<div class="layer" data-make="space"
-     data-fx="nebula@0 starfield@0(speed=0.15) vortex@1 form-text@4(text=HELLO)"></div>
-<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, SPACE</h1>
-```
+### 1. 真 3D 二次元口播角色（`fx-vrm.js`）
 
-- 一個 `data-make="space"` 就是一塊畫布；寫在它上面的每個粒子動效是一層，依書寫順序**由下往上**疊（上例：星雲在最底，聚字在最上）。上面的標題是一般 DOM 元素，疊在畫布之上。
-- 通用參數：`dur`（這一層持續多久，預設到場景結束）、`fade` / `out`（淡入淡出秒數）、`x` / `y`（中心位置百分比）、`seed`。
-- 顏色清單用 `/` 分隔，例如 `colors=#6fd3ff/#ff8a4d`。
-- `form-text` 要分清三個時間：`dur` 是整層時長，`conv` 是聚攏要多久，`start` 是先飄多久。它會用外觀主題的標題字型取樣，中英文都行。
-- 畫布是一般元素，可以照常加其他動效，例如 `to@3(scale=1.3)` 做推近。
-- 和主庫一樣逐幀可重現：每一幀都是時間的純函數，隨機帶種子。請注意這是用 2D 畫布**模擬**透視，不是真 3D（WebGL）；要真 3D 請用下面的 `fx-3d.js`。
-
-### 3D 場景（fx-3d.js）
-
-選用模組，真 3D 場景（three.js / WebGL）：3D 星空、漩渦星系、立體能量球、粒子隧道、波浪點陣、點陣球、立體黑洞、立體爆炸、立體粒子字、城市，再加上兩個攝影機動效。**腳本要照這個順序載入**：
+<div align="center">
+  <img src="docs/vrm-preview.gif" width="88%" alt="fx-vrm.js 真 3D VRM 角色與 circuit / switches 實機渲染展示" />
+</div>
 
 ```html
 <script src="lib/vendor/gsap.min.js"></script>
 <script src="lib/vendor/three-fx.min.js"></script>
+<script src="lib/vendor/three-vrm.min.js"></script>
 <script src="lib/fx.js"></script>
 <script src="lib/fx-3d.js"></script>
+<script src="lib/fx-vrm.js"></script>
 
-<div class="layer" data-make="stage3d" data-bloom="0.8"
-     data-fx="stars3d@0 galaxy3d@0 orb3d@0(in=1.5) orbit3d@0(turn=120,r=13,h=5,dur=6)"></div>
-<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, 3D</h1>
+<section class="scene overlay" data-t="0" data-d="30">
+  <div class="abs" style="left:20px;bottom:0;width:580px;height:900px;pointer-events:none"
+       data-make="stage3d" data-alpha="1" data-light="anime"
+       data-fov="26" data-cam="0,1.34,2.85" data-look="0,1.30,0"
+       data-fx="vrm3d@0(src=shino,headscale=1.18,ry=12)
+                vrm-pose@0(pose=wave,expr=happy,dur=0.45)
+                vrm-pose@4.0(pose=explain,expr=relaxed,look=right,emote=sparkle)
+                vrm-talk@0.3(dur=12.0,rate=7.5)"></div>
+</section>
 ```
 
-- 一個 `data-make="stage3d"` 就是一個 3D 舞台（一塊 WebGL 畫布 + 一台攝影機）。上面的標題是一般 DOM 元素，直接疊在畫面上。
-- 寫在舞台上的動效分兩類：**往舞台裡放東西的**（`stars3d` `galaxy3d` `orb3d` `tunnel3d` `waves3d` `globe3d` `blackhole3d` `burst3d` `text3d` `city3d`），和**移動攝影機的**（`cam3d` `orbit3d`）。詳細參數見「動效目錄」的「3D」一節。
-- 和 `fx-particles.js` 的差別：粒子模組是用 2D 畫布**模擬**透視，輕量，不依賴其他函式庫；3D 模組是真攝影機、真光照、輝光，粒子數量能多一到兩個數量級，但依賴 three.js（`vendor/three-fx.min.js`，753 KB）。
-- 3D 場景一般搭配 `theme-space`；沒有專屬外觀主題。
+### 2. 2D 柔性骨骼（`fx-rig.js`）、真 3D 場景（`fx-3d.js`）與 2D 粒子（`fx-particles.js`）
 
-**舞台屬性**
+- **`fx-rig.js`**：提供雙骨 IK `FX.ik2` 與連續貝茲軟管袖 `FX.hose`，搭配 `rig-idle`、`rig-pose`、`rig-talk`、`rig-nod`、`rig-wave`。
+- **`fx-3d.js`**：支援 `data-alpha="1"`（透明背景 + 自動 2× 超採樣）、`data-light="anime"`、`data-bloom`、純函數攝影機 `cam3d` / `orbit3d`。
+- **`fx-particles.js`**：在 `data-make="space"` 畫布上疊加 `nebula`、`starfield`、`vortex`、`blackhole`、`form-text` 等粒子層。
 
-| 屬性 | 意義 |
-|---|---|
-| `data-bloom` | 輝光強度，`0` 關閉 |
-| `data-threshold` | 多亮的地方才發光 |
-| `data-radius` | 輝光擴散範圍 |
-| `data-bg` | 背景色 |
-| `data-fog` | 霧的濃度（0.003 左右，遠處變淡） |
-| `data-fov` | 攝影機視角 |
-| `data-cam="x,y,z"` | 攝影機初始位置 |
-| `data-look="x,y,z"` | 攝影機初始看向哪裡 |
-| `data-light="0"` | 關掉預設燈光 |
+---
 
-**攝影機**：攝影機是時間的純函數。`cam3d` 從目前位置飛到新位置（`x` `y` `z`），同時把視線轉向新目標（`lx` `ly` `lz`）；`orbit3d` 繞著目標轉圈（`turn` 轉多少度，`r` 結束時的距離，`h` 結束時的高度）。沒寫的參數維持不變。**同一段時間裡 `cam3d` 和 `orbit3d` 不要重疊**，否則攝影機該往哪走就說不清了。
+## 📜 開源授權與致謝
 
-**物件通用參數**：`dur`（存在多久）、`fade` / `out`（淡入淡出秒數）、`px` / `py` / `pz`（擺放位置）、`s`（整體縮放）、`seed`。
+- **核心程式碼（`fx*.js`、`fx.css`）**：[MIT License](LICENSE)，第三方聲明見 [NOTICE](NOTICE)。
+- **3D 與 VRM 執行期**：[three.js](https://github.com/mrdoob/three.js)（MIT）與 [@pixiv/three-vrm](https://github.com/pixiv/three-vrm)（MIT）。
+- **內建 3D 範例模型（`assets/shino.vrm`、`assets/vita.vrm`）**：由 pixiv Inc. 以 **CC0 1.0 公共領域貢獻**釋出（見 [assets/README.md](assets/README.md)）。
+- **感謝算力夥伴 [HRouter (hrouter.net)](https://hrouter.net/)** 提供 Claude / GPT / Gemini / Grok 一站式 AI 程式開發與自動化影片生成支援。
 
-**注意事項**
-
-- 輝光會讓很亮的字變模糊：有 `text3d` 時，把 `data-bloom` 降到 0.35~0.5。
-- 一個 `stage3d` 就是一個 WebGL 上下文，一支影片裡建議不要超過 7 個。
-- 逐幀可重現：粒子位置在顯示卡裡由「屬性 + 時間」算出，同一幀兩次渲染逐位元組一致。
-- 渲染需要 WebGL。有顯示卡加速時很快（5 秒的片子約 16 秒渲完）；沒有顯示卡加速的機器會退回軟體渲染，慢很多。
-- 3D 成片的位元率很高，上傳前建議用 ffmpeg 壓一遍：`ffmpeg -i in.mp4 -c:v libx264 -crf 24 out.mp4`。
-
-### 手寫補充
-
-動效庫裡沒有的動效，直接寫 GSAP。用 `at('場景id', 場景內秒數)` 換算成絕對時間：
-
-```js
-FX.build({
-  extra(tl, at) {
-    tl.to('#logo', { rotation: 360, duration: 1 }, at('s3', 0.5));
-  }
-});
-```
-
-也可以註冊成新動效，之後就能在 `data-fx` 裡使用：
-
-```js
-FX.register('spin-in', '入场', '旋轉入場', c => {
-  c.tl.from(c.els, { rotation: -180, opacity: 0, duration: +(c.o.dur || 0.6) }, c.t);
-});
-```
-
-> 第二個參數是目錄使用的分類鍵（`入场` 入場、`退场` 退場、`强调` 強調、`数据` 資料、`文字` 文字、`镜头` 鏡頭、`角色` 角色、`剪纸` 剪紙、`组件` 元件、`转场` 轉場）。這些鍵請維持簡體原樣。
-
-**三條硬規則**：不使用 CSS animation / transition；不使用 `setTimeout` / `requestAnimationFrame`；要隨機就用 `FX.rand(種子)`，不要用 `Math.random`。
-
-## 五套外觀主題
-
-在根元素上換一個 class，整支影片就換風格：
-
-| class | 風格 | 底色 | 標題字 | 強調色 | 適合 |
-|---|---|---|---|---|---|
-| `theme-violet` | 白紫科技 | 白 `#fdfdfd` / 深 `#171719`（場景加 `dark` / `light` 切換） | 優設標題黑 | 紫 `#8453e8` / 淺紫 `#d5befe` | AI 工具、效率、工作流程講解 |
-| `theme-gold` | 黑金電影 | 深藍黑 `#080a0f` + 模糊實拍 + 暗角 | 金色漸層斜體 | 金 `#e4b256`，紅 `#ff5b56` 只用於下跌 | 財經、產業分析、排行榜 |
-| `theme-pixel` | 像素復古 | 米色網點紙 `#efe9dc` | Fusion Pixel 像素字 | 綠 `#9fe07a` · 紅 · 黃 | 動漫主持人、輕鬆科普 |
-| `theme-paper` | 剪紙拼貼 | 米色紙底 `#efe6d6` + 純 CSS 紙紋 | 站酷快樂體 ZCOOL KuaiLe | 剪紙紅 `#c8322b` · 青 `#2f6b6e` · 芥黃 `#e3a83b` | 文化、節氣、生活風格、兒童科普、手作感品牌 |
-| `theme-space` | 深空粒子 | 深藍底 `#061226`（放射漸層） | 預設標題字，自帶青色發光（也可單獨用 `.t-glow`） | 青 `#6fd3ff` · 橙 `#ff8a4d` | 科技、科普、宇宙、發表會片頭、概念片；字幕搭配 `{style:'plain'}`；另有 `.scene.space-bg` |
-
-所有顏色、字型、圓角、字幕尺寸都是 `fx.css` 最上方的 CSS 變數（`--fx-bg` `--fx-accent` `--fx-font-title` …），改變數就能做出自己的外觀主題。
-
-**常用樣式類別**
-
-| 類型 | 類別名稱 |
-|---|---|
-| 文字 | `t-hero` `t-title` `t-h2` `t-h3` `t-body` `t-small` `t-en`（英文小副標）`t-num`（大數字）`t-mono` `t-pixel` `accent` `muted` `unit` |
-| 版面 | `layer`（整個螢幕的圖層）`abs` `center` `row` `col` |
-| 卡片 | `card` `shot`（截圖卡）`glass`（玻璃卡）`qcard`（問號佔位卡）`stat`（大數字報） |
-| 標籤 | `pill` `note`（截圖上的黑色標註）`tag` `speed`（×3.5 加速角標）`ptag`（像素標籤） |
-| 元件 | `fx-window`（mac 視窗，加 `.pixel` 變像素視窗）`fx-chat`（聊天氣泡）`fx-check`（清單打勾）`fx-cursor`（滑鼠游標）`pbar`（像素能量條）`fx-hbar`（橫向長條） |
-| 背景 | `bg-footage`（模糊實拍）`vignette`（暗角） |
-| 角色 | `host`（立繪容器，裡面放多張 `[data-pose]` 圖，搭配 `pose` / `lipsync`） |
-| 剪紙 | `paper`（紙片，可加 `.red` `.teal` `.mustard` `.ink` `.tilt-l` `.tilt-r`）`paper-tag`（毛邊標籤）`tape`（膠帶）`fx-torn-shadow`（替毛邊元素補投影的外殼）`scene.paper-bg`（在任何外觀主題下替場景鋪紙紋底）；新變數 `--fx-font-round`（圓體字） |
-
-## 常見問題
-
-**截圖正常，成片底部卻少了一截、字幕不見了？**
-渲染時沒有帶 `chrome-tall.sh`，見「快速開始」第 3 步。
-
-**某個動效沒出現？**
-先看名稱有沒有拼錯。寫錯的名稱不會中斷渲染，只會在主控台印出 `FX：没有这个动效`（沒有這個動效），用 `npx hyperframes validate` 或瀏覽器主控台就能看到。另外請檢查時間是否超過了場景時長。
-
-**中文變成方塊，或者字型不對？**
-內文使用的是系統內建的蘋方（PingFang SC）。非 macOS 的機器請安裝 Noto Sans SC，並在 `--fx-font-body` 裡加上它。
-
-**`npx hyperframes lint` 回報 `missing_timeline_registry` / `font_family_without_font_face`？**
-這是靜態檢查的誤報：時間軸由 `fx.js` 在執行階段註冊，字型在 `fx.css` 裡透過 `@import` 宣告。請以 `snapshot` 截出來的畫面為準。
-
-**漸層字拆字後不見了？**
-用 `background-clip:text` 做的漸層字（例如黑金外觀的金字），搭配 `chars:`、`type`、`roll` 這類拆字動效時會消失。需要逐字動畫的那段文字請改用純色（例如 `color:#e4b256`）。
-
-**想和配音對齊？**
-用配音的時間戳記填入每個場景的 `data-t` / `data-d` 和 `FX.subtitles` 的時間即可。動效時間都是相對場景開頭的，不用修改。
-
-**粒子沒出來？**
-檢查是否載入了 `lib/fx-particles.js`（要在 `fx.js` 之後），以及粒子動效是否寫在 `data-make="space"` 的元素上；寫在別的元素上不會有任何畫面。
-
-**3D 畫面是黑的 / 沒出來？**
-檢查三件事：腳本載入順序是否為 `gsap` → `three-fx.min.js` → `fx.js` → `fx-3d.js`；3D 動效是否寫在 `data-make="stage3d"` 的元素上；渲染的機器是否支援 WebGL。
-
-## 授權
-
-- 程式碼：[MIT](LICENSE)；第三方元件說明見 [NOTICE](NOTICE)。
-- GSAP：使用 GreenSock 的 [Standard License](https://gsap.com/standard-license)（免費，含商用）。
-- 字型：見 [fonts/README.md](fonts/README.md)。
-- three.js：[MIT](https://github.com/mrdoob/three.js)（`vendor/three-fx.min.js` 內含 r187 與後製模組，授權見 [vendor/three-LICENSE.txt](vendor/three-LICENSE.txt)）。
-
-## 致謝 / Credits
-
-v1.1 的新動效和外觀主題受到下列開源專案的啟發：
-
-- [animate.css](https://github.com/animate-css/animate.css)（MIT）
-- [Magic UI](https://github.com/magicuidesign/magicui)（MIT）
-- [React Bits](https://github.com/DavidHDev/react-bits)（MIT + Commons Clause）
-
-這些專案是 CSS 動畫或 React 元件，渲染器無法逐格控制。本動效庫依照「逐格可 seek、結果可重現」的需求重新實作了對應的效果：只借用了它們的創意和效果名稱（說明裡括號中的原名），**沒有複製它們的程式碼**。
-
-3D 模組基於 [three.js](https://github.com/mrdoob/three.js)（MIT）。
+---
 
 <!-- CATALOG:START -->
 ## 動效目錄（153 種動效 + 20 種轉場）

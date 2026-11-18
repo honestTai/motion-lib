@@ -1,22 +1,47 @@
-# motion-lib
+<div align="center">
+
+<img src="docs/hero-banner.svg" width="100%" alt="motion-lib — HTML → 视频的声明式动效库" />
+
+<br />
 
 **简体中文** · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md)
 
-**HTML → 视频的声明式动效库。** 在元素上写一行 `data-fx="动效名@秒数"`，就能做出知识口播、科技解说这类视频里常见的动效，再用 [HyperFrames](https://hyperframes.heygen.com) 逐帧渲染成 MP4。
+[![License: MIT](https://img.shields.io/badge/License-MIT-8453e8?style=flat-square)](LICENSE)
+[![Effects](https://img.shields.io/badge/Effects-153-6fd3ff?style=flat-square)](#动效目录153-种动效--20-种转场)
+[![Transitions](https://img.shields.io/badge/Transitions-20-e4b256?style=flat-square)](#转场20)
+[![3D & VRM](https://img.shields.io/badge/3D_&_VRM-three.js_+_IK-68e6b2?style=flat-square)](#1-真-3d-二次元口播角色fx-vrmjs)
+[![Zero Build](https://img.shields.io/badge/Build-Zero_Bundler-2ea043?style=flat-square)](#🚀-快速开始)
+[![Sponsor: HRouter](https://img.shields.io/badge/Sponsor-HRouter.net-a8ff57?style=flat-square&labelColor=0b1a13)](https://hrouter.net/)
 
-> **v1.5 新增**：可选真 3D 二次元角色模块 `fx-vrm.js`（基于 `@pixiv/three-vrm` MIT 标准：支持任意 VRoid / OpenSourceAvatars `.vrm` 3D 模型与 `.vrma` 动作捕捉，内置 MToon 赛璐璐描边着色、13 套全身口播姿态、五元音口型同步 `aa/ih/ou/ee/oh`、以及逐帧确定性的 3D 头发/裙摆物理惯性 `SpringBone`；仓库自带 CC0 示例角色 `assets/shino.vrm`）。
->
-> **v1.4 新增**：可选柔性骨骼与软蒙皮模块 `fx-rig.js`（通用双骨 IK `FX.ik2` + RubberHose 连续贝塞尔无接缝软袖管 `FX.hose` + 声明式 `[data-bone]` / `[data-follow]` / `[data-hose]`，适用于任意自定义 SVG 角色，无木偶拼接感）+ 6 种新转场（`shatter` `diagonal-split` `blinds` `crt-off` `portal-spin` `halftone`）+ 6 种新动效（`circuit` `overload` `scan` `callout` `scatter-out` `toggle`）+ `switches` 开关组件。
->
-> **v1.3 新增**：可选 3D 模块 `fx-3d.js`（真 3D 场景：星系、能量球、隧道、黑洞、城市飞行、点阵球、立体粒子字等 12 个动效，带辉光和可编程摄像机）。
->
-> **v1.2 新增**：可选粒子模块 `fx-particles.js`（8 个粒子动效：星空、星云、旋涡、黑洞、能量球、爆炸、粒子聚字、粒子流）+ 第 5 套皮肤 `theme-space`（深空粒子）。
->
-> **v1.1 新增**：40 种动效 + 4 个转场（`paper-slide` `tear` `glitch-cut` `open`）+ 5 个组件生成器（`circle-text` `retro-grid` `papercut` `hills` `torn`）；2 个新分类「文字」「剪纸」；第 4 套皮肤 `theme-paper`（剪纸拼贴）。灵感来自 animate.css、Magic UI、React Bits，见文末「致谢」。
+[快速开始](#-快速开始) · [主题画廊](#-主题与-3d-示例画廊) · [AI 批量出片](#-ai-批量生成视频工作流) · [核心写法](#-核心写法) · [2D 软骨骼 & 3D VRM](#-进阶视觉与角色模块) · [动效全目录](#动效目录153-种动效--20-种转场)
 
-[![motion-lib 宣传片](promo/cover.jpg)](promo/motion-lib-promo.mp4)
+</div>
 
-> 上面的宣传片就是用这个库写的，源码在 [`promo/index.html`](promo/index.html)。
+---
+
+<!-- HROUTER SPONSOR BANNER -->
+<div align="center">
+  <a href="https://hrouter.net/" target="_blank" rel="noopener">
+    <img src="docs/hrouter-zh.svg" width="100%" alt="HRouter — 一把 API Key 接 Claude / GPT / Gemini / Grok" />
+  </a>
+</div>
+
+> ⚡ **官方算力合作伙伴 [HRouter](https://hrouter.net/)**：**一把 API Key 直连 Claude / GPT / Gemini / Grok**。无需分别订阅昂贵月费，余额实时到账、消费逐笔可查、用多少付多少。原生兼容 **[Claude Code](https://hrouter.net/docs/claude-code/)**、**[Codex](https://hrouter.net/docs/codex/)**、**[Gemini CLI](https://hrouter.net/docs/gemini-cli/)** 与生图生视频 API —— 让大模型一句话直接写出 `data-fx` 分镜，全自动批量出片！👉 **[官网 hrouter.net](https://hrouter.net/)** · **[模型与实时价格](https://hrouter.net/models/)** · **[四步接入教程](https://hrouter.net/docs/index/)**
+
+---
+
+## 🎬 实机效果预览
+
+**HTML → 视频的声明式动效库。** 在普通 DOM 元素上写一行 `data-fx="动效名@秒数"`，就能做出知识口播、科技解说、数据榜单、深空粒子与真 3D 二次元角色视频，再用 [HyperFrames](https://hyperframes.heygen.com) 逐帧确定性渲染成 1080p / 60fps MP4。
+
+<div align="center">
+  <a href="promo/motion-lib-promo.mp4">
+    <img src="docs/promo-preview.gif" width="100%" alt="motion-lib 实机宣传片动效预览" />
+  </a>
+  <p>
+    <sub>▲ 实机渲染预览（点击查看完整高清宣传片 <a href="promo/motion-lib-promo.mp4"><code>promo/motion-lib-promo.mp4</code></a> · 源码 <a href="promo/index.html"><code>promo/index.html</code></a> · 六片合集 <a href="examples/showreel.mp4"><code>examples/showreel.mp4</code></a>）</sub>
+  </p>
+</div>
 
 <!-- STATS:START -->
 | | 数量 |
@@ -27,14 +52,34 @@
 | 皮肤 | **5** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴 · 深空粒子） |
 <!-- STATS:END -->
 
-## 为什么要用它
+<details open>
+<summary><b>✨ 版本更新亮点（v1.4 全新升级：真 3D VRM 口播角色 + 2D 软管骨骼 IK + 12 种新特效/转场）</b></summary>
+<br />
 
-用 HTML 做视频，难的不是排版，是动效：
+- **v1.4 新增（3D 角色 & 2D 软骨骼 & 科技转场）**：
+  - **真 3D 二次元角色模块 [`fx-vrm.js`](fx-vrm.js)**：基于 `@pixiv/three-vrm`（MIT），内置解析式双骨 3D IK 求解器 `FX.ik3d`、跨模型身高/臂展自动重定向、6 节脊柱相位波、锁骨自动联动、13 套口播姿态、C¹ 五元音口型同步（`aa/ih/ou/ee/oh`）、MToon 赛璐璐描边、2× 超采样抗锯齿与连续 60Hz `SpringBone` 头发/裙摆物理；仓库自带两套 Pixiv 官方 **CC0 公共领域**模型 `assets/shino.vrm` 与 `assets/vita.vrm`。
+  - **2D 柔性骨骼与连续软袖管模块 [`fx-rig.js`](fx-rig.js)**：通用双骨 IK `FX.ik2` + RubberHose 连续贝塞尔无接缝软蒙皮 `FX.hose` + 声明式 `[data-bone]` / `[data-follow]` / `[data-hose]`，适用于任意自定义 SVG 角色，彻底告别木偶关节割裂感。
+  - **12 种新特效与转场**：新增 6 种转场（`shatter` `diagonal-split` `blinds` `crt-off` `portal-spin` `halftone`）+ 6 种动效（`circuit` `overload` `scan` `callout` `scatter-out` `toggle`）+ `switches` 拨动开关组件。
+- **v1.3 新增**：可选真 3D 场景模块 [`fx-3d.js`](fx-3d.js)（星系、能量球、隧道、黑洞、城市沿街飞行、点阵球、立体粒子字等 12 个 WebGL 动效，带 Bloom 辉光与可编程摄像机 `cam3d` / `orbit3d`）。
+- **v1.2 新增**：可选 Canvas 2D 粒子模块 [`fx-particles.js`](fx-particles.js)（8 个粒子动效）+ 第 5 套皮肤 `theme-space`（深空粒子）。
+- **v1.1 新增**：40 种动效 + 4 个转场 + 5 个组件生成器 + 「文字」「剪纸」两大分类 + 第 4 套皮肤 `theme-paper`（剪纸拼贴）。
 
-- **渲染器是「跳到第 N 帧 → 截图」**。CSS animation、`setTimeout`、`Math.random` 都不受它控制，渲出来要么不动，要么每次不一样。
-- 手写 GSAP 时间线，一条一分钟的片子就要算几百个时间点。
+</details>
 
-motion-lib 把所有动效都排进**一条暂停的 GSAP 时间线**，你只需要声明「哪个元素、什么动效、第几秒」：
+---
+
+## 💡 为什么要用它（架构原理）
+
+用 HTML 做视频，难的从来不是排版，而是**可复现的时间控制**：
+
+- **无头渲染器是「跳到第 N 帧 → 截图」**：原生 CSS `animation`、`setTimeout`、`Math.random()` 不受帧时钟控制，多进程并发截帧时要么静止不动，要么每次渲染对不上。
+- **手写 GSAP 时间线极度繁琐**：一条一分钟的口播片要手动计算几百个绝对秒数，改一句配音全片重算。
+
+<div align="center">
+  <img src="docs/pipeline.svg" width="100%" alt="motion-lib 确定性渲染流水线" />
+</div>
+
+`motion-lib` 把所有 DOM、Canvas 粒子、WebGL 3D 镜头与 VRM 骨骼物理统一编排进**唯一一条暂停的 GSAP 主时间线**，你只需在元素上声明「什么动效、第几秒」：
 
 ```html
 <h1 data-fx="blur-rise-in@0.2">做热点最难的是什么？</h1>
@@ -42,52 +87,96 @@ motion-lib 把所有动效都排进**一条暂停的 GSAP 时间线**，你只�
 <ul data-fx="each:pop-in@1(stagger=0.1)"> <li>芯片</li><li>算力</li><li>大模型</li> </ul>
 ```
 
-- **逐帧可 seek**：任意跳到哪一帧，画面都和顺序播放时一致，每次渲染结果相同。
-- **随机也可复现**：需要随机效果的地方（粒子、乱码、波形）一律用带种子的 `FX.rand(seed)`。
-- **不依赖网络**：GSAP 和字体都打包在仓库里。
-- **零构建**：一个 `fx.js`、一个 `fx.css`，不需要 npm / 打包工具。
+- 🎯 **任意帧精准可 Seek**：跳到任意第 `N` 帧，DOM、粒子、3D 摄像机与头发物理均与顺序播放完全一致，多核并行渲染零闪烁。
+- 🎲 **带种子可复现随机**：粒子、乱码、波形、眨眼一律走确定性伪随机 `FX.rand(seed)`，同一帧渲染一百次逐字节相同。
+- 📦 **100% 离线自包含**：GSAP、three.js、three-vrm、四款商用免费字体与 CC0 示例模型全部打包在库内，渲染不依赖任何外网请求。
+- ⚡ **零构建零配置**：直接引入 `.js` 与 `.css` 即可在浏览器按空格实时预览，无需 npm 打包或 Webpack/Vite。
 
-## 目录
+---
 
-```
+## 🎨 主题与 3D 示例画廊
+
+五套内建视觉皮肤 + 真 3D 场景各附有一条完整示例成片与源码，改几行文案就能直接出片：
+
+<table>
+  <tr>
+    <td width="33%" align="center">
+      <a href="examples/violet/violet.mp4"><img src="examples/violet/cover.jpg" width="100%" alt="theme-violet" /></a><br />
+      <b>白紫科技</b> <code>theme-violet</code><br />
+      <sub><a href="examples/violet/violet.mp4">▶ 观看成片</a> · <a href="examples/violet/index.html">查看源码</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/gold/gold.mp4"><img src="examples/gold/cover.jpg" width="100%" alt="theme-gold" /></a><br />
+      <b>黑金电影</b> <code>theme-gold</code><br />
+      <sub><a href="examples/gold/gold.mp4">▶ 观看成片</a> · <a href="examples/gold/index.html">查看源码</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/pixel/pixel.mp4"><img src="examples/pixel/cover.jpg" width="100%" alt="theme-pixel" /></a><br />
+      <b>像素复古</b> <code>theme-pixel</code><br />
+      <sub><a href="examples/pixel/pixel.mp4">▶ 观看成片</a> · <a href="examples/pixel/index.html">查看源码</a></sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="33%" align="center">
+      <a href="examples/paper/paper.mp4"><img src="examples/paper/cover.jpg" width="100%" alt="theme-paper" /></a><br />
+      <b>剪纸拼贴</b> <code>theme-paper</code><br />
+      <sub><a href="examples/paper/paper.mp4">▶ 观看成片</a> · <a href="examples/paper/index.html">查看源码</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/space/space.mp4"><img src="examples/space/cover.jpg" width="100%" alt="theme-space" /></a><br />
+      <b>深空粒子</b> <code>theme-space</code><br />
+      <sub><a href="examples/space/space.mp4">▶ 观看成片</a> · <a href="examples/space/index.html">查看源码</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/three/three.mp4"><img src="examples/three/cover.jpg" width="100%" alt="fx-3d.js" /></a><br />
+      <b>真 3D 场景</b> <code>fx-3d.js</code><br />
+      <sub><a href="examples/three/three.mp4">▶ 观看成片</a> · <a href="examples/three/index.html">查看源码</a></sub>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 📂 仓库目录结构
+
+```text
 motion-lib/
-├── fx.js            动效库本体：动效、转场、组件生成器、字幕、预览播放器
-├── fx.css           基础样式、组件样式、五套皮肤
-├── fx-particles.js  可选的粒子模块（宇宙、旋涡、黑洞、爆炸、粒子聚字）
-├── fx-3d.js         可选的 3D 模块（真 3D 场景、辉光、可编程摄像机；需要 three.js）
-├── fx-rig.js        可选的 2D 柔性骨骼与连续贝塞尔软蒙皮模块（适用于任意自定义 SVG 角色）
-├── fx-vrm.js        可选的真 3D 二次元角色模块（支持标准 .vrm 模型、MToon 赛璐璐、5 元音口型与头发物理）
-├── assets/          内置 CC0 1.0 公共领域 3D 二次元示例模型（shino.vrm）
-├── fonts/           优设标题黑、得意黑、Fusion Pixel 像素字体、站酷快乐体（许可见 fonts/README.md）
+├── fx.js            核心引擎：动效调度、转场、组件生成器、字幕系统、浏览器预览器
+├── fx.css           排版系统、UI 组件样式、五套主题皮肤 CSS 变量
+├── fx-particles.js  可选模块：Canvas 2D 粒子（星空、星云、旋涡、黑洞、爆炸、粒子聚字）
+├── fx-3d.js         可选模块：WebGL 真 3D 舞台、Bloom 辉光、动漫打光、可编程摄像机
+├── fx-rig.js        可选模块：2D 双骨 IK（FX.ik2）与连续贝塞尔软袖管蒙皮（FX.hose）
+├── fx-vrm.js        可选模块：真 3D VRM 角色（FX.ik3d 解析解 IK、五元音口型、60Hz 头发物理）
+├── assets/          内置 CC0 1.0 公共领域 3D VRM 示例角色（shino.vrm、vita.vrm）
+├── fonts/           优设标题黑、得意黑、Fusion Pixel 像素体、站酷快乐体（许可见 fonts/README.md）
 ├── vendor/          GSAP 3.15、three.js r187（three-fx.min.js）、@pixiv/three-vrm 3.5（three-vrm.min.js）
-├── new-project.sh   把库装进一个视频项目（也用来更新）
-├── chrome-tall.sh   渲染用 Chrome 包装（防止成片底部字幕被截掉）
-├── gen-readme.mjs   从 fx.js 自动生成本文的数量表和动效目录（node gen-readme.mjs）
-├── demo/            演示页：6 个场景，三套皮肤都用到
-├── promo/           宣传片源码 + 成片
-└── examples/        五套皮肤各一条完整示例片 + 一条真 3D 示例 + 合集
+├── new-project.sh   一键将运行库安装/同步到任意视频项目目录（./new-project.sh my-video）
+├── chrome-tall.sh   无头渲染 Chrome 视口包装器（防止成片底部字幕被裁切）
+├── gen-readme.mjs   从源码自动提取并同步四语种 README 统计表与全量动效目录
+├── demo/            入门演示工程（6 个分镜串联多套皮肤）
+├── promo/           官方宣传片源码与成片
+└── examples/        五套皮肤完整示例片 + 真 3D 场景示例片 + 六片合集 showreel
 ```
 
-## 环境要求
+---
 
-- Node.js 18+（用 `npx hyperframes`）
-- FFmpeg
-- Google Chrome（macOS 默认位置；其他位置设环境变量 `REAL_CHROME`）
-- 第一次跑 `npx hyperframes` 会自动下载 CLI
+## 🚀 快速开始
 
-## 快速开始
+### 环境要求
+- **Node.js 18+**（运行 `npx hyperframes`，首次执行会自动拉取 CLI）
+- **FFmpeg**
+- **Google Chrome**（macOS 默认路径自动识别；其他路径可设环境变量 `REAL_CHROME`）
 
-**1. 建项目**
+### 1. 初始化视频项目
 
 ```bash
 mkdir my-video
-./new-project.sh my-video        # 把 fx.js / fx.css / 字体 / GSAP 拷到 my-video/lib/
+./new-project.sh my-video        # 自动将 fx*.js / fx.css / 字体 / vendor / CC0 模型同步到 my-video/lib/
 ```
 
-> HyperFrames 只能读项目目录里的文件，所以库是**拷进**项目，而不是用 `../` 引用。库更新后，在同一个项目上再跑一次这条命令即可。
-> 仓库里的 `demo/` 和 `promo/` 也一样，第一次打开前先跑 `./new-project.sh demo`、`./new-project.sh promo`。
+> 💡 HyperFrames 安全沙箱仅读取项目目录内的静态资源，因此运行库采用**拷入 `lib/`** 的方式而非 `../` 跨目录引用。升级 `motion-lib` 后，对已有项目重跑一次 `./new-project.sh my-video` 即可无损热更新（仓库自带的 `demo/` 与 `promo/` 首次预览前也请先执行一次）。
 
-**2. 写 `my-video/index.html`**
+### 2. 编写分镜 `my-video/index.html`
 
 ```html
 <!doctype html>
@@ -99,7 +188,7 @@ mkdir my-video
   <script src="lib/fx.js"></script>
 </head>
 <body>
-<div id="root" class="theme-violet" data-composition-id="main" data-width="1920" data-height="1080">
+<div id="root" class="theme-violet" data-composition-id="main" data-width="1920" data-height="1080" data-fps="60">
 
   <section class="scene dark center" data-d="3.5">
     <h1 class="t-title" data-fx="mask-rise@0.2">全自动剪辑 <span class="accent">Skill</span></h1>
@@ -114,161 +203,188 @@ mkdir my-video
 
 </div>
 <script>
-  FX.subtitles([[0.2, 3.4, '看完这期，你也可以'], [3.5, 7.4, '播放集中在{开播后}几小时']], { style: 'pill' });
+  FX.subtitles([
+    [0.2, 3.4, '看完这期，你也可以'],
+    [3.5, 7.4, '播放集中在{开播后}几小时']
+  ], { style: 'pill' });
   FX.build();
 </script>
 </body>
 </html>
 ```
 
-> 要用粒子动效时，在 `fx.js` 后面多加一行：`<script src="lib/fx-particles.js"></script>`（`new-project.sh` 已经把它拷进 `lib/` 了）。
->
-> 要用 3D 动效时，在 `fx.js` 前后各加一个脚本，见下面的「3D 场景」一节（`new-project.sh` 已经把 `fx-3d.js` 和 `vendor/three-fx.min.js` 拷进 `lib/` 了）。
-
-
-**3. 预览、截帧、出片**
+### 3. 浏览器实时预览、抽帧检查与导出 MP4
 
 ```bash
 cd my-video
-open "index.html?play"                       # 浏览器预览：空格播放，←/→ 逐帧，↑/↓ 跳场景
-npx hyperframes snapshot --at 1,3,5          # 截几帧检查
+open "index.html?play"                       # 浏览器预览：空格播放/暂停，←/→ 逐帧微调，↑/↓ 跳分镜
+npx hyperframes snapshot --at 1,3,5          # 秒级抽帧截图检查排版
 HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
   npx hyperframes render -o out.mp4 --experimental-fast-capture=false
 ```
 
-> 出片时一定要带 `chrome-tall.sh`。本机完整版 Chrome 无头渲染时，可视高度比窗口矮约 90px，成片底部（字幕）会被截掉。这个脚本会把窗口加高。
+> ⚠️ **出片必带 `chrome-tall.sh`**：桌面版 Chrome 在无头模式下可视视口比窗口高度矮约 90px，直接渲染会导致底部字幕被截断；`chrome-tall.sh` 会自动补偿视口高度。
 
-## 示例片
+---
 
-五套皮肤各做了一条完整示例（纯动效、无配音），源码就在对应目录里，可以直接改着用：
+## 🤖 AI 批量生成视频工作流
 
-| 皮肤 | 示例 | 源码 |
-|---|---|---|
-| 白紫科技 `theme-violet` | [![violet](examples/violet/cover.jpg)](examples/violet/violet.mp4) | [`examples/violet/index.html`](examples/violet/index.html) |
-| 黑金电影 `theme-gold` | [![gold](examples/gold/cover.jpg)](examples/gold/gold.mp4) | [`examples/gold/index.html`](examples/gold/index.html) |
-| 像素复古 `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
-| 剪纸拼贴 `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
-| 深空粒子 `theme-space` | [![space](examples/space/cover.jpg)](examples/space/space.mp4) | [`examples/space/index.html`](examples/space/index.html) |
-| 真 3D 场景 `fx-3d.js` | [![three](examples/three/cover.jpg)](examples/three/three.mp4) | [`examples/three/index.html`](examples/three/index.html) |
+`motion-lib` 的声明式语法（一个 HTML 文件 = 完整分镜 + 排版 + 动效时间轴 + 角色口型）专为 **AI Coding Agent 批量产片**而设计——无需让大模型编写脆弱的复杂 JS 动画逻辑，只需让 AI 读取本仓库的动效表即可一次性直出高质量视频源码。
 
-六条合在一起：[`examples/showreel.mp4`](examples/showreel.mp4)。
+推荐使用 **[HRouter (hrouter.net)](https://hrouter.net/)** 一把 API Key 接入 **Claude Code / Codex / Gemini CLI**，按量付费驱动自动化视频流水线：
 
-## 写法
+```bash
+# 1. 在 https://hrouter.net 创建 API Key，两行配置接入 Claude Code
+export ANTHROPIC_BASE_URL="https://hrouter.net"
+export ANTHROPIC_AUTH_TOKEN="sk-你的-HRouter-Key"
+
+# 2. 让 AI 直接基于 motion-lib 批量生成分镜并渲染成片
+claude "参考 motion-lib/README.md 的动效目录和 fx-vrm.js，把 script.md 改写成 60fps 口播视频 index.html 并渲染 MP4"
+```
+
+---
+
+## 📐 核心写法
 
 ### 场景 `<section class="scene">`
 
-一个场景就是一个镜头。场景之间按顺序首尾相接。
+一个 `<section class="scene">` 就是一个独立镜头，默认按书写顺序首尾相接：
 
 | 写法 | 含义 |
 |---|---|
-| `data-d="4"` | 时长 4 秒 |
-| `data-t="12.5"` | 指定开始时间（不写就紧接上一个场景） |
-| `data-in="blur-cross(dur=0.5)"` | 用什么转场进入这个场景，见「转场」 |
-| `class="scene dark"` / `"scene light"` | 单个场景切深色 / 浅色底 |
-| `class="scene overlay"` | 叠加层：不占顺序，和其他场景同时显示（角标、常驻进度条） |
+| `data-d="4"` | 当前场景持续 4 秒 |
+| `data-t="12.5"` | 显式指定开始秒数（省略则自动紧接上一幕结尾） |
+| `data-in="blur-cross(dur=0.5)"` | 进入本场景时的转场效果，详见文末「转场」目录 |
+| `class="scene dark"` / `"scene light"` | 单个场景切换深色 / 浅色背景 |
+| `class="scene overlay"` | 全局叠加层：不占顺序时长，与其他分镜同时显示（常驻 3D 主持人、角标、章节条） |
 
-根元素必须带 `data-composition-id="main"`、`data-width`、`data-height`，总时长会自动算出来。
+根容器 `#root` 需声明 `data-composition-id="main"`、`data-width`、`data-height`（可选 `data-fps="60"`），全片总时长自动求和。
 
-### 动效 `data-fx="[目标:]名字@时间(参数)"`
+### 动效声明 `data-fx="[目标:]名字@时间(参数)"`
 
-一个元素可以写多个动效，用空格隔开：`data-fx="rise-in@0.2 pulse@1.5 fade-out@-0.3"`。
+同一个元素可串联任意多个动效，以空格分隔：`data-fx="rise-in@0.2 pulse@1.5 fade-out@-0.3"`。
 
-| 部分 | 写法 | 含义 |
+| 组成 | 写法 | 含义 |
 |---|---|---|
-| 时间 | `@1.2` | 场景开始后 1.2 秒 |
-| | `@+0.3` | 比同一元素上的前一个动效晚 0.3 秒 |
-| | `@-0.4` | 场景结束前 0.4 秒（做退场） |
-| 目标 | （不写） | 元素本身 |
-| | `each:` | 每个子元素，自动错峰（卡片组、清单、柱子） |
-| | `chars:` / `words:` / `lines:` | 拆成单字 / 词 / 行（按 `<br>`）再做动效 |
-| 参数 | `dur=0.8` | 时长（秒） |
-| | `ease=spring` | 缓动，见下表 |
-| | `stagger=0.1` | 错峰间隔（配合 `each:` / `chars:`） |
-| | `order=center` | 错峰顺序：`start` `end` `center` `edges` |
-| | 其他 | 各动效自己的参数，见「动效目录」 |
+| **时间** | `@1.2` | 场景开始后 1.2 秒触发 |
+| | `@+0.3` | 比同一元素上的前一个动效晚 0.3 秒触发 |
+| | `@-0.4` | 场景结束前 0.4 秒触发（专为退场动效设计） |
+| **目标** | （省略） | 作用在当前元素自身 |
+| | `each:` | 作用在每个直接子元素并自动错峰（卡片组、清单、柱状图） |
+| | `chars:` / `words:` / `lines:` | 自动拆分为单字 / 单词 / 行（按 `<br>`）并逐个动画 |
+| **参数** | `dur=0.8` | 动效时长（秒） |
+| | `ease=spring` | 缓动曲线别名或原生 GSAP 缓动名（见下表） |
+| | `stagger=0.1` | 子元素错峰间隔秒数（配合 `each:` / `chars:`） |
+| | `order=center` | 错峰推进顺序：`start` `end` `center` `edges` `random` |
 
-**缓动别名**
+<details>
+<summary><b>查看全部 12 种内置缓动别名（Easing Aliases）</b></summary>
+<br />
 
-| 别名 | 等于 | 手感 |
+| 别名 | 等价 GSAP 曲线 | 运动手感与适用场景 |
 |---|---|---|
-| `out`（默认） | `power3.out` | 急起缓停，最通用 |
-| `soft` | `power2.out` | 柔和 |
-| `snap` | `expo.out` | 极快冲到位，再慢慢停稳 |
-| `sharp` | `power4.out` | 比 out 更利落 |
-| `inout` | `power3.inOut` | 两头慢中间快，镜头运动用 |
-| `in` | `power2.in` | 越来越快，退场用 |
-| `spring` | `back.out(1.7)` | 轻微过冲回弹 |
-| `bounce` | `back.out(2.8)` | 明显过冲 |
-| `elastic` | `elastic.out(1,0.55)` | 弹簧 |
-| `drop` | `bounce.out` | 落地弹跳 |
-| `linear` | `none` | 匀速 |
-| `pixel` | `steps(5)` | 阶梯式（像素风） |
+| `out`（默认） | `power3.out` | 急起缓停，最自然的通用入场曲线 |
+| `soft` | `power2.out` | 轻柔克制 |
+| `snap` | `expo.out` | 极快冲刺到位后细腻停稳，科技感强 |
+| `sharp` | `power4.out` | 比 `out` 更干脆利落 |
+| `inout` | `power3.inOut` | 两头慢中间快，适合摄像机推拉摇移 |
+| `in` | `power2.in` | 加速离开，适合退场 |
+| `spring` | `back.out(1.7)` | 轻微过冲回弹，灵动不夸张 |
+| `bounce` | `back.out(2.8)` | 明显Q弹过冲 |
+| `elastic` | `elastic.out(1,0.55)` | 弹簧振荡回正 |
+| `drop` | `bounce.out` | 重力落地弹跳 |
+| `linear` | `none` | 严格匀速（持续旋转、跑马灯、背景滚动） |
+| `pixel` | `steps(5)` | 阶梯定格跳变（像素复古风） |
 
-也可以直接写 GSAP 原名，如 `ease=power4.out`、`ease=steps(8)`、`ease=elastic.out(1,0.5)`。
+</details>
 
-### 组件生成器 `data-make="名字"`
+### 组件生成器 `data-make="名字"`（17 个）
 
-重复的 DOM 交给库生成，再配对应的动效：
+把重复繁琐的图表、装饰与画布 DOM 交给库生成，再直接挂 `data-fx` 驱动动画：
 
-| 名字 | 属性 | 配合的动效 | 用途 |
+| 名字 | 属性配置 | 最佳搭档动效 | 用途说明 |
 |---|---|---|---|
-| `bars` | `data-values` `data-labels` `data-hi="2,3"` `data-max` | `each:grow-y` | 柱状图 / 直方图 |
-| `line` | `data-values` `data-w` `data-h` `data-smooth` | `draw` | 折线 / 曲线 |
-| `ring` | `data-size` `data-stroke` `data-dash` | `ring(to=0.7)` | 圆环进度、倒计时 |
-| `wave` | `data-n` `data-seed` | `each:grow-y`、`wave-live` | 音频波形 |
-| `steps` | `data-labels="选题,写稿,配音"` | `step(i=2)` | 步骤导航胶囊 |
-| `chapters` | `data-labels` | `chapter(i=3)` | 顶部章节进度条 |
-| `pixels` | `data-text="SKILL?"` `data-size` `data-colors` | `each:pixel-in(order=random)` | 5×7 点阵方块字 |
-| `wall` | `data-cols` `data-rows` `data-seed` | `drift` | 背景卡片墙 |
-| `dust` | `data-n` `data-seed` | `drift`、`float` | 漂浮粒子 |
-| `circle-text` | `data-text` `data-r`（半径） | `spin`（让文字环转起来） | 环形文字、徽章、印章 |
-| `retro-grid` | `data-cell`（格子大小）`data-color` `data-angle`（倾角） | `bg-scroll`（让网格往前流动） | 复古透视网格背景 |
-| `papercut` | `data-size` `data-fold`（几折：6 / 8 / 12）`data-shape`（`flower` `circle` `square`）`data-color` `data-seed` | `pop-in`、`spin`、`jitter` | 对称剪纸窗花，每个 seed 图案都不同 |
-| `hills` | `data-layers`（层数）`data-colors`（从后到前的颜色）`data-seed` | `layer-rise`、`parallax` | 层叠纸山；每层是一个子元素 |
-| `torn` | `data-edges`（`top,right,bottom,left`，默认 `top,bottom`）`data-depth` `data-teeth` `data-seed` | `stick-on`、`rise-in` | 把元素的边剪成毛边纸条；`clip-path` 会裁掉阴影，要投影请在外面套一层 `fx-torn-shadow` |
-| `space` | `data-fx` 里写粒子动效（需加载 `fx-particles.js`） | `nebula` `starfield` `vortex` `blackhole` `form-text` 等「粒子」类 | 画布容器：一块画布，每个粒子动效是一层 |
-| `stage3d` | `data-bloom`（辉光强度，0 关闭）`data-threshold` `data-radius` `data-bg` `data-fog` `data-fov` `data-cam` `data-look` `data-light` | `stars3d` `galaxy3d` `orb3d` `cam3d` `orbit3d` 等「3D」类 | 3D 舞台：一块 WebGL 画布 + 一台摄像机（需加载 `three-fx.min.js` 和 `fx-3d.js`） |
+| `bars` | `data-values` `data-labels` `data-hi="2,3"` `data-max` | `each:grow-y` | 柱状图 / 直方图（支持高亮指定柱） |
+| `line` | `data-values` `data-w` `data-h` `data-smooth` | `draw` | 折线图 / 平滑贝塞尔趋势曲线 |
+| `ring` | `data-size` `data-stroke` `data-dash` | `ring(to=0.7)` | 圆环进度条、占比环、倒计时 |
+| `wave` | `data-n` `data-seed` | `each:grow-y`、`wave-live` | 音频声波条 |
+| `steps` | `data-labels="选题,写稿,配音"` | `step(i=2)` | 流程步骤胶囊导航 |
+| `chapters` | `data-labels` | `chapter(i=3)` | 画面顶部常驻章节进度条 |
+| `switches` | `data-labels="联网,记忆,工具"` `data-on="1,3"` | `toggle(i=2,on=1)` | iOS 风拨动开关列表（支持 `i=1/2/3` 批量联动） |
+| `pixels` | `data-text="SKILL?"` `data-size` `data-colors` | `each:pixel-in(order=random)` | 5×7 点阵像素拼字 |
+| `wall` | `data-cols` `data-rows` `data-seed` | `drift` | 景深背景卡片墙 |
+| `dust` | `data-n` `data-seed` | `drift`、`float` | 氛围悬浮微粒 |
+| `circle-text` | `data-text` `data-r`（半径） | `spin` | 环形旋转文字徽章、印章 |
+| `retro-grid` | `data-cell` `data-color` `data-angle` | `bg-scroll` | 复古合成波透视流动网格 |
+| `papercut` | `data-size` `data-fold`（6/8/12）`data-shape` `data-color` `data-seed` | `cut-in`、`spin`、`jitter` | 对称剪纸窗花（每个 `seed` 图案唯一） |
+| `hills` | `data-layers` `data-colors` `data-seed` | `layer-rise`、`parallax` | 多层剪纸视差远山 |
+| `torn` | `data-edges` `data-depth` `data-teeth` `data-seed` | `stick-on`、`rise-in` | 毛边撕纸裁切（需投影时外包 `.fx-torn-shadow`） |
+| `space` | 在 `data-fx` 中串联粒子动效（需 `fx-particles.js`） | `nebula` `starfield` `vortex` `form-text` 等 | Canvas 2D 多层粒子画布容器 |
+| `stage3d` | `data-bloom` `data-alpha` `data-light` `data-cam` `data-look` `data-fog` | `galaxy3d` `city3d` `cam3d` `vrm3d` 等 | WebGL 真 3D 舞台（支持透明叠加层与动漫打光） |
 
-### 字幕
+### 字幕系统 `FX.subtitles()`
 
 ```js
 FX.subtitles([
-  [开始秒, 结束秒, '文字，{花括号}里的词变强调色'],
-  …
+  [0.2, 3.4, '普通台词，{花括号}里的重点词自动染成主题强调色'],
 ], { style: 'pill', pop: false });
 ```
 
-| `style` | 样子 | 搭配皮肤 |
-|---|---|---|
-| `pill` | 黑色圆角胶囊 + 白字 | 白紫科技 |
-| `bar` | 半透明黑条 | 像素复古 |
-| `plain` | 白字 + 描影，无底 | 黑金电影 |
-| `paper` | 米色毛边纸条 + 深色字 | 剪纸拼贴 |
+内置 4 种字幕样式：`pill`（黑底圆角胶囊，配 `theme-violet`）、`bar`（半透明黑带，配 `theme-pixel`）、`plain`（无底描影白字，配 `theme-gold` / `theme-space`）、`paper`（米色毛边纸条，配 `theme-paper`）。设 `pop: true` 可开启轻柔上浮入场。
 
-`pop: true` 时每句字幕会轻轻上浮出现；默认是硬切，口播视频一般就是硬切。
+---
 
-### 粒子（fx-particles.js）
+## 🌟 进阶视觉与角色模块
 
-可选模块，画布（Canvas 2D）粒子：星空、星云、旋涡、黑洞、能量球、爆炸、粒子聚字、粒子流。在 `fx.js` 之后加载，再写：
+### 1. 真 3D 二次元口播角色（`fx-vrm.js`）
+
+想在知识口播或技术解说视频一角放一位**带真实立体透视、双骨解析解 IK 手势、五元音口型同步、发丝裙摆随动作柔顺飘动**的 3D 二次元主持人？加载 `vendor/three-vrm.min.js` + `fx-vrm.js`，把一个透明 `stage3d`（`data-alpha="1" data-light="anime"`）放在 `overlay` 叠加层上即可：
+
+<div align="center">
+  <img src="docs/vrm-preview.gif" width="88%" alt="fx-vrm.js 真 3D VRM 角色与 circuit / switches 实机渲染演示" />
+  <p><sub>▲ 仓库内置 CC0 模型 <code>assets/shino.vrm</code> + <code>circuit</code> 电路脉冲 + <code>switches</code> 开关实机渲染效果</sub></p>
+</div>
 
 ```html
-<script src="lib/fx-particles.js"></script>
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/vendor/three-fx.min.js"></script>
+<script src="lib/vendor/three-vrm.min.js"></script>
+<script src="lib/fx.js"></script>
+<script src="lib/fx-3d.js"></script>
+<script src="lib/fx-vrm.js"></script>
 
-<div class="layer" data-make="space"
-     data-fx="nebula@0 starfield@0(speed=0.15) vortex@1 form-text@4(text=HELLO)"></div>
-<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, SPACE</h1>
+<section class="scene overlay" data-t="0" data-d="30">
+  <div class="abs" style="left:20px;bottom:0;width:580px;height:900px;pointer-events:none"
+       data-make="stage3d" data-alpha="1" data-light="anime"
+       data-fov="26" data-cam="0,1.34,2.85" data-look="0,1.30,0"
+       data-fx="vrm3d@0(src=shino,headscale=1.18,ry=12)
+                vrm-pose@0(pose=wave,expr=happy,dur=0.45)
+                vrm-pose@4.0(pose=explain,expr=relaxed,look=right,emote=sparkle)
+                vrm-pose@9.0(pose=think,expr=sad,look=up,emote=question)
+                vrm-talk@0.3(dur=12.0,rate=7.5)"></div>
+</section>
 ```
 
-- 一个 `data-make="space"` 就是一块画布；写在它上面的每个粒子动效是一层，按书写顺序**从下往上**叠（上例：星云在最底，聚字在最上）。上面的标题是普通 DOM 元素，叠在画布之上。
-- 通用参数：`dur`（这一层持续多久，默认到场景结束）、`fade` / `out`（淡入淡出秒数）、`x` / `y`（中心位置百分比）、`seed`。
-- 颜色列表用 `/` 分隔，例如 `colors=#6fd3ff/#ff8a4d`。
-- `form-text` 里要分清三个时间：`dur` 是整层时长，`conv` 是聚拢用多久，`start` 是先飘多久。它用皮肤的标题字体取样，中英文都行。
-- 画布是普通元素，可以照常加别的动效，比如 `to@3(scale=1.3)` 做推近。
-- 和主库一样逐帧可复现：每一帧都是时间的纯函数，随机带种子。注意这是用 2D 画布**模拟**透视，不是真 3D（WebGL）；要真 3D 请用下面的 `fx-3d.js`。
+- **解析式 3D 双骨 IK（`FX.ik3d`）与全身协调动力学**：内置余弦定理 + 极向量正交基四元数闭式求解器，零万向节死锁；切换姿态时自动触发 **6 节脊柱相位波**（`hips → spine → chest → upperChest → neck → head`）、锁骨自动耸肩前探、重心反平衡（Contrapposto）与手指波浪微动。
+- **跨模型通用重定向**：支持任意 [VRoid Studio](https://vroid.com) 导出或社区标准 `.vrm`（VRM 0.x / 1.0 自动识别）及 `.vrma` 动捕文件（`vrm-anim`）；自动居中根骨骼偏移并按真实肩宽臂展归一化手腕 IK 目标，可选 `headscale=1.2`（圆润 Q 版头身比）与 `padz`（大裙摆/胸前防穿模间距）。
+- **13 套口播预设姿态 + 漫符情绪气泡**：内置 `idle` `wave` `explain` `point` `point-up` `think` `shock` `clasp` `reject` `shrug` `proud` `cheer` `bow`（亦支持 `lx/ly/lz/rx/ry/rz` 直接传入自定义 3D 手腕坐标），搭配 3D 眼部锚定的腮红与 6 种漫画情绪符号（`sweat` `question` `idea` `anger` `sparkle` `excl`）。
+- **连续 60Hz 零抖动头发物理**：自动接入 `window.__hf.buildReady` 预加载模型（无首帧空白），在 HyperFrames 工作进程内连续 60Hz 积分 `SpringBone` 并在分片边界执行定步长预热，彻底消除跳帧抖动。
 
-### 3D 场景（fx-3d.js）
+### 2. 2D 柔性骨骼与 RubberHose 软袖管角色（`fx-rig.js`）
 
-可选模块，真 3D 场景（three.js / WebGL）：3D 星空、旋涡星系、立体能量球、粒子隧道、波浪点阵、点阵球、立体黑洞、立体爆炸、立体粒子字、城市，外加两个摄像机动效。**脚本要按这个顺序加载**：
+针对 2D 扁平圆润风 SVG 角色，[`fx-rig.js`](fx-rig.js) 提供了 2D 双骨 IK 求解器 `FX.ik2` 与 **RubberHose 连续三次贝塞尔无接缝软管蒙皮 `FX.hose`**——手臂无论弯曲到什么角度都是整根圆润连贯的弧线袖管，彻底消除传统旋转木偶的折角与关节割裂：
+
+```html
+<script src="lib/fx-rig.js"></script>
+
+<svg class="fx-rig" data-fx="rig-idle@0 rig-pose@1.2(pose=explain,face=happy) rig-talk@0.4(dur=5) rig-wave@3.5(arm=R)">
+  <!-- 任意带 [data-bone] / [data-hose] / [data-viseme] 标记的自定义 SVG 角色 -->
+</svg>
+```
+
+### 3. WebGL 真 3D 场景（`fx-3d.js`）
+
+需要几万颗发光粒子的旋涡星系、立体黑洞、点阵地球或沿街穿梭的赛博城市时，按顺序加载 `three-fx.min.js` → `fx.js` → `fx-3d.js`：
 
 ```html
 <script src="lib/vendor/gsap.min.js"></script>
@@ -281,77 +397,27 @@ FX.subtitles([
 <h1 class="t-hero" data-fx="rise-in@0.6">HELLO, 3D</h1>
 ```
 
-- 一个 `data-make="stage3d"` 是一个 3D 舞台（一块 WebGL 画布 + 一台摄像机）。上面的标题是普通 DOM 元素，直接叠在画面上。
-- 写在舞台上的动效分两类：**往舞台里放东西的**（`stars3d` `galaxy3d` `orb3d` `tunnel3d` `waves3d` `globe3d` `blackhole3d` `burst3d` `text3d` `city3d`），和**移动摄像机的**（`cam3d` `orbit3d`）。具体参数见「动效目录」的「3D」一节。
-- 和 `fx-particles.js` 的区别：粒子模块是 2D 画布**模拟**透视，轻量，不依赖别的库；3D 模块是真摄像机、真光照、辉光，粒子数量能多一到两个数量级，但依赖 three.js（`vendor/three-fx.min.js`，753 KB）。
-- 3D 场景一般配 `theme-space`；没有专属皮肤。
-
-**舞台属性**
-
-| 属性 | 含义 |
+| `stage3d` 属性 | 作用说明 |
 |---|---|
-| `data-bloom` | 辉光强度，`0` 关闭 |
-| `data-threshold` | 多亮的地方才发光 |
-| `data-radius` | 辉光扩散范围 |
-| `data-bg` | 背景色 |
-| `data-fog` | 雾的浓度（0.003 左右，远处变淡） |
-| `data-fov` | 摄像机视角 |
-| `data-cam="x,y,z"` | 摄像机初始位置 |
-| `data-look="x,y,z"` | 摄像机初始看向哪里 |
-| `data-light="0"` | 关掉默认灯光 |
+| `data-alpha="1"` | 开启透明背景 WebGL 叠加层（自动启用 2× Retina 超采样抗锯齿，最适合 3D 角色浮层） |
+| `data-light="anime"` | 启用 4 灯位二次元赛璐璐柔光影棚预设（`0` 为关闭默认灯光） |
+| `data-bloom` / `data-threshold` / `data-radius` | UnrealBloom 辉光强度（`0` 关闭，有 `text3d` 时建议 `0.35~0.5`）、阈值与扩散半径 |
+| `data-bg` / `data-fog` | 舞台背景色与指数雾浓度（如 `0.003`） |
+| `data-cam="x,y,z"` / `data-look="x,y,z"` / `data-fov` | 摄像机初始坐标、初始注视点与视角度数（配合纯函数镜头 `cam3d` / `orbit3d`，注意同一时间段二者勿重叠） |
 
-**摄像机**：摄像机是时间的纯函数。`cam3d` 从当前位置飞到新位置（`x` `y` `z`），同时把视线转向新目标（`lx` `ly` `lz`）；`orbit3d` 绕着目标转圈（`turn` 转多少度，`r` 结束时的距离，`h` 结束时的高度）。没写的参数保持不变。**同一时间段里 `cam3d` 和 `orbit3d` 不要重叠**，否则谁也说不清摄像机该去哪。
+### 4. Canvas 2D 粒子画布（`fx-particles.js`）
 
-**物体通用参数**：`dur`（存在多久）、`fade` / `out`（淡入淡出秒数）、`px` / `py` / `pz`（摆放位置）、`s`（整体缩放）、`seed`。
-
-**注意事项**
-
-- 辉光会让很亮的字发糊：有 `text3d` 时，把 `data-bloom` 降到 0.35~0.5。
-- 一个 `stage3d` 就是一个 WebGL 上下文，一条片子里建议不超过 7 个。
-- 逐帧可复现：粒子位置在显卡里由「属性 + 时间」算出，同一帧两次渲染逐字节一致。
-- 渲染需要 WebGL。有显卡加速时很快（5 秒的片子约 16 秒渲完）；没有显卡加速的机器会退回软件渲染，慢很多。
-- 3D 成片码率高，上传前建议用 ffmpeg 压一遍：`ffmpeg -i in.mp4 -c:v libx264 -crf 24 out.mp4`。
-
-### 真 3D 二次元口播角色（`fx-vrm.js`）
-
-想在知识口播片角落放一个带立体透视、头发随动作自然摆动、口型会发 `a/i/u/e/o` 五元音的真 3D 二次元主持人？加载 `vendor/three-vrm.min.js` + `fx-vrm.js`，把一个透明 `stage3d`（`data-alpha="1"`）放在 `overlay` 叠加层上即可：
+零 three.js 依赖的轻量 2D 粒子层（星空、星云、旋涡、黑洞、能量球、爆炸、粒子聚字、数据粒子流），在 `fx.js` 之后引入即可在 `data-make="space"` 容器上按书写顺序由底向上叠层：
 
 ```html
-<script src="lib/vendor/gsap.min.js"></script>
-<script src="lib/vendor/three-fx.min.js"></script>
-<script src="lib/vendor/three-vrm.min.js"></script>
-<script src="lib/fx.js"></script>
-<script src="lib/fx-3d.js"></script>
-<script src="lib/fx-vrm.js"></script>
-
-<section class="scene overlay" data-t="0" data-d="30">
-  <div class="abs" style="left:-60px;bottom:0;width:740px;height:920px;pointer-events:none"
-       data-make="stage3d" data-alpha="1" data-light="anime"
-       data-fx="vrm3d@0(src=assets/shino.vrm,ry=12)
-                vrm-pose@0(pose=wave,expr=relaxed,dur=0.45)
-                vrm-pose@4.0(pose=explain,expr=happy,look=right)
-                vrm-pose@9.0(pose=think,expr=sad,look=up)
-                vrm-talk@0.3(dur=12.0)"></div>
-</section>
+<script src="lib/fx-particles.js"></script>
+<div class="layer" data-make="space"
+     data-fx="nebula@0 starfield@0(speed=0.15) vortex@1 form-text@4(text=HELLO)"></div>
 ```
 
-- **开放标准生态**：支持任何从 [VRoid Studio](https://vroid.com) 导出或 [Open Source Avatars](https://www.opensourceavatars.com) 下载的 `.vrm`（VRM 0.x / 1.0 自动识别）及 `.vrma` 动捕片段；内置身高自动归一化（`autofit=1`），换模型不会跑出取景框。
-- **13 套口播预设姿态**：`idle` `wave` `explain` `point` `point-up` `think` `shock` `clasp` `reject` `shrug` `proud` `cheer` `bow`。
-- **100% 逐帧确定性头发物理**：模型加载自动注册到 `window.__hf.buildReady`（无首帧空白），`SpringBone` 物理在任意帧 `t` 从 `t - 0.42s` 定步长推演，多进程并行渲染零抖动。
+### 5. 原生 GSAP 扩展与自定义动效注册
 
-### 手写补充
-
-库里没有的动效，直接写 GSAP。用 `at('场景id', 场景内秒数)` 换算绝对时间：
-
-```js
-FX.build({
-  extra(tl, at) {
-    tl.to('#logo', { rotation: 360, duration: 1 }, at('s3', 0.5));
-  }
-});
-```
-
-也可以注册成新动效，之后就能在 `data-fx` 里用：
+库里没有的特殊镜头或交互，既可在 `FX.build({ extra(tl, at) { ... } })` 中直接操作主时间线，也可通过 `FX.register` 注册为声明式动效：
 
 ```js
 FX.register('spin-in', '入场', '旋转入场', c => {
@@ -359,79 +425,81 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 });
 ```
 
-**三条硬规则**：不用 CSS animation / transition；不用 `setTimeout` / `requestAnimationFrame`；要随机就用 `FX.rand(种子)`，不用 `Math.random`。
+> **三条确定性铁律**：禁止使用 CSS `animation` / `transition`；禁止使用 `setTimeout` / `requestAnimationFrame`；所有随机一律走 `FX.rand(seed)`，禁用 `Math.random()`。
 
-## 五套皮肤
+---
 
-在根元素上换一个 class，整片换风格：
+## 🎭 五套主题皮肤与样式速查
 
-| class | 风格 | 底色 | 标题字 | 强调色 | 适合 |
+在 `#root` 上换一个类名即可整片换肤，所有色板、字重、圆角均抽离为 `fx.css` 顶部的 `--fx-*` CSS 变量：
+
+| 主题类名 | 视觉气质 | 背景基调 | 标题字体 | 主题强调色 | 典型场景 |
 |---|---|---|---|---|---|
-| `theme-violet` | 白紫科技 | 白 `#fdfdfd` / 深 `#171719`（场景加 `dark` / `light` 切换） | 优设标题黑 | 紫 `#8453e8` / 浅紫 `#d5befe` | AI 工具、效率、工作流讲解 |
-| `theme-gold` | 黑金电影 | 深蓝黑 `#080a0f` + 模糊实拍 + 暗角 | 金色渐变斜体 | 金 `#e4b256`，红 `#ff5b56` 只给下跌 | 财经、行业分析、榜单 |
-| `theme-pixel` | 像素复古 | 米色网点纸 `#efe9dc` | Fusion Pixel 像素字 | 绿 `#9fe07a` · 红 · 黄 | 动漫主持人、轻松科普 |
-| `theme-paper` | 剪纸拼贴 | 米色纸底 `#efe6d6` + 纯 CSS 纸纹 | 站酷快乐体 ZCOOL KuaiLe | 剪纸红 `#c8322b` · 青 `#2f6b6e` · 芥黄 `#e3a83b` | 文化、节气、生活方式、儿童科普、手作感品牌 |
-| `theme-space` | 深空粒子 | 深蓝底 `#061226`（径向渐变） | 默认标题字，自带青色发光（也可单独用 `.t-glow`） | 青 `#6fd3ff` · 橙 `#ff8a4d` | 科技、科普、宇宙、发布会片头、概念片；字幕配 `{style:'plain'}`；另有 `.scene.space-bg` |
+| `theme-violet` | 白紫科技 | 亮白 `#fdfdfd` / 深灰 `#171719` | 优设标题黑 | 电光紫 `#8453e8` | AI 工具、产品演示、效率工作流 |
+| `theme-gold` | 黑金电影 | 深蓝黑 `#080a0f` + 暗角 | 金色斜体渐变 | 流金 `#e4b256` / 跌红 `#ff5b56` | 商业财经、算力研报、年度榜单 |
+| `theme-pixel` | 像素复古 | 米色网点纸 `#efe9dc` | Fusion Pixel | 荧光绿 `#9fe07a` · 红 · 黄 | 极客科普、游戏解说、轻松口播 |
+| `theme-paper` | 剪纸拼贴 | 肌理宣纸 `#efe6d6` | 站酷快乐体 | 朱砂红 `#c8322b` · 石青 `#2f6b6e` | 人文历史、节气生活、手作感故事 |
+| `theme-space` | 深空粒子 | 宇宙深蓝径向渐变 `#061226` | 发光标题 `.t-glow` | 星云青 `#6fd3ff` · 恒星橙 `#ff8a4d` | 前沿科技、硬核物理、发布会片头 |
 
-所有颜色、字体、圆角、字幕尺寸都是 `fx.css` 顶部的 CSS 变量（`--fx-bg` `--fx-accent` `--fx-font-title` …），改变量就能做自己的皮肤。
+<details>
+<summary><b>展开常用排版与 UI 组件 CSS 类名速查表</b></summary>
+<br />
 
-**常用样式类**
-
-| 类型 | 类名 |
+| 类别 | 内置类名 |
 |---|---|
-| 文字 | `t-hero` `t-title` `t-h2` `t-h3` `t-body` `t-small` `t-en`（英文小副标）`t-num`（大数字）`t-mono` `t-pixel` `accent` `muted` `unit` |
-| 布局 | `layer`（整屏图层）`abs` `center` `row` `col` |
-| 卡片 | `card` `shot`（截图卡）`glass`（玻璃卡）`qcard`（问号占位卡）`stat`（大数字报） |
-| 标签 | `pill` `note`（截图上的黑色标注）`tag` `speed`（×3.5 加速角标）`ptag`（像素标签） |
-| 组件 | `fx-window`（mac 窗口，加 `.pixel` 变像素窗口）`fx-chat`（聊天气泡）`fx-check`（清单打勾）`fx-cursor`（鼠标光标）`pbar`（像素能量条）`fx-hbar`（横向条形） |
-| 背景 | `bg-footage`（模糊实拍）`vignette`（暗角） |
-| 角色 | `host`（立绘容器，里面放多张 `[data-pose]` 图，配 `pose` / `lipsync`） |
-| 剪纸 | `paper`（纸片，可加 `.red` `.teal` `.mustard` `.ink` `.tilt-l` `.tilt-r`）`paper-tag`（毛边标签）`tape`（胶带）`fx-torn-shadow`（给毛边元素补投影的外壳）`scene.paper-bg`（任意皮肤下给场景铺纸纹底）；新变量 `--fx-font-round`（圆体字） |
+| **排版文字** | `t-hero` `t-title` `t-h2` `t-h3` `t-body` `t-small` `t-en` `t-num` `t-mono` `t-pixel` `accent` `muted` `unit` |
+| **画布布局** | `layer`（整屏绝对定位层）`abs` `center` `row` `col` |
+| **容器卡片** | `card` `shot`（带阴影截图卡）`glass`（毛玻璃）`qcard`（悬念问号卡）`stat`（大数字指标卡） |
+| **徽章标签** | `pill` `note`（截图黑底批注）`tag` `speed`（×3.5 倍速角标）`ptag`（像素边框标签） |
+| **交互组件** | `fx-window`（macOS 窗口，加 `.pixel` 切像素风）`fx-chat` `fx-check` `fx-switches` `fx-cursor` `pbar` `fx-hbar` |
+| **角色与纸艺** | `host`（立绘容器）`fx-rig`（2D 软骨骼容器）`paper`（`.red` `.teal` `.mustard` `.ink` `.tilt-l` `.tilt-r`）`paper-tag` `tape` `fx-torn-shadow` |
 
-## 常见问题
+</details>
 
-**截图正常，成片底部却少了一截、字幕没了？**
-渲染没带 `chrome-tall.sh`，见「快速开始」第 3 步。
+---
 
-**某个动效没出现？**
-先看名字有没有拼错。写错的名字不会中断渲染，只会在控制台打印 `FX：没有这个动效`，用 `npx hyperframes validate` 或浏览器控制台能看到。另外检查时间是否超过了场景时长。
+## ❓ 常见问题
 
-**中文变成方块，或者字体不对？**
-正文用的是系统苹方。非 macOS 机器请安装 Noto Sans SC，并在 `--fx-font-body` 里加上它。
+<details>
+<summary><b>截图正常，但渲染出的 MP4 底部少了一截、字幕不见了？</b></summary>
+渲染命令漏了 <code>HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh"</code>，详见「快速开始」第 3 步。
+</details>
 
-**`npx hyperframes lint` 报 `missing_timeline_registry` / `font_family_without_font_face`？**
-这是静态检查的误报：时间线由 `fx.js` 在运行时注册，字体在 `fx.css` 里通过 `@import` 声明。以 `snapshot` 截出来的画面为准。
+<details>
+<summary><b>某个动效没触发？</b></summary>
+先检查动效名拼写——写错的名字不会中断渲染，会在控制台提示 <code>FX：没有这个动效</code>（可用 <code>npx hyperframes validate</code> 查看）；同时确认触发秒数未超出所在场景的 <code>data-d</code> 时长。
+</details>
 
-**渐变字拆字后不见了？**
-用 `background-clip:text` 做的渐变字（如黑金皮肤的金字），配 `chars:`、`type`、`roll` 这类拆字动效时会消失。要逐字动画的那段文字改用纯色（如 `color:#e4b256`）。
+<details>
+<summary><b>渐变文字搭配拆字动效（<code>chars:</code> / <code>type</code> / <code>roll</code>）后消失了？</b></summary>
+<code>background-clip: text</code> 在拆分为多层嵌套 <code>&lt;span&gt;</code> 后无法继承父级背景裁切，需要逐字动画的标题请改用纯色（如 <code>color: #e4b256</code>）。
+</details>
 
-**想和配音对齐？**
-用配音的时间戳填每个场景的 `data-t` / `data-d` 和 `FX.subtitles` 的时间即可。动效时间都是相对场景开头的，不用改。
+<details>
+<summary><b>如何与外部 TTS / 真人配音精准对齐？</b></summary>
+按配音字幕时间戳填入各 <code>&lt;section&gt;</code> 的 <code>data-t</code> / <code>data-d</code> 与 <code>FX.subtitles</code> 即可；元素上的 <code>@秒数</code> 均为相对当前场景开头的偏移量，无需重算。
+</details>
 
-**粒子没出来？**
-检查是否加载了 `lib/fx-particles.js`（在 `fx.js` 之后），以及粒子动效是否写在 `data-make="space"` 的元素上；写在别的元素上不会有任何画面。
+<details>
+<summary><b>3D 场景或 VRM 角色黑屏 / 未显示？</b></summary>
+请确认：① 脚本顺序为 <code>gsap.min.js</code> → <code>three-fx.min.js</code> →（如需 VRM）<code>three-vrm.min.js</code> → <code>fx.js</code> → <code>fx-3d.js</code> → <code>fx-vrm.js</code>；② 动效挂在 <code>data-make="stage3d"</code> 元素上，且单条视频中的 <code>stage3d</code> 实例不超过 7 个。
+</details>
 
-**3D 画面是黑的 / 没出来？**
-检查三件事：脚本加载顺序是否为 `gsap` → `three-fx.min.js` → `fx.js` → `fx-3d.js`；3D 动效是否写在 `data-make="stage3d"` 的元素上；渲染的机器是否支持 WebGL。
+---
 
-## 许可
+## 📜 开源许可与致谢
 
-- 代码：[MIT](LICENSE)；第三方组件说明见 [NOTICE](NOTICE)。
-- GSAP：使用 GreenSock 的 [Standard License](https://gsap.com/standard-license)（免费，含商用）。
-- 字体：见 [fonts/README.md](fonts/README.md)。
-- three.js：[MIT](https://github.com/mrdoob/three.js)（`vendor/three-fx.min.js` 里打包了 r187 和后期处理模块，许可证见 [vendor/three-LICENSE.txt](vendor/three-LICENSE.txt)）。
+### 许可证（100% 商用友好）
+- **核心代码（`fx*.js`、`fx.css`）**：[MIT License](LICENSE)，第三方声明详见 [NOTICE](NOTICE)。
+- **3D 引擎与 VRM 运行时**：[three.js](https://github.com/mrdoob/three.js)（MIT，见 [vendor/three-LICENSE.txt](vendor/three-LICENSE.txt)）与 [@pixiv/three-vrm](https://github.com/pixiv/three-vrm)（MIT，见 [vendor/three-vrm-LICENSE.txt](vendor/three-vrm-LICENSE.txt)）。
+- **内置 3D 示例角色（`assets/shino.vrm`、`assets/vita.vrm`）**：由 pixiv Inc. 官方以 **CC0 1.0 公共领域贡献**发布（详见 [assets/README.md](assets/README.md)，可自由商用与修改）。
+- **GSAP 与字体**：GSAP 遵循 GreenSock [Standard License](https://gsap.com/standard-license)；内置四款开源/免费商用字体详见 [fonts/README.md](fonts/README.md)。
 
-## 致谢 / Credits
+### 致谢与生态支持
+- 部分动效创意与命名致敬了 [animate.css](https://github.com/animate-css/animate.css)（MIT）、[Magic UI](https://github.com/magicuidesign/magicui)（MIT）与 [React Bits](https://github.com/DavidHDev/react-bits)——本库针对「逐帧确定性可 Seek」架构全部独立重写，未复制任何源码。
+- 感谢 **[HRouter (hrouter.net)](https://hrouter.net/)** 提供多模型 AI 编程与自动化视频生成算力支持（一把 API Key 畅连 Claude / GPT / Gemini / Grok）。
 
-v1.1 的新动效和皮肤受到下面这些开源项目的启发：
-
-- [animate.css](https://github.com/animate-css/animate.css)（MIT）
-- [Magic UI](https://github.com/magicuidesign/magicui)（MIT）
-- [React Bits](https://github.com/DavidHDev/react-bits)（MIT + Commons Clause）
-
-这些项目是 CSS 动画或 React 组件，渲染器无法逐帧控制。本库按「逐帧可 seek、结果可复现」的需求重新实现了相应的效果：只借用了它们的创意和效果名称（说明里括号中的原名），**没有复制它们的代码**。
-
-3D 模块基于 [three.js](https://github.com/mrdoob/three.js)（MIT）。
+---
 
 <!-- CATALOG:START -->
 ## 动效目录（153 种动效 + 20 种转场）

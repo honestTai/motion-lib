@@ -1,22 +1,47 @@
-# motion-lib
+<div align="center">
+
+<img src="docs/hero-banner.svg" width="100%" alt="motion-lib — Declarative HTML-to-Video Motion Library" />
+
+<br />
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · **English** · [日本語](README.ja.md)
 
-**A declarative motion library for HTML → video.** Write one line, `data-fx="effect-name@seconds"`, on an element to get the motion you see in talking-head explainers and tech videos, then render it frame by frame to MP4 with [HyperFrames](https://hyperframes.heygen.com).
+[![License: MIT](https://img.shields.io/badge/License-MIT-8453e8?style=flat-square)](LICENSE)
+[![Effects](https://img.shields.io/badge/Effects-153-6fd3ff?style=flat-square)](#effect-catalog-153-effects--20-transitions)
+[![Transitions](https://img.shields.io/badge/Transitions-20-e4b256?style=flat-square)](#transitions-20)
+[![3D & VRM](https://img.shields.io/badge/3D_&_VRM-three.js_+_IK-68e6b2?style=flat-square)](#1-real-3d-anime-vrm-presenter-fx-vrmjs)
+[![Zero Build](https://img.shields.io/badge/Build-Zero_Bundler-2ea043?style=flat-square)](#quick-start)
+[![Sponsor: HRouter](https://img.shields.io/badge/Sponsor-HRouter.net-a8ff57?style=flat-square&labelColor=0b1a13)](https://hrouter.net/)
 
-> **New in v1.5**: the optional 3D anime avatar module `fx-vrm.js` (built on `@pixiv/three-vrm` MIT: loads any standard `.vrm` 0.x/1.0 avatar and `.vrma` mocap clip with MToon cel-shading, closed-form two-bone 3D IK `FX.ik3d`, 6-segment spine wave, auto-clavicle coupling, 13 full-body presenter poses, 5-vowel lip-sync `aa/ih/ou/ee/oh`, 2× supersampling, and deterministic 60Hz `SpringBone` hair/skirt physics; includes two CC0 public-domain avatars `assets/shino.vrm` & `assets/vita.vrm`).
->
-> **New in v1.4**: the optional 2D soft-rig module `fx-rig.js` (two-bone IK `FX.ik2` + seamless continuous Bezier RubberHose limbs `FX.hose` + declarative `[data-bone]` / `[data-follow]` / `[data-hose]` for any custom SVG character) + 6 new transitions (`shatter` `diagonal-split` `blinds` `crt-off` `portal-spin` `halftone`) + 6 new effects (`circuit` `overload` `scan` `callout` `scatter-out` `toggle`) + the `switches` component.
->
-> **New in v1.3**: the optional 3D module `fx-3d.js` (real 3D scenes: galaxy, energy orb, tunnel, black hole, city fly-through, dot globe, 3D particle text and more, 12 effects in all, with bloom and a programmable camera).
->
-> **New in v1.2**: the optional particle module `fx-particles.js` (8 particle effects: starfield, nebula, vortex, black hole, energy orb, explosion, particle text, particle stream) + a 5th theme, `theme-space` (deep-space particles).
->
-> **New in v1.1**: 40 effects + 4 transitions (`paper-slide` `tear` `glitch-cut` `open`) + 5 component generators (`circle-text` `retro-grid` `papercut` `hills` `torn`); 2 new categories, Text and Papercut; a 4th theme, `theme-paper` (papercut collage). Inspired by animate.css, Magic UI and React Bits; see Credits at the bottom.
+[Quick Start](#-quick-start) · [Theme Gallery](#-theme--3d-gallery) · [AI Video Pipeline](#-ai-video-automation-workflow) · [Core Syntax](#-core-syntax) · [2D Rig & 3D VRM](#-advanced-visual--character-modules) · [Effect Catalog](#effect-catalog-153-effects--20-transitions)
 
-[![motion-lib promo](promo/cover.jpg)](promo/motion-lib-promo.mp4)
+</div>
 
-> The promo above was made with this library. Source: [`promo/index.html`](promo/index.html).
+---
+
+<!-- HROUTER SPONSOR BANNER -->
+<div align="center">
+  <a href="https://hrouter.net/" target="_blank" rel="noopener">
+    <img src="docs/hrouter-en.svg" width="100%" alt="HRouter — One API Key for Claude, GPT, Gemini & Grok" />
+  </a>
+</div>
+
+> ⚡ **Official Compute Partner — [HRouter](https://hrouter.net/)**: **One API Key for Claude, GPT, Gemini & Grok**. Pay-as-you-go with instant balance top-up, transparent per-request billing, and zero wasted monthly subscriptions. Plugs natively into **[Claude Code](https://hrouter.net/docs/claude-code/)**, **[Codex](https://hrouter.net/docs/codex/)**, **[Gemini CLI](https://hrouter.net/docs/gemini-cli/)**, and Image/Video APIs — let your AI coding agent author `data-fx` scenes and batch-render MP4s automatically! 👉 **[hrouter.net](https://hrouter.net/)** · **[Models & Pricing](https://hrouter.net/models/)** · **[Quick Setup Docs](https://hrouter.net/docs/index/)**
+
+---
+
+## 🎬 Live Showcase
+
+**A declarative motion library for HTML → video.** Write a single `data-fx="effect-name@seconds"` attribute on ordinary DOM elements to produce talking-head explainers, tech breakdowns, data stories, deep-space particle worlds, and real 3D anime presenters — rendered deterministically frame-by-frame to 1080p / 60fps MP4 with [HyperFrames](https://hyperframes.heygen.com).
+
+<div align="center">
+  <a href="promo/motion-lib-promo.mp4">
+    <img src="docs/promo-preview.gif" width="100%" alt="motion-lib promo highlight preview" />
+  </a>
+  <p>
+    <sub>▲ Live rendered preview (Click for full HD promo <a href="promo/motion-lib-promo.mp4"><code>promo/motion-lib-promo.mp4</code></a> · Source <a href="promo/index.html"><code>promo/index.html</code></a> · 6-clip showreel <a href="examples/showreel.mp4"><code>examples/showreel.mp4</code></a>)</sub>
+  </p>
+</div>
 
 <!-- STATS:START -->
 | | Count |
@@ -27,14 +52,34 @@
 | Skins | **5** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles) |
 <!-- STATS:END -->
 
-## Why use it
+<details open>
+<summary><b>✨ Release Highlights (v1.4: Real 3D VRM Presenters + 2D RubberHose IK + 12 New FX & Transitions)</b></summary>
+<br />
 
-Making video with HTML, layout is not the hard part. Motion is:
+- **New in v1.4 (3D VRM Avatars & 2D Soft Rig & Cyber Transitions)**:
+  - **Real 3D Anime VRM Module [`fx-vrm.js`](fx-vrm.js)**: Built on `@pixiv/three-vrm` (MIT) with a closed-form two-bone 3D analytical IK solver (`FX.ik3d`), universal cross-model retargeting, 6-segment spine wave, auto-clavicle coupling, 13 full-body presenter poses, C¹ 5-vowel lip-sync (`aa/ih/ou/ee/oh`), MToon cel-shading, 2× Retina supersampling, and continuous 60Hz `SpringBone` hair/skirt physics. Ships with two Pixiv **CC0 1.0 Public Domain** sample avatars (`assets/shino.vrm` & `assets/vita.vrm`).
+  - **2D Soft-Bone & RubberHose Module [`fx-rig.js`](fx-rig.js)**: Generic 2D two-bone IK (`FX.ik2`) + seamless continuous Bezier soft-sleeve limbs (`FX.hose`) + declarative `[data-bone]` / `[data-follow]` / `[data-hose]` for any custom SVG character.
+  - **12 New Effects & Transitions**: 6 transitions (`shatter` `diagonal-split` `blinds` `crt-off` `portal-spin` `halftone`) + 6 effects (`circuit` `overload` `scan` `callout` `scatter-out` `toggle`) + the `switches` generator.
+- **New in v1.3**: Optional WebGL 3D scene module [`fx-3d.js`](fx-3d.js) (galaxy, energy orb, tunnel, black hole, city fly-through, dot globe, 3D particle text, bloom, and programmable camera `cam3d` / `orbit3d`).
+- **New in v1.2**: Optional Canvas 2D particle module [`fx-particles.js`](fx-particles.js) + 5th theme `theme-space` (deep-space particles).
+- **New in v1.1**: 40 effects + 4 transitions + 5 component generators + Text & Papercut categories + 4th theme `theme-paper`.
 
-- **The renderer works by "seek to frame N, take a screenshot".** CSS animations, `setTimeout` and `Math.random` are outside its control, so the output either doesn't move or differs on every run.
-- Hand-writing GSAP timelines means calculating hundreds of time points for a one-minute video.
+</details>
 
-motion-lib schedules every effect onto **one paused GSAP timeline**. You only declare "which element, which effect, at which second":
+---
+
+## 💡 Why `motion-lib`? (Architecture)
+
+When turning HTML into video, layout is easy — **deterministic time** is the hard part:
+
+- **Headless renderers work via `seek(frame N) → screenshot`**: Native CSS `animation`, `setTimeout`, and `Math.random()` run outside the frame clock, producing frozen frames or non-reproducible glitches across parallel workers.
+- **Hand-coding GSAP timelines doesn't scale**: A 60-second explainer takes hundreds of hand-calculated timestamps.
+
+<div align="center">
+  <img src="docs/pipeline.svg" width="100%" alt="motion-lib deterministic rendering pipeline" />
+</div>
+
+`motion-lib` compiles every DOM animation, Canvas particle, WebGL 3D camera move, and VRM bone solver onto **one paused master GSAP timeline**:
 
 ```html
 <h1 data-fx="blur-rise-in@0.2">What is the hardest part of chasing trends?</h1>
@@ -42,52 +87,96 @@ motion-lib schedules every effect onto **one paused GSAP timeline**. You only de
 <ul data-fx="each:pop-in@1(stagger=0.1)"> <li>Chips</li><li>Compute</li><li>LLMs</li> </ul>
 ```
 
-- **Frame-accurate seeking**: jump to any frame and the picture is identical to sequential playback, so every render gives the same result.
-- **Reproducible randomness**: anything random (particles, scrambled text, waveforms) uses the seeded `FX.rand(seed)`.
-- **No network needed**: GSAP and the fonts are bundled in the repo.
-- **Zero build**: one `fx.js`, one `fx.css`. No npm or bundler.
+- 🎯 **Frame-Accurate Seeking**: Jump to any frame `N` and DOM, particles, 3D cameras, and hair physics match sequential playback identically.
+- 🎲 **Seeded Reproducible Randomness**: Particles, text scrambles, waveforms, and eye blinks all use `FX.rand(seed)`.
+- 📦 **100% Offline & Self-Contained**: GSAP, three.js, three-vrm, 4 commercial-friendly fonts, and CC0 sample models live right in the repo.
+- ⚡ **Zero Build Step**: Drop `<script>` and `<link>` into plain HTML — no npm bundler, Webpack, or Vite required.
 
-## Layout
+---
 
-```
+## 🎨 Theme & 3D Gallery
+
+Each of the 5 built-in themes plus the real-3D module comes with a complete example video and editable HTML source:
+
+<table>
+  <tr>
+    <td width="33%" align="center">
+      <a href="examples/violet/violet.mp4"><img src="examples/violet/cover.jpg" width="100%" alt="theme-violet" /></a><br />
+      <b>Violet Tech</b> <code>theme-violet</code><br />
+      <sub><a href="examples/violet/violet.mp4">▶ Watch MP4</a> · <a href="examples/violet/index.html">Source</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/gold/gold.mp4"><img src="examples/gold/cover.jpg" width="100%" alt="theme-gold" /></a><br />
+      <b>Black-Gold Cinema</b> <code>theme-gold</code><br />
+      <sub><a href="examples/gold/gold.mp4">▶ Watch MP4</a> · <a href="examples/gold/index.html">Source</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/pixel/pixel.mp4"><img src="examples/pixel/cover.jpg" width="100%" alt="theme-pixel" /></a><br />
+      <b>Retro Pixel</b> <code>theme-pixel</code><br />
+      <sub><a href="examples/pixel/pixel.mp4">▶ Watch MP4</a> · <a href="examples/pixel/index.html">Source</a></sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="33%" align="center">
+      <a href="examples/paper/paper.mp4"><img src="examples/paper/cover.jpg" width="100%" alt="theme-paper" /></a><br />
+      <b>Papercut Collage</b> <code>theme-paper</code><br />
+      <sub><a href="examples/paper/paper.mp4">▶ Watch MP4</a> · <a href="examples/paper/index.html">Source</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/space/space.mp4"><img src="examples/space/cover.jpg" width="100%" alt="theme-space" /></a><br />
+      <b>Deep-Space Particles</b> <code>theme-space</code><br />
+      <sub><a href="examples/space/space.mp4">▶ Watch MP4</a> · <a href="examples/space/index.html">Source</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/three/three.mp4"><img src="examples/three/cover.jpg" width="100%" alt="fx-3d.js" /></a><br />
+      <b>Real 3D Stage</b> <code>fx-3d.js</code><br />
+      <sub><a href="examples/three/three.mp4">▶ Watch MP4</a> · <a href="examples/three/index.html">Source</a></sub>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 📂 Repository Structure
+
+```text
 motion-lib/
-├── fx.js            the library: effects, transitions, component generators, subtitles, preview player
-├── fx.css           base styles, component styles, five themes
-├── fx-particles.js  optional particle module (space, vortex, black hole, explosion, particle text)
-├── fx-3d.js         optional 3D module (real 3D scenes, bloom, programmable camera; needs three.js)
-├── fx-rig.js        optional 2D soft-bone & RubberHose skinning module for any custom SVG character
-├── fx-vrm.js        optional 3D VRM anime avatar module (FX.ik3d, MToon cel-shading, 5-vowel lip-sync, hair physics)
-├── assets/          built-in CC0 1.0 public-domain 3D VRM sample avatars (shino.vrm, vita.vrm)
+├── fx.js            core engine: effect scheduler, transitions, generators, subtitles, browser preview player
+├── fx.css           typography, UI components, and 5 CSS-variable themes
+├── fx-particles.js  optional Canvas 2D particle module (starfield, nebula, vortex, blackhole, burst, form-text)
+├── fx-3d.js         optional WebGL 3D stage, UnrealBloom, anime lighting, programmable camera
+├── fx-rig.js        optional 2D two-bone IK (FX.ik2) & continuous Bezier RubberHose limbs (FX.hose)
+├── fx-vrm.js        optional real 3D VRM avatar module (FX.ik3d analytical IK, 5-vowel lip-sync, 60Hz hair physics)
+├── assets/          built-in CC0 1.0 Public Domain 3D VRM sample avatars (shino.vrm, vita.vrm)
 ├── fonts/           YouSheBiaoTiHei, Smiley Sans, Fusion Pixel, ZCOOL KuaiLe (licenses in fonts/README.md)
 ├── vendor/          GSAP 3.15, three.js r187 (three-fx.min.js), @pixiv/three-vrm 3.5 (three-vrm.min.js)
-├── new-project.sh   install the library into a video project (also used to update)
-├── chrome-tall.sh   Chrome wrapper for rendering (keeps the bottom subtitles from being cut off)
-├── gen-readme.mjs   generates the count table and effect catalog in this file (node gen-readme.mjs)
-├── demo/            demo page: 6 scenes using the first three themes
-├── promo/           promo source + final video
-└── examples/        one full example per theme (five in all) + a real-3D example + a showreel
+├── new-project.sh   copies/updates the runtime into a video project (./new-project.sh my-video)
+├── chrome-tall.sh   headless Chrome viewport wrapper (prevents bottom subtitle clipping)
+├── gen-readme.mjs   auto-generates multi-language stats & full effect catalogs from source
+├── demo/            starter 6-scene multi-theme demo project
+├── promo/           official promo source + rendered MP4
+└── examples/        5 theme films + real-3D film + combined showreel
 ```
 
-## Requirements
+---
 
-- Node.js 18+ (uses `npx hyperframes`)
-- FFmpeg
-- Google Chrome (default macOS location; set the `REAL_CHROME` environment variable for other locations)
-- The first `npx hyperframes` run downloads the CLI automatically
+## 🚀 Quick Start
 
-## Quick start
+### Requirements
+- **Node.js 18+** (runs `npx hyperframes`, auto-downloads CLI on first run)
+- **FFmpeg**
+- **Google Chrome** (auto-detected on macOS; set `REAL_CHROME` elsewhere)
 
-**1. Create a project**
+### 1. Initialize a Video Project
 
 ```bash
 mkdir my-video
-./new-project.sh my-video        # copies fx.js / fx.css / fonts / GSAP into my-video/lib/
+./new-project.sh my-video        # syncs fx*.js / fx.css / fonts / vendor / CC0 avatars into my-video/lib/
 ```
 
-> HyperFrames can only read files inside the project directory, so the library is **copied into** the project rather than referenced via `../`. After the library is updated, run the same command again on the same project.
-> The same goes for `demo/` and `promo/` in this repo: run `./new-project.sh demo` and `./new-project.sh promo` before opening them for the first time.
+> 💡 HyperFrames only serves files inside the project directory, so `new-project.sh` copies the runtime into `my-video/lib/` (run it again anytime to update). Run `./new-project.sh demo` and `./new-project.sh promo` before opening them for the first time.
 
-**2. Write `my-video/index.html`**
+### 2. Author `my-video/index.html`
 
 ```html
 <!doctype html>
@@ -99,11 +188,11 @@ mkdir my-video
   <script src="lib/fx.js"></script>
 </head>
 <body>
-<div id="root" class="theme-violet" data-composition-id="main" data-width="1920" data-height="1080">
+<div id="root" class="theme-violet" data-composition-id="main" data-width="1920" data-height="1080" data-fps="60">
 
   <section class="scene dark center" data-d="3.5">
-    <h1 class="t-title" data-fx="mask-rise@0.2">Fully automated editing <span class="accent">Skill</span></h1>
-    <p class="t-body" data-fx="rise-in@0.6 marker@1.4">Watch this, and you can too</p>
+    <h1 class="t-title" data-fx="mask-rise@0.2">Automated Video <span class="accent">Skill</span></h1>
+    <p class="t-body" data-fx="rise-in@0.6 marker@1.4">One HTML file, studio-grade motion</p>
   </section>
 
   <section class="scene light" data-d="4" data-in="blur-cross">
@@ -114,299 +203,192 @@ mkdir my-video
 
 </div>
 <script>
-  FX.subtitles([[0.2, 3.4, 'Watch this, and you can too'], [3.5, 7.4, 'Views peak in the {first few hours} after going live']], { style: 'pill' });
+  FX.subtitles([
+    [0.2, 3.4, 'One HTML file, studio-grade motion'],
+    [3.5, 7.4, 'Views peak in the {first few hours} after launch']
+  ], { style: 'pill' });
   FX.build();
 </script>
 </body>
 </html>
 ```
 
-> For particle effects, add one more line after `fx.js`: `<script src="lib/fx-particles.js"></script>` (`new-project.sh` already copies it into `lib/`).
->
-> For 3D effects, add one script before and one after `fx.js`; see the "3D scenes" section below (`new-project.sh` already copies `fx-3d.js` and `vendor/three-fx.min.js` into `lib/`).
-
-
-**3. Preview, snapshot, render**
+### 3. Preview, Snapshot & Render MP4
 
 ```bash
 cd my-video
-open "index.html?play"                       # browser preview: Space to play, ←/→ frame by frame, ↑/↓ jump between scenes
-npx hyperframes snapshot --at 1,3,5          # grab a few frames to check
+open "index.html?play"                       # browser preview: Space play/pause, ←/→ step frames, ↑/↓ jump scenes
+npx hyperframes snapshot --at 1,3,5          # grab quick check frames
 HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
   npx hyperframes render -o out.mp4 --experimental-fast-capture=false
 ```
 
-> Always render with `chrome-tall.sh`. With the full Chrome on this machine in headless mode, the visible height is about 90px shorter than the window, so the bottom of the video (subtitles) gets cut off. The script makes the window taller.
+> ⚠️ Always pass `chrome-tall.sh` when rendering so headless Chrome's window chrome does not crop bottom subtitles.
 
-## Examples
+---
 
-Each of the five themes has a full example (motion only, no voice-over). The source is in the matching directory, ready to adapt:
+## 🤖 AI Video Automation Workflow
 
-| Theme | Example | Source |
-|---|---|---|
-| Violet tech `theme-violet` | [![violet](examples/violet/cover.jpg)](examples/violet/violet.mp4) | [`examples/violet/index.html`](examples/violet/index.html) |
-| Black-gold cinema `theme-gold` | [![gold](examples/gold/cover.jpg)](examples/gold/gold.mp4) | [`examples/gold/index.html`](examples/gold/index.html) |
-| Retro pixel `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
-| Papercut collage `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
-| Deep-space particles `theme-space` | [![space](examples/space/cover.jpg)](examples/space/space.mp4) | [`examples/space/index.html`](examples/space/index.html) |
-| Real 3D scene `fx-3d.js` | [![three](examples/three/cover.jpg)](examples/three/three.mp4) | [`examples/three/index.html`](examples/three/index.html) |
+Because an entire video in `motion-lib` is a single declarative HTML file (`data-fx` + `FX.subtitles`), AI coding agents can generate complete 60fps videos in one shot without writing brittle imperative animation code.
 
-All six combined: [`examples/showreel.mp4`](examples/showreel.mp4).
+Pair **[HRouter (hrouter.net)](https://hrouter.net/)** with **Claude Code / Codex / Gemini CLI** using a single pay-as-you-go API key:
 
-## Syntax
+```bash
+# 1. Create an API key at https://hrouter.net and connect Claude Code
+export ANTHROPIC_BASE_URL="https://hrouter.net"
+export ANTHROPIC_AUTH_TOKEN="sk-your-hrouter-key"
+
+# 2. Batch-generate and render motion-lib explainer videos from plain scripts
+claude "Read motion-lib/README.en.md and fx-vrm.js, turn script.md into a 60fps index.html video and render MP4"
+```
+
+---
+
+## 📐 Core Syntax
 
 ### Scenes `<section class="scene">`
 
-A scene is a shot. Scenes are chained end to end in order.
-
 | Syntax | Meaning |
 |---|---|
-| `data-d="4"` | Duration of 4 seconds |
-| `data-t="12.5"` | Explicit start time (if omitted, it follows the previous scene) |
-| `data-in="blur-cross(dur=0.5)"` | The transition into this scene; see "Transitions" |
-| `class="scene dark"` / `"scene light"` | Switch a single scene to a dark / light background |
-| `class="scene overlay"` | Overlay layer: takes no sequence time and shows alongside other scenes (corner badges, persistent progress bars) |
-
-The root element must have `data-composition-id="main"`, `data-width` and `data-height`. The total duration is computed automatically.
+| `data-d="4"` | Scene duration (4 seconds) |
+| `data-t="12.5"` | Explicit start second (if omitted, follows the previous scene) |
+| `data-in="blur-cross(dur=0.5)"` | Transition entering this scene (see Transitions catalog) |
+| `class="scene dark"` / `"scene light"` | Per-scene dark / light background override |
+| `class="scene overlay"` | Persistent global overlay (corner 3D presenter, watermarks, chapter bar) |
 
 ### Effects `data-fx="[target:]name@time(params)"`
 
-An element can have several effects, separated by spaces: `data-fx="rise-in@0.2 pulse@1.5 fade-out@-0.3"`.
+Chain multiple effects separated by spaces: `data-fx="rise-in@0.2 pulse@1.5 fade-out@-0.3"`.
 
 | Part | Syntax | Meaning |
 |---|---|---|
-| Time | `@1.2` | 1.2 seconds after the scene starts |
-| | `@+0.3` | 0.3 seconds after the previous effect on the same element |
-| | `@-0.4` | 0.4 seconds before the scene ends (for exits) |
-| Target | (omitted) | The element itself |
-| | `each:` | Every child element, automatically staggered (card groups, lists, bars) |
-| | `chars:` / `words:` / `lines:` | Split into characters / words / lines (by `<br>`) and animate each |
-| Params | `dur=0.8` | Duration in seconds |
-| | `ease=spring` | Easing; see the table below |
-| | `stagger=0.1` | Stagger interval (with `each:` / `chars:`) |
-| | `order=center` | Stagger order: `start` `end` `center` `edges` |
-| | others | Each effect's own parameters; see the "Effect catalog" |
+| **Time** | `@1.2` / `@+0.3` / `@-0.4` | 1.2s from scene start / 0.3s after previous effect / 0.4s before scene end |
+| **Target** | *(omitted)* / `each:` / `chars:` `words:` `lines:` | Element itself / staggered children / split text units |
+| **Params** | `dur=0.8` `ease=spring` `stagger=0.1` `order=center` | Duration, easing alias (or raw GSAP ease), stagger step & order |
 
-**Easing aliases**
+<details>
+<summary><b>View all 12 built-in Easing Aliases</b></summary>
+<br />
 
-| Alias | Equals | Feel |
+| Alias | GSAP Curve | Feel |
 |---|---|---|
-| `out` (default) | `power3.out` | Fast start, soft stop; the most general-purpose |
-| `soft` | `power2.out` | Gentle |
-| `snap` | `expo.out` | Shoots into place, then settles slowly |
-| `sharp` | `power4.out` | Crisper than out |
-| `inout` | `power3.inOut` | Slow at both ends, fast in the middle; for camera moves |
-| `in` | `power2.in` | Keeps accelerating; for exits |
-| `spring` | `back.out(1.7)` | Slight overshoot and settle |
-| `bounce` | `back.out(2.8)` | Pronounced overshoot |
-| `elastic` | `elastic.out(1,0.55)` | Spring |
-| `drop` | `bounce.out` | Bounces on landing |
-| `linear` | `none` | Constant speed |
-| `pixel` | `steps(5)` | Stepped (pixel style) |
+| `out` (default) | `power3.out` | Fast start, smooth settle |
+| `soft` | `power2.out` | Gentle deceleration |
+| `snap` | `expo.out` | Ultra-snappy arrival |
+| `sharp` | `power4.out` | Crisp, decisive stop |
+| `inout` | `power3.inOut` | Smooth ease-in-out for camera moves |
+| `in` | `power2.in` | Accelerating exit |
+| `spring` | `back.out(1.7)` | Subtle overshoot |
+| `bounce` | `back.out(2.8)` | Lively overshoot |
+| `elastic` | `elastic.out(1,0.55)` | Elastic spring |
+| `drop` | `bounce.out` | Gravity landing bounce |
+| `linear` | `none` | Constant velocity |
+| `pixel` | `steps(5)` | Retro stepped motion |
 
-You can also write GSAP's own names directly, e.g. `ease=power4.out`, `ease=steps(8)`, `ease=elastic.out(1,0.5)`.
+</details>
 
-### Component generators `data-make="name"`
+### Component Generators `data-make="name"` (17 Generators)
 
-Let the library generate repetitive DOM, then pair it with the matching effect:
-
-| Name | Attributes | Pairs with | Use |
+| Name | Attributes | Pairs with | Purpose |
 |---|---|---|---|
-| `bars` | `data-values` `data-labels` `data-hi="2,3"` `data-max` | `each:grow-y` | Bar chart / histogram |
-| `line` | `data-values` `data-w` `data-h` `data-smooth` | `draw` | Line / curve |
-| `ring` | `data-size` `data-stroke` `data-dash` | `ring(to=0.7)` | Ring progress, countdown |
-| `wave` | `data-n` `data-seed` | `each:grow-y`, `wave-live` | Audio waveform |
+| `bars` | `data-values` `data-labels` `data-hi="2,3"` `data-max` | `each:grow-y` | Vertical bar chart / histogram |
+| `line` | `data-values` `data-w` `data-h` `data-smooth` | `draw` | Polyline / smooth Bezier trend line |
+| `ring` | `data-size` `data-stroke` `data-dash` | `ring(to=0.7)` | Circular progress & donut ring |
+| `wave` | `data-n` `data-seed` | `each:grow-y`, `wave-live` | Audio waveform bars |
 | `steps` | `data-labels="Topic,Script,Voice"` | `step(i=2)` | Step navigation pills |
 | `chapters` | `data-labels` | `chapter(i=3)` | Top chapter progress bar |
-| `pixels` | `data-text="SKILL?"` `data-size` `data-colors` | `each:pixel-in(order=random)` | 5×7 dot-matrix block lettering |
-| `wall` | `data-cols` `data-rows` `data-seed` | `drift` | Background card wall |
-| `dust` | `data-n` `data-seed` | `drift`, `float` | Floating particles |
-| `circle-text` | `data-text` `data-r` (radius) | `spin` (rotate the ring of text) | Circular text, badges, stamps |
-| `retro-grid` | `data-cell` (cell size) `data-color` `data-angle` (tilt) | `bg-scroll` (make the grid flow toward the viewer) | Retro perspective-grid background |
-| `papercut` | `data-size` `data-fold` (number of folds: 6 / 8 / 12) `data-shape` (`flower` `circle` `square`) `data-color` `data-seed` | `pop-in`, `spin`, `jitter` | Symmetric paper-cut window flowers; every seed gives a different pattern |
-| `hills` | `data-layers` (number of layers) `data-colors` (colors from back to front) `data-seed` | `layer-rise`, `parallax` | Layered paper hills; each layer is a child element |
-| `torn` | `data-edges` (`top,right,bottom,left`, default `top,bottom`) `data-depth` `data-teeth` `data-seed` | `stick-on`, `rise-in` | Cuts an element's edges into a ragged torn-paper strip; `clip-path` clips shadows, so wrap it in `fx-torn-shadow` if you want one |
-| `space` | particle effects go in `data-fx` (needs `fx-particles.js`) | `nebula` `starfield` `vortex` `blackhole` `form-text` and other Particles effects | A canvas container: one canvas, each particle effect is a layer |
-| `stage3d` | `data-bloom` (bloom strength, 0 turns it off) `data-threshold` `data-radius` `data-bg` `data-fog` `data-fov` `data-cam` `data-look` `data-light` | `stars3d` `galaxy3d` `orb3d` `cam3d` `orbit3d` and other 3D effects | A 3D stage: one WebGL canvas and one camera (needs `three-fx.min.js` and `fx-3d.js`) |
+| `switches` | `data-labels="Search,Memory,Tools"` `data-on="1,3"` | `toggle(i=2,on=1)` | Toggle switch list (supports batch `i=1/2/3`) |
+| `pixels` | `data-text="SKILL?"` `data-size` `data-colors` | `each:pixel-in(order=random)` | 5×7 dot-matrix block text |
+| `wall` | `data-cols` `data-rows` `data-seed` | `drift` | Ambient background card grid |
+| `dust` | `data-n` `data-seed` | `drift`, `float` | Floating ambient particles |
+| `circle-text` | `data-text` `data-r` | `spin` | Circular badge / stamp text |
+| `retro-grid` | `data-cell` `data-color` `data-angle` | `bg-scroll` | Synthwave perspective grid |
+| `papercut` | `data-size` `data-fold` `data-shape` `data-color` `data-seed` | `cut-in`, `spin`, `jitter` | Symmetric paper-cut window flower |
+| `hills` | `data-layers` `data-colors` `data-seed` | `layer-rise`, `parallax` | Layered paper hills |
+| `torn` | `data-edges` `data-depth` `data-teeth` `data-seed` | `stick-on`, `rise-in` | Torn-paper ragged edge mask |
+| `space` | particle effects in `data-fx` (`fx-particles.js`) | `nebula` `starfield` `vortex` `form-text` | Multi-layer Canvas 2D particle stage |
+| `stage3d` | `data-bloom` `data-alpha` `data-light` `data-cam` `data-look` | `galaxy3d` `city3d` `cam3d` `vrm3d` | WebGL 3D stage (supports alpha overlay & anime lighting) |
 
-### Subtitles
+---
 
-```js
-FX.subtitles([
-  [startSeconds, endSeconds, 'Text; words in {braces} take the accent color'],
-  …
-], { style: 'pill', pop: false });
-```
+## 🌟 Advanced Visual & Character Modules
 
-| `style` | Look | Pairs with theme |
-|---|---|---|
-| `pill` | Black rounded pill + white text | Violet tech |
-| `bar` | Semi-transparent black bar | Retro pixel |
-| `plain` | White text + shadow, no background | Black-gold cinema |
-| `paper` | Beige torn-paper strip + dark text | Papercut collage |
+### 1. Real 3D Anime VRM Presenter (`fx-vrm.js`)
 
-With `pop: true` each subtitle floats up gently as it appears; the default is a hard cut, which is what talking-head videos usually use.
+Place a real 3D anime presenter in the corner of your video with **closed-form two-bone 3D IK (`FX.ik3d`), MToon cel-shading, 5-vowel lip-sync, comic emotes, and silky 60Hz `SpringBone` hair/skirt physics**:
 
-### Particles (fx-particles.js)
-
-An optional module with canvas (Canvas 2D) particles: starfield, nebula, vortex, black hole, energy orb, explosion, particle text and particle stream. Load it after `fx.js`, then write:
-
-```html
-<script src="lib/fx-particles.js"></script>
-
-<div class="layer" data-make="space"
-     data-fx="nebula@0 starfield@0(speed=0.15) vortex@1 form-text@4(text=HELLO)"></div>
-<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, SPACE</h1>
-```
-
-- One `data-make="space"` is one canvas; every particle effect written on it is a layer, stacked **bottom to top** in the order written (above: the nebula is at the bottom, the text on top). The heading is a normal DOM element sitting over the canvas.
-- Common parameters: `dur` (how long this layer lasts, default until the scene ends), `fade` / `out` (fade in / out seconds), `x` / `y` (center position in percent), `seed`.
-- Color lists are separated with `/`, e.g. `colors=#6fd3ff/#ff8a4d`.
-- `form-text` has three different times: `dur` is the length of the whole layer, `conv` is how long the gathering takes, and `start` is how long the particles drift first. It samples the theme's title font, so Chinese and English both work.
-- The canvas is a normal element, so you can add other effects to it as usual, e.g. `to@3(scale=1.3)` for a push-in.
-- Like the rest of the library it is frame-exact: every frame is a pure function of time, and randomness is seeded. Note that perspective is **simulated** on a 2D canvas; it is not real 3D (WebGL); for real 3D use `fx-3d.js`, described below.
-
-### 3D scenes (fx-3d.js)
-
-An optional module for real 3D scenes (three.js / WebGL): 3D starfield, spiral galaxy, 3D energy orb, particle tunnel, wave grid, dot globe, 3D black hole, 3D explosion, 3D particle text and a city, plus two camera effects. **Load the scripts in exactly this order:**
+<div align="center">
+  <img src="docs/vrm-preview.gif" width="88%" alt="fx-vrm.js 3D VRM presenter + circuit + switches live render" />
+  <p><sub>▲ Built-in CC0 avatar <code>assets/shino.vrm</code> + <code>circuit</code> packet flow + <code>switches</code> rendered with HyperFrames</sub></p>
+</div>
 
 ```html
 <script src="lib/vendor/gsap.min.js"></script>
 <script src="lib/vendor/three-fx.min.js"></script>
+<script src="lib/vendor/three-vrm.min.js"></script>
 <script src="lib/fx.js"></script>
 <script src="lib/fx-3d.js"></script>
+<script src="lib/fx-vrm.js"></script>
 
-<div class="layer" data-make="stage3d" data-bloom="0.8"
-     data-fx="stars3d@0 galaxy3d@0 orb3d@0(in=1.5) orbit3d@0(turn=120,r=13,h=5,dur=6)"></div>
-<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, 3D</h1>
+<section class="scene overlay" data-t="0" data-d="30">
+  <div class="abs" style="left:20px;bottom:0;width:580px;height:900px;pointer-events:none"
+       data-make="stage3d" data-alpha="1" data-light="anime"
+       data-fov="26" data-cam="0,1.34,2.85" data-look="0,1.30,0"
+       data-fx="vrm3d@0(src=shino,headscale=1.18,ry=12)
+                vrm-pose@0(pose=wave,expr=happy,dur=0.45)
+                vrm-pose@4.0(pose=explain,expr=relaxed,look=right,emote=sparkle)
+                vrm-pose@9.0(pose=think,expr=sad,look=up,emote=question)
+                vrm-talk@0.3(dur=12.0,rate=7.5)"></div>
+</section>
 ```
 
-- One `data-make="stage3d"` is one 3D stage (one WebGL canvas and one camera). The heading above is a normal DOM element laid directly over the picture.
-- The effects you write on a stage come in two kinds: those that **put things into the stage** (`stars3d` `galaxy3d` `orb3d` `tunnel3d` `waves3d` `globe3d` `blackhole3d` `burst3d` `text3d` `city3d`) and those that **move the camera** (`cam3d` `orbit3d`). Their parameters are in the 3D section of the effect catalog.
-- How it differs from `fx-particles.js`: the particle module **simulates** perspective on a 2D canvas, is lightweight and needs nothing else; the 3D module has a real camera, real lighting and bloom and can handle one to two orders of magnitude more particles, but depends on three.js (`vendor/three-fx.min.js`, 753 KB).
-- 3D scenes usually go with `theme-space`; there is no dedicated theme.
+- **Analytical 3D Two-Bone IK (`FX.ik3d`) & Full-Body Coordination**: Zero gimbal lock, paired with a 6-segment phase-delayed spine wave (`hips → spine → chest → upperChest → neck → head`), auto-clavicle lift, contrapposto hip sway, and 30-joint finger wave.
+- **Universal VRM 0.x / 1.0 Retargeting**: Works out-of-the-box with [VRoid Studio](https://vroid.com) exports, community `.vrm` models, and `.vrma` mocap clips (`vrm-anim`); auto-normalizes root offsets, eye height, and shoulder/arm span (`headscale` & `padz` supported).
+- **13 Presenter Poses & Comic Emotes**: `idle` `wave` `explain` `point` `point-up` `think` `shock` `clasp` `reject` `shrug` `proud` `cheer` `bow` (or custom 3D wrist targets `lx/ly/lz/rx/ry/rz`) + `sweat` `question` `idea` `anger` `sparkle` `excl`.
 
-**Stage attributes**
+### 2. 2D Soft-Bone & RubberHose Characters (`fx-rig.js`)
 
-| Attribute | Meaning |
-|---|---|
-| `data-bloom` | Bloom strength; `0` turns it off |
-| `data-threshold` | How bright something must be to glow |
-| `data-radius` | How far the bloom spreads |
-| `data-bg` | Background color |
-| `data-fog` | Fog density (around 0.003; distant things fade out) |
-| `data-fov` | Camera field of view |
-| `data-cam="x,y,z"` | Initial camera position |
-| `data-look="x,y,z"` | Where the camera initially looks |
-| `data-light="0"` | Turns off the default lighting |
+For flat rounded 2D SVG characters, [`fx-rig.js`](fx-rig.js) provides 2D two-bone IK (`FX.ik2`) and seamless cubic-Bezier soft-sleeve limbs (`FX.hose`) — eliminating puppet joint seams (`rig-idle`, `rig-pose`, `rig-talk`, `rig-nod`, `rig-wave`).
 
-**Camera**: the camera is a pure function of time. `cam3d` flies from the current position to a new one (`x` `y` `z`) while turning the view toward a new target (`lx` `ly` `lz`); `orbit3d` circles a target (`turn` is how many degrees, `r` the distance at the end, `h` the height at the end). Parameters you leave out stay unchanged. **Do not overlap `cam3d` and `orbit3d` in the same time span**, or it is unclear where the camera should go.
+### 3. WebGL Real 3D Scenes (`fx-3d.js`) & Canvas 2D Particles (`fx-particles.js`)
 
-**Common object parameters**: `dur` (how long it exists), `fade` / `out` (fade in / out seconds), `px` / `py` / `pz` (placement), `s` (overall scale), `seed`.
+- **`fx-3d.js` (`data-make="stage3d"`)**: Supports `data-alpha="1"` (transparent overlay + automatic 2× Retina supersampling), `data-light="anime"`, `data-bloom`, `data-fog`, `data-cam`, `data-look`, and pure-time camera moves (`cam3d`, `orbit3d`).
+- **`fx-particles.js` (`data-make="space"`)**: Lightweight zero-WebGL layered 2D particles (`starfield`, `nebula`, `vortex`, `blackhole`, `orb`, `burst`, `form-text`, `stream`).
+- **Custom GSAP / `FX.register`**: Extend via `FX.build({ extra(tl, at) {} })` or `FX.register(name, catKey, desc, fn)`. Keep the 3 deterministic rules: no CSS `animation`/`transition`, no `setTimeout`/`rAF`, and always use `FX.rand(seed)`.
 
-**Notes**
+---
 
-- Bloom smears very bright text: when you use `text3d`, lower `data-bloom` to 0.35 to 0.5.
-- Each `stage3d` is a WebGL context, so keep it to 7 or fewer per video.
-- Frame-exact: particle positions are computed on the GPU from "attributes + time", and the same frame rendered twice is byte-for-byte identical.
-- Rendering needs WebGL. With GPU acceleration it is fast (a 5-second clip renders in about 16 seconds); a machine without it falls back to software rendering, which is much slower.
-- 3D output has a high bitrate; compress it with ffmpeg before uploading: `ffmpeg -i in.mp4 -c:v libx264 -crf 24 out.mp4`.
+## 🎭 Five Themes & FAQ
 
-### Hand-written extras
-
-For effects the library doesn't have, write GSAP directly. Use `at('sceneId', secondsInScene)` to convert to absolute time:
-
-```js
-FX.build({
-  extra(tl, at) {
-    tl.to('#logo', { rotation: 360, duration: 1 }, at('s3', 0.5));
-  }
-});
-```
-
-You can also register it as a new effect, usable from `data-fx` afterwards:
-
-```js
-FX.register('spin-in', '入场', 'Spin in', c => {
-  c.tl.from(c.els, { rotation: -180, opacity: 0, duration: +(c.o.dur || 0.6) }, c.t);
-});
-```
-
-> The second argument is the category key used by the catalog (`入场` Enter, `退场` Exit, `强调` Emphasis, `数据` Data, `文字` Text, `镜头` Camera, `角色` Character, `剪纸` Papercut, `组件` Components, `转场` Transitions). Keep these Chinese keys as-is.
-
-**Three hard rules**: no CSS animation / transition; no `setTimeout` / `requestAnimationFrame`; for randomness use `FX.rand(seed)`, never `Math.random`.
-
-## Five themes
-
-Change one class on the root element to restyle the whole video:
-
-| class | Style | Background | Title font | Accent | Good for |
+| Theme class | Style | Background | Title font | Accent | Best for |
 |---|---|---|---|---|---|
-| `theme-violet` | Violet tech | White `#fdfdfd` / dark `#171719` (switch per scene with `dark` / `light`) | YouSheBiaoTiHei | Violet `#8453e8` / light violet `#d5befe` | AI tools, productivity, workflow explainers |
-| `theme-gold` | Black-gold cinema | Deep blue-black `#080a0f` + blurred footage + vignette | Gold gradient italic | Gold `#e4b256`; red `#ff5b56` only for declines | Finance, industry analysis, rankings |
-| `theme-pixel` | Retro pixel | Beige halftone paper `#efe9dc` | Fusion Pixel font | Green `#9fe07a` · red · yellow | Anime hosts, light-hearted explainers |
-| `theme-paper` | Papercut collage | Beige paper `#efe6d6` + pure-CSS paper grain | ZCOOL KuaiLe | Paper red `#c8322b` · teal `#2f6b6e` · mustard `#e3a83b` | Culture, solar terms, lifestyle, kids' science, handmade-feel brands |
-| `theme-space` | Deep-space particles | Deep blue `#061226` (radial gradient) | Default title font, with a built-in cyan glow (also usable alone as `.t-glow`) | Cyan `#6fd3ff` · orange `#ff8a4d` | Tech, science explainers, space, launch-event openers, concept films; pair subtitles with `{style:'plain'}`; there is also `.scene.space-bg` |
+| `theme-violet` | Violet Tech | `#fdfdfd` / `#171719` | YouSheBiaoTiHei | `#8453e8` | AI tools, SaaS, workflow explainers |
+| `theme-gold` | Black-Gold Cinema | `#080a0f` + vignette | Gold italic gradient | `#e4b256` | Finance, industry reports, rankings |
+| `theme-pixel` | Retro Pixel | `#efe9dc` halftone | Fusion Pixel | `#9fe07a` | Tech trivia, retro gaming, anime hosts |
+| `theme-paper` | Papercut Collage | `#efe6d6` paper grain | ZCOOL KuaiLe | `#c8322b` · `#2f6b6e` | Culture, storytelling, handcrafted brands |
+| `theme-space` | Deep-Space | `#061226` radial glow | Cyan `.t-glow` | `#6fd3ff` · `#ff8a4d` | Space, science, keynote openers |
 
-All colors, fonts, corner radii and subtitle sizes are CSS variables at the top of `fx.css` (`--fx-bg` `--fx-accent` `--fx-font-title` …). Change the variables to build your own theme.
+<details>
+<summary><b>Common Troubleshooting (Subtitles cropped / Missing effects / 3D black screen)</b></summary>
+<br />
 
-**Common style classes**
+- **Bottom subtitles cut off in rendered MP4?** Always pass `HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh"`.
+- **Gradient text vanishes with `chars:` / `type`?** `background-clip: text` cannot inherit through split character spans; use a solid color (e.g. `color: #e4b256`) on per-char animated titles.
+- **3D / VRM stage blank?** Load scripts strictly in order: `gsap.min.js` → `three-fx.min.js` → (`three-vrm.min.js`) → `fx.js` → `fx-3d.js` → (`fx-vrm.js`), and keep `stage3d` instances ≤ 7 per video.
 
-| Type | Class names |
-|---|---|
-| Text | `t-hero` `t-title` `t-h2` `t-h3` `t-body` `t-small` `t-en` (small English subtitle) `t-num` (big number) `t-mono` `t-pixel` `accent` `muted` `unit` |
-| Layout | `layer` (full-screen layer) `abs` `center` `row` `col` |
-| Cards | `card` `shot` (screenshot card) `glass` (glass card) `qcard` (question-mark placeholder card) `stat` (big-number card) |
-| Labels | `pill` `note` (black annotation on a screenshot) `tag` `speed` (×3.5 fast-forward badge) `ptag` (pixel tag) |
-| Components | `fx-window` (mac window; add `.pixel` for a pixel window) `fx-chat` (chat bubble) `fx-check` (checklist tick) `fx-cursor` (mouse cursor) `pbar` (pixel energy bar) `fx-hbar` (horizontal bar) |
-| Background | `bg-footage` (blurred footage) `vignette` |
-| Character | `host` (portrait container holding several `[data-pose]` images, used with `pose` / `lipsync`) |
-| Papercut | `paper` (paper sheet; add `.red` `.teal` `.mustard` `.ink` `.tilt-l` `.tilt-r`) `paper-tag` (ragged-edge label) `tape` (masking tape) `fx-torn-shadow` (wrapper that adds a shadow to torn-edge elements) `scene.paper-bg` (paper-grain background for a scene under any theme); new variable `--fx-font-round` (rounded font) |
+</details>
 
-## FAQ
+---
 
-**Screenshots look fine, but the final video is missing the bottom strip and the subtitles?**
-You rendered without `chrome-tall.sh`. See step 3 of "Quick start".
+## 📜 License & Credits
 
-**An effect doesn't show up?**
-First check the name for typos. A wrong name doesn't abort the render; it only prints `FX：没有这个动效` ("no such effect") to the console, visible with `npx hyperframes validate` or the browser console. Also check that the time doesn't exceed the scene duration.
+- **Core Library (`fx*.js`, `fx.css`)**: [MIT License](LICENSE); third-party notices in [NOTICE](NOTICE).
+- **3D & VRM Runtime**: [three.js](https://github.com/mrdoob/three.js) (MIT, [vendor/three-LICENSE.txt](vendor/three-LICENSE.txt)) & [@pixiv/three-vrm](https://github.com/pixiv/three-vrm) (MIT, [vendor/three-vrm-LICENSE.txt](vendor/three-vrm-LICENSE.txt)).
+- **Sample 3D Avatars (`assets/shino.vrm`, `assets/vita.vrm`)**: Released under **CC0 1.0 Public Domain** by pixiv Inc. ([assets/README.md](assets/README.md)).
+- **GSAP & Fonts**: GSAP under GreenSock [Standard License](https://gsap.com/standard-license); font licenses in [fonts/README.md](fonts/README.md).
+- **Credits & Sponsor**: Effect ideas in v1.1 were inspired by [animate.css](https://github.com/animate-css/animate.css), [Magic UI](https://github.com/magicuidesign/magicui), and [React Bits](https://github.com/DavidHDev/react-bits) (all independently re-implemented from scratch for frame-accurate seeking). Powered & sponsored by **[HRouter (hrouter.net)](https://hrouter.net/)** — one API key for Claude, GPT, Gemini & Grok.
 
-**Chinese text turns into boxes, or the font is wrong?**
-Body text uses the system PingFang SC. On non-macOS machines, install Noto Sans SC and add it to `--fx-font-body`.
-
-**`npx hyperframes lint` reports `missing_timeline_registry` / `font_family_without_font_face`?**
-These are false positives from the static check: the timeline is registered by `fx.js` at runtime, and the fonts are declared via `@import` in `fx.css`. Trust the frames produced by `snapshot`.
-
-**Gradient text disappears after splitting?**
-Gradient text made with `background-clip:text` (such as the gold text in the gold theme) vanishes when combined with splitting effects like `chars:`, `type` or `roll`. Give the text you animate per character a solid colour instead (e.g. `color:#e4b256`).
-
-**Want to sync with a voice-over?**
-Use the voice-over timestamps to fill each scene's `data-t` / `data-d` and the times in `FX.subtitles`. Effect times are all relative to the start of the scene, so they don't need to change.
-
-**Particles not showing up?**
-Check that `lib/fx-particles.js` is loaded (after `fx.js`), and that the particle effects are written on an element with `data-make="space"`; on any other element they draw nothing.
-
-**The 3D picture is black / not showing up?**
-Check three things: the scripts load in the order `gsap` → `three-fx.min.js` → `fx.js` → `fx-3d.js`; the 3D effects are written on an element with `data-make="stage3d"`; and the machine doing the rendering supports WebGL.
-
-## License
-
-- Code: [MIT](LICENSE). Third-party notes: [NOTICE](NOTICE).
-- GSAP: used under GreenSock's [Standard License](https://gsap.com/standard-license) (free, including commercial use).
-- Fonts: see [fonts/README.md](fonts/README.md).
-- three.js: [MIT](https://github.com/mrdoob/three.js) (`vendor/three-fx.min.js` bundles r187 and the post-processing modules; license in [vendor/three-LICENSE.txt](vendor/three-LICENSE.txt)).
-
-## Credits
-
-The new effects and theme in v1.1 were inspired by these open-source projects:
-
-- [animate.css](https://github.com/animate-css/animate.css) (MIT)
-- [Magic UI](https://github.com/magicuidesign/magicui) (MIT)
-- [React Bits](https://github.com/DavidHDev/react-bits) (MIT + Commons Clause)
-
-Those projects are CSS animations or React components, which a frame-by-frame renderer cannot drive. motion-lib re-implements the corresponding effects for a seekable, reproducible timeline. We borrowed only the ideas and effect names (the original names in parentheses in the catalog) and **did not copy any of their code**.
-
-The 3D module is built on [three.js](https://github.com/mrdoob/three.js) (MIT).
+---
 
 <!-- CATALOG:START -->
 ## Effect catalog (153 effects + 20 transitions)

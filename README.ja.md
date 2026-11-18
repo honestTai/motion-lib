@@ -1,22 +1,47 @@
-# motion-lib
+<div align="center">
+
+<img src="docs/hero-banner.svg" width="100%" alt="motion-lib — HTML → 動画のための宣言型モーションライブラリ" />
+
+<br />
 
 [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · **日本語**
 
-**HTML → 動画のための宣言型モーションライブラリです。** 要素に `data-fx="エフェクト名@秒数"` と 1 行書くだけで、トーク系の解説動画やテック解説動画でよく見るモーションが作れます。あとは [HyperFrames](https://hyperframes.heygen.com) でフレームごとに MP4 へレンダリングします。
+[![License: MIT](https://img.shields.io/badge/License-MIT-8453e8?style=flat-square)](LICENSE)
+[![Effects](https://img.shields.io/badge/Effects-153-6fd3ff?style=flat-square)](#エフェクトカタログエフェクト-153-種--トランジション-20-種)
+[![Transitions](https://img.shields.io/badge/Transitions-20-e4b256?style=flat-square)](#トランジション-20)
+[![3D & VRM](https://img.shields.io/badge/3D_&_VRM-three.js_+_IK-68e6b2?style=flat-square)](#1-本物の-3d-アニメ-vrm-プレゼンターfx-vrmjs)
+[![Zero Build](https://img.shields.io/badge/Build-Zero_Bundler-2ea043?style=flat-square)](#クイックスタート)
+[![Sponsor: HRouter](https://img.shields.io/badge/Sponsor-HRouter.net-a8ff57?style=flat-square&labelColor=0b1a13)](https://hrouter.net/)
 
-> **v1.5 の新機能**：オプションの真 3D アニメアバターモジュール `fx-vrm.js`（`@pixiv/three-vrm` MIT ベース：標準 `.vrm` モデルや `.vrma` モーションを読み込み、MToon トゥーン輪郭描画、解析的 2 ボーン 3D IK `FX.ik3d`、6 節脊椎ウェーブ、自動鎖骨連動、13 種の全身プレゼンポーズ、5 母音リップシンク `aa/ih/ou/ee/oh`、2× スーパーサンプリング、決定論的 60Hz `SpringBone` 髪・スカート物理を搭載。CC0 パブリックドメインのサンプルモデル `assets/shino.vrm`・`assets/vita.vrm` を同梱）。
->
-> **v1.4 の新機能**：オプションの 2D ソフトボーン＆ラバーホースモジュール `fx-rig.js`（2 ボーン IK `FX.ik2` + 継ぎ目のない連続ベジェ袖 `FX.hose` + 任意の SVG キャラ向け `[data-bone]` / `[data-follow]`）+ トランジション 6 種（`shatter` `diagonal-split` `blinds` `crt-off` `portal-spin` `halftone`）+ エフェクト 6 種（`circuit` `overload` `scan` `callout` `scatter-out` `toggle`）+ `switches` コンポーネント。
->
-> **v1.3 の新機能**：オプションの 3D モジュール `fx-3d.js`（本物の 3D シーン：銀河、エネルギーボール、トンネル、ブラックホール、都市の飛行、ドットの地球、立体パーティクル文字など 12 種のエフェクト。グロー効果とプログラムできるカメラ付き）。
->
-> **v1.2 の新機能**：オプションのパーティクルモジュール `fx-particles.js`（パーティクルエフェクト 8 種：星空、星雲、渦、ブラックホール、エネルギーボール、爆発、パーティクル文字、パーティクルの流れ）と、5 つ目のスキン `theme-space`（深宇宙パーティクル）。
->
-> **v1.1 の新機能**：エフェクト 40 種 + トランジション 4 種（`paper-slide` `tear` `glitch-cut` `open`）+ コンポーネントジェネレーター 5 個（`circle-text` `retro-grid` `papercut` `hills` `torn`）、新カテゴリー 2 つ（テキスト・切り紙）、4 つ目のスキン `theme-paper`（切り紙コラージュ）。animate.css、Magic UI、React Bits にインスピレーションを受けています。末尾の「クレジット」をご覧ください。
+[クイックスタート](#-クイックスタート) · [テーマギャラリー](#-テーマ--3d-ギャラリー) · [AI 動画自動化](#-ai-による動画自動生成ワークフロー) · [基本構文](#-基本構文) · [2D IK & 3D VRM](#-高度なビジュアル--キャラクターモジュール) · [エフェクト一覧](#エフェクトカタログエフェクト-153-種--トランジション-20-種)
 
-[![motion-lib プロモーション動画](promo/cover.jpg)](promo/motion-lib-promo.mp4)
+</div>
 
-> 上のプロモーション動画は、このライブラリで作られています。ソースは [`promo/index.html`](promo/index.html) です。
+---
+
+<!-- HROUTER SPONSOR BANNER -->
+<div align="center">
+  <a href="https://hrouter.net/" target="_blank" rel="noopener">
+    <img src="docs/hrouter-en.svg" width="100%" alt="HRouter — One API Key for Claude, GPT, Gemini & Grok" />
+  </a>
+</div>
+
+> ⚡ **公式コンピュートパートナー [HRouter](https://hrouter.net/)**：**1 つの API キーで Claude / GPT / Gemini / Grok に直結**。従量課金・即時チャージ反映・リクエスト単位の利用明細に対応し、**[Claude Code](https://hrouter.net/docs/claude-code/)**・**[Codex](https://hrouter.net/docs/codex/)**・**[Gemini CLI](https://hrouter.net/docs/gemini-cli/)** から `motion-lib` の動画 HTML を一括自動生成できます！ 👉 **[公式サイト hrouter.net](https://hrouter.net/)** · **[モデルと料金](https://hrouter.net/models/)** · **[導入ガイド](https://hrouter.net/docs/index/)**
+
+---
+
+## 🎬 ライブプレビュー
+
+**HTML → 動画のための宣言型モーションライブラリです。** 通常の DOM 要素に `data-fx="エフェクト名@秒数"` と 1 行書くだけで、解説動画・テック動画・データ可視化・宇宙パーティクル・本物の 3D VRM アニメプレゼンターを構築し、[HyperFrames](https://hyperframes.heygen.com) で 1080p / 60fps MP4 へ決定論的にレンダリングできます。
+
+<div align="center">
+  <a href="promo/motion-lib-promo.mp4">
+    <img src="docs/promo-preview.gif" width="100%" alt="motion-lib プロモーション動画プレビュー" />
+  </a>
+  <p>
+    <sub>▲ 実機レンダリングプレビュー（フル HD 動画 <a href="promo/motion-lib-promo.mp4"><code>promo/motion-lib-promo.mp4</code></a> · ソース <a href="promo/index.html"><code>promo/index.html</code></a> · 6 本まとめ <a href="examples/showreel.mp4"><code>examples/showreel.mp4</code></a>）</sub>
+  </p>
+</div>
 
 <!-- STATS:START -->
 | | 数 |
@@ -27,386 +52,149 @@
 | スキン | **5** 種（白紫テック · 黒金シネマ · レトロピクセル · 切り紙コラージュ · 深宇宙パーティクル） |
 <!-- STATS:END -->
 
-## なぜ使うのか
+<details open>
+<summary><b>✨ アップデートハイライト（v1.4：3D VRM アバター + 2D ラバーホース IK + 新エフェクト・トランジション 12 種）</b></summary>
+<br />
 
-HTML で動画を作るとき、難しいのはレイアウトではなくモーションです。
+- **v1.4 の新機能**：
+  - **本物の 3D VRM アニメアバターモジュール [`fx-vrm.js`](fx-vrm.js)**：`@pixiv/three-vrm`（MIT）ベース。解析的 2 ボーン 3D IK（`FX.ik3d`）、自動モデルリターゲティング、6 節脊椎ウェーブ、自動鎖骨連動、13 種のプレゼンポーズ、5 母音リップシンク（`aa/ih/ou/ee/oh`）、MToon トゥーン描画、2× スーパーサンプリング、連続 60Hz `SpringBone` 髪・スカート物理を搭載。pixiv 公式 **CC0 1.0 パブリックドメイン**モデル `assets/shino.vrm`・`assets/vita.vrm` を同梱。
+  - **2D ソフトボーン＆ラバーホースモジュール [`fx-rig.js`](fx-rig.js)**：2 ボーン IK `FX.ik2` + 継ぎ目のない連続ベジェ袖 `FX.hose` + 任意の SVG キャラ対応 `[data-bone]` / `[data-follow]`。
+  - **12 種の新エフェクト＆トランジション**：トランジション 6 種（`shatter` `diagonal-split` `blinds` `crt-off` `portal-spin` `halftone`）+ エフェクト 6 種（`circuit` `overload` `scan` `callout` `scatter-out` `toggle`）+ `switches` コンポーネント。
+- **v1.3 / v1.2 / v1.1**：WebGL 3D モジュール [`fx-3d.js`](fx-3d.js)、Canvas 2D パーティクル [`fx-particles.js`](fx-particles.js)、`theme-space` および `theme-paper`。
 
-- **レンダラーは「N フレーム目へシーク → スクリーンショット」という方式です。** CSS アニメーション、`setTimeout`、`Math.random` はレンダラーの制御外のため、出力が動かなかったり、実行のたびに変わったりします。
-- GSAP のタイムラインを手書きすると、1 分の動画でも数百個の時間点を計算する必要があります。
+</details>
 
-motion-lib はすべてのエフェクトを**一時停止状態の 1 本の GSAP タイムライン**に並べます。書くのは「どの要素に、どのエフェクトを、何秒目に」だけです。
+---
 
-```html
-<h1 data-fx="blur-rise-in@0.2">トレンド作りで一番難しいことは？</h1>
-<b  data-fx="count@0.6 marker@1.6">7,000</b>
-<ul data-fx="each:pop-in@1(stagger=0.1)"> <li>チップ</li><li>計算資源</li><li>大規模モデル</li> </ul>
-```
+## 💡 なぜ `motion-lib` なのか（仕組み）
 
-- **フレーム単位でシーク可能**：どのフレームへ飛んでも、順次再生したときと同じ映像になり、レンダリング結果は毎回同じです。
-- **ランダムも再現可能**：ランダムな表現（パーティクル、文字化け、波形）には、必ずシード付きの `FX.rand(seed)` を使います。
-- **ネットワーク不要**：GSAP とフォントはリポジトリ内に同梱されています。
-- **ビルド不要**：`fx.js` と `fx.css` が 1 つずつあるだけで、npm もバンドラーも要りません。
-
-## ディレクトリ構成
-
-```
-motion-lib/
-├── fx.js            ライブラリ本体：エフェクト、トランジション、コンポーネントジェネレーター、字幕、プレビュープレーヤー
-├── fx.css           基本スタイル、コンポーネントのスタイル、5 つのスキン
-├── fx-particles.js  オプションのパーティクルモジュール（宇宙、渦、ブラックホール、爆発、パーティクル文字）
-├── fx-3d.js         オプションの 3D モジュール（本物の 3D シーン、グロー、プログラムできるカメラ。three.js が必要）
-├── fx-rig.js        オプションの 2D ソフトボーン＆連続ベジェスキンモジュール（任意のカスタム SVG キャラ対応）
-├── fx-vrm.js        オプションの 3D VRM アニメアバターモジュール（FX.ik3d、MToon トゥーン、5 母音口形、髪揺れ物理）
-├── assets/          CC0 1.0 パブリックドメインの 3D VRM サンプルモデル（shino.vrm、vita.vrm）
-├── fonts/           YouSheBiaoTiHei、Smiley Sans、Fusion Pixel、ZCOOL KuaiLe（ライセンスは fonts/README.md）
-├── vendor/          GSAP 3.15、three.js r187（three-fx.min.js）、@pixiv/three-vrm 3.5（three-vrm.min.js）
-├── new-project.sh   ライブラリを動画プロジェクトに組み込む（更新にも使う）
-├── chrome-tall.sh   レンダリング用の Chrome ラッパー（下部の字幕が切れるのを防ぐ）
-├── gen-readme.mjs   このファイルの数量表とエフェクトカタログを自動生成（node gen-readme.mjs）
-├── demo/            デモページ：6 シーン、3 つのスキンすべてを使用
-├── promo/           プロモーション動画のソース + 完成動画
-└── examples/        5 つのスキンごとに 1 本ずつの完全なサンプル + 本物の 3D のサンプル + まとめ動画
-```
-
-## 動作環境
-
-- Node.js 18 以上（`npx hyperframes` を使用）
-- FFmpeg
-- Google Chrome（macOS のデフォルトの場所。それ以外の場所にある場合は環境変数 `REAL_CHROME` を設定）
-- 初回の `npx hyperframes` 実行時に CLI が自動でダウンロードされます
-
-## クイックスタート
-
-**1. プロジェクトを作る**
-
-```bash
-mkdir my-video
-./new-project.sh my-video        # fx.js / fx.css / フォント / GSAP を my-video/lib/ にコピー
-```
-
-> HyperFrames はプロジェクトディレクトリ内のファイルしか読めないため、ライブラリは `../` で参照するのではなく、プロジェクトに**コピー**します。ライブラリが更新されたら、同じプロジェクトでこのコマンドをもう一度実行してください。
-> このリポジトリの `demo/` と `promo/` も同様で、初めて開く前に `./new-project.sh demo`、`./new-project.sh promo` を実行してください。
-
-**2. `my-video/index.html` を書く**
-
-```html
-<!doctype html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="lib/fx.css">
-  <script src="lib/vendor/gsap.min.js"></script>
-  <script src="lib/fx.js"></script>
-</head>
-<body>
-<div id="root" class="theme-violet" data-composition-id="main" data-width="1920" data-height="1080">
-
-  <section class="scene dark center" data-d="3.5">
-    <h1 class="t-title" data-fx="mask-rise@0.2">全自動編集 <span class="accent">Skill</span></h1>
-    <p class="t-body" data-fx="rise-in@0.6 marker@1.4">この動画を見れば、あなたにもできます</p>
-  </section>
-
-  <section class="scene light" data-d="4" data-in="blur-cross">
-    <div class="abs" style="left:200px;top:300px;width:1200px;height:400px"
-         data-make="bars" data-values="3,8,21,40,26,12" data-hi="4"
-         data-fx="each:grow-y@0.3(stagger=0.05)"></div>
-  </section>
-
+<div align="center">
+  <img src="docs/pipeline.svg" width="100%" alt="motion-lib deterministic rendering pipeline" />
 </div>
-<script>
-  FX.subtitles([[0.2, 3.4, 'この動画を見れば、あなたにもできます'], [3.5, 7.4, '再生は{公開後}数時間に集中します']], { style: 'pill' });
-  FX.build();
-</script>
-</body>
-</html>
-```
 
-> パーティクルエフェクトを使うときは、`fx.js` の後ろに 1 行追加します：`<script src="lib/fx-particles.js"></script>`（`new-project.sh` が `lib/` にコピー済みです）。
->
-> 3D エフェクトを使うときは、`fx.js` の前後にスクリプトを 1 つずつ追加します。下の「3D シーン」の節を参照してください（`new-project.sh` が `fx-3d.js` と `vendor/three-fx.min.js` を `lib/` にコピー済みです）。
+ヘッドレス動画レンダラーは「フレーム `N` へシーク → スクリーンショット」を繰り返します。`motion-lib` はすべての DOM・パーティクル・3D カメラ・VRM 物理を**一時停止した 1 本の GSAP タイムライン**に統合し、シード付き乱数 `FX.rand(seed)` と純粋時間関数で完全な再現性を保証します。
 
+---
 
-**3. プレビュー、フレームの書き出し、レンダリング**
+## 🎨 テーマ ＆ 3D ギャラリー
+
+<table>
+  <tr>
+    <td width="33%" align="center">
+      <a href="examples/violet/violet.mp4"><img src="examples/violet/cover.jpg" width="100%" alt="theme-violet" /></a><br />
+      <b>白紫テック</b> <code>theme-violet</code><br />
+      <sub><a href="examples/violet/violet.mp4">▶ MP4 を再生</a> · <a href="examples/violet/index.html">ソース</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/gold/gold.mp4"><img src="examples/gold/cover.jpg" width="100%" alt="theme-gold" /></a><br />
+      <b>黒金シネマ</b> <code>theme-gold</code><br />
+      <sub><a href="examples/gold/gold.mp4">▶ MP4 を再生</a> · <a href="examples/gold/index.html">ソース</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/pixel/pixel.mp4"><img src="examples/pixel/cover.jpg" width="100%" alt="theme-pixel" /></a><br />
+      <b>レトロピクセル</b> <code>theme-pixel</code><br />
+      <sub><a href="examples/pixel/pixel.mp4">▶ MP4 を再生</a> · <a href="examples/pixel/index.html">ソース</a></sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="33%" align="center">
+      <a href="examples/paper/paper.mp4"><img src="examples/paper/cover.jpg" width="100%" alt="theme-paper" /></a><br />
+      <b>切り紙コラージュ</b> <code>theme-paper</code><br />
+      <sub><a href="examples/paper/paper.mp4">▶ MP4 を再生</a> · <a href="examples/paper/index.html">ソース</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/space/space.mp4"><img src="examples/space/cover.jpg" width="100%" alt="theme-space" /></a><br />
+      <b>深宇宙パーティクル</b> <code>theme-space</code><br />
+      <sub><a href="examples/space/space.mp4">▶ MP4 を再生</a> · <a href="examples/space/index.html">ソース</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/three/three.mp4"><img src="examples/three/cover.jpg" width="100%" alt="fx-3d.js" /></a><br />
+      <b>本物の 3D シーン</b> <code>fx-3d.js</code><br />
+      <sub><a href="examples/three/three.mp4">▶ MP4 を再生</a> · <a href="examples/three/index.html">ソース</a></sub>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 🚀 クイックスタート
+
+**動作環境**：Node.js 18+、FFmpeg、Google Chrome（標準以外の場所は環境変数 `REAL_CHROME`）。
 
 ```bash
+mkdir my-video && ./new-project.sh my-video
 cd my-video
-open "index.html?play"                       # ブラウザでプレビュー：スペースで再生、←/→ で 1 フレームずつ、↑/↓ でシーン間ジャンプ
-npx hyperframes snapshot --at 1,3,5          # 数フレームを書き出して確認
+open "index.html?play"                       # スペースで再生、←/→ でコマ送り、↑/↓ でシーン移動
+npx hyperframes snapshot --at 1,3,5
 HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
   npx hyperframes render -o out.mp4 --experimental-fast-capture=false
 ```
 
-> レンダリング時は必ず `chrome-tall.sh` を指定してください。この環境のフル版 Chrome をヘッドレスで動かすと、表示可能な高さがウィンドウより約 90px 低くなり、動画の下部（字幕）が切れてしまいます。このスクリプトはウィンドウを高くします。
+---
 
-## サンプル動画
+## 🤖 AI による動画自動生成ワークフロー
 
-5 つのスキンそれぞれに、完全なサンプルを 1 本ずつ用意しています（モーションのみ、ナレーションなし）。ソースは対応するディレクトリにあり、そのまま改造して使えます。
+**[HRouter (hrouter.net)](https://hrouter.net/)** の単一 API キーで **Claude Code / Codex / Gemini CLI** を接続すれば、台本から `data-fx` 付き HTML と MP4 を一括生成できます：
 
-| スキン | サンプル | ソース |
-|---|---|---|
-| 白紫テック `theme-violet` | [![violet](examples/violet/cover.jpg)](examples/violet/violet.mp4) | [`examples/violet/index.html`](examples/violet/index.html) |
-| 黒金シネマ `theme-gold` | [![gold](examples/gold/cover.jpg)](examples/gold/gold.mp4) | [`examples/gold/index.html`](examples/gold/index.html) |
-| レトロピクセル `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
-| 切り紙コラージュ `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
-| 深宇宙パーティクル `theme-space` | [![space](examples/space/cover.jpg)](examples/space/space.mp4) | [`examples/space/index.html`](examples/space/index.html) |
-| 本物の 3D シーン `fx-3d.js` | [![three](examples/three/cover.jpg)](examples/three/three.mp4) | [`examples/three/index.html`](examples/three/index.html) |
-
-6 本をまとめたもの：[`examples/showreel.mp4`](examples/showreel.mp4)。
-
-## 書き方
-
-### シーン `<section class="scene">`
-
-1 つのシーンは 1 つのショットです。シーンは順番に前後がつながります。
-
-| 書き方 | 意味 |
-|---|---|
-| `data-d="4"` | 長さ 4 秒 |
-| `data-t="12.5"` | 開始時刻を指定（省略すると直前のシーンに続く） |
-| `data-in="blur-cross(dur=0.5)"` | このシーンへ入るときのトランジション。「トランジション」を参照 |
-| `class="scene dark"` / `"scene light"` | 単一のシーンだけ暗い / 明るい背景に切り替え |
-| `class="scene overlay"` | オーバーレイ：順序の時間を占有せず、他のシーンと同時に表示（コーナーバッジ、常駐のプログレスバーなど） |
-
-ルート要素には `data-composition-id="main"`、`data-width`、`data-height` が必要です。総再生時間は自動で計算されます。
-
-### エフェクト `data-fx="[ターゲット:]名前@時間(パラメーター)"`
-
-1 つの要素に複数のエフェクトを、スペース区切りで書けます：`data-fx="rise-in@0.2 pulse@1.5 fade-out@-0.3"`。
-
-| 項目 | 書き方 | 意味 |
-|---|---|---|
-| 時間 | `@1.2` | シーン開始から 1.2 秒後 |
-| | `@+0.3` | 同じ要素の直前のエフェクトより 0.3 秒後 |
-| | `@-0.4` | シーン終了の 0.4 秒前（退場用） |
-| ターゲット | （省略） | 要素自身 |
-| | `each:` | 各子要素に、自動で時間差をつけて適用（カード群、リスト、棒グラフ） |
-| | `chars:` / `words:` / `lines:` | 1 文字 / 単語 / 行（`<br>` 区切り）に分割してから適用 |
-| パラメーター | `dur=0.8` | 長さ（秒） |
-| | `ease=spring` | イージング。下の表を参照 |
-| | `stagger=0.1` | 時間差の間隔（`each:` / `chars:` と併用） |
-| | `order=center` | 時間差の順序：`start` `end` `center` `edges` |
-| | その他 | 各エフェクト固有のパラメーター。「エフェクトカタログ」を参照 |
-
-**イージングのエイリアス**
-
-| エイリアス | 実体 | 手触り |
-|---|---|---|
-| `out`（デフォルト） | `power3.out` | 素早く始まり、ゆっくり止まる。最も汎用的 |
-| `soft` | `power2.out` | やわらかい |
-| `snap` | `expo.out` | 一気に定位置へ飛び込み、そのあとゆっくり落ち着く |
-| `sharp` | `power4.out` | out よりキレがある |
-| `inout` | `power3.inOut` | 両端がゆっくりで中間が速い。カメラワーク用 |
-| `in` | `power2.in` | だんだん速くなる。退場用 |
-| `spring` | `back.out(1.7)` | わずかにオーバーシュートして戻る |
-| `bounce` | `back.out(2.8)` | はっきりとオーバーシュートする |
-| `elastic` | `elastic.out(1,0.55)` | バネ |
-| `drop` | `bounce.out` | 着地で弾む |
-| `linear` | `none` | 等速 |
-| `pixel` | `steps(5)` | 階段状（ピクセル風） |
-
-GSAP の元の名前を直接書くこともできます。例：`ease=power4.out`、`ease=steps(8)`、`ease=elastic.out(1,0.5)`。
-
-### コンポーネントジェネレーター `data-make="名前"`
-
-繰り返しの多い DOM はライブラリに生成させ、対応するエフェクトと組み合わせます。
-
-| 名前 | 属性 | 組み合わせるエフェクト | 用途 |
-|---|---|---|---|
-| `bars` | `data-values` `data-labels` `data-hi="2,3"` `data-max` | `each:grow-y` | 棒グラフ / ヒストグラム |
-| `line` | `data-values` `data-w` `data-h` `data-smooth` | `draw` | 折れ線 / 曲線 |
-| `ring` | `data-size` `data-stroke` `data-dash` | `ring(to=0.7)` | リング進捗、カウントダウン |
-| `wave` | `data-n` `data-seed` | `each:grow-y`、`wave-live` | 音声波形 |
-| `steps` | `data-labels="企画,原稿,ナレーション"` | `step(i=2)` | ステップナビのピル |
-| `chapters` | `data-labels` | `chapter(i=3)` | 上部のチャプター進捗バー |
-| `pixels` | `data-text="SKILL?"` `data-size` `data-colors` | `each:pixel-in(order=random)` | 5×7 ドットマトリクスのブロック文字 |
-| `wall` | `data-cols` `data-rows` `data-seed` | `drift` | 背景のカードの壁 |
-| `dust` | `data-n` `data-seed` | `drift`、`float` | 漂うパーティクル |
-| `circle-text` | `data-text` `data-r`（半径） | `spin`（文字の輪を回す） | 円形テキスト、バッジ、スタンプ |
-| `retro-grid` | `data-cell`（マスの大きさ）`data-color` `data-angle`（傾き） | `bg-scroll`（グリッドを手前へ流す） | レトロな遠近グリッドの背景 |
-| `papercut` | `data-size` `data-fold`（折り数：6 / 8 / 12）`data-shape`（`flower` `circle` `square`）`data-color` `data-seed` | `pop-in`、`spin`、`jitter` | 左右対称の切り紙（窓花）。seed ごとに違う模様になります |
-| `hills` | `data-layers`（層の数）`data-colors`（奥から手前への色）`data-seed` | `layer-rise`、`parallax` | 重なる紙の山。各層が子要素になります |
-| `torn` | `data-edges`（`top,right,bottom,left`、既定は `top,bottom`）`data-depth` `data-teeth` `data-seed` | `stick-on`、`rise-in` | 要素の縁をギザギザの破れ紙にします。`clip-path` は影も切り取るため、影が必要なら外側を `fx-torn-shadow` で包みます |
-| `space` | `data-fx` にパーティクルエフェクトを書きます（`fx-particles.js` が必要） | `nebula` `starfield` `vortex` `blackhole` `form-text` などの「パーティクル」系 | キャンバスコンテナ：1 枚のキャンバスで、各パーティクルエフェクトが 1 レイヤー |
-| `stage3d` | `data-bloom`（グローの強さ。0 で無効）`data-threshold` `data-radius` `data-bg` `data-fog` `data-fov` `data-cam` `data-look` `data-light` | `stars3d` `galaxy3d` `orb3d` `cam3d` `orbit3d` などの「3D」系 | 3D ステージ：1 枚の WebGL キャンバスと 1 台のカメラ（`three-fx.min.js` と `fx-3d.js` が必要） |
-
-### 字幕
-
-```js
-FX.subtitles([
-  [開始秒, 終了秒, 'テキスト。{波括弧}の中の語はアクセントカラーになります'],
-  …
-], { style: 'pill', pop: false });
+```bash
+export ANTHROPIC_BASE_URL="https://hrouter.net"
+export ANTHROPIC_AUTH_TOKEN="sk-your-hrouter-key"
+claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fps 動画 index.html を作成し MP4 をレンダリングして"
 ```
 
-| `style` | 見た目 | 組み合わせるスキン |
-|---|---|---|
-| `pill` | 黒い角丸のピル + 白文字 | 白紫テック |
-| `bar` | 半透明の黒いバー | レトロピクセル |
-| `plain` | 白文字 + 影、背景なし | 黒金シネマ |
-| `paper` | ベージュの破れ紙の帯 + 濃い色の文字 | 切り紙コラージュ |
+---
 
-`pop: true` にすると、各字幕がふわっと浮かびながら現れます。デフォルトはハードカットで、トーク動画では通常ハードカットを使います。
+## 📐 基本構文
 
-### パーティクル（fx-particles.js）
+- **シーン `<section class="scene">`**：`data-d="4"`（秒数）、`data-t="12.5"`（開始秒）、`data-in="blur-cross(dur=0.5)"`（トランジション）、`class="scene overlay"`（常駐オーバーレイ）。
+- **エフェクト `data-fx="[ターゲット:]名前@時間(パラメーター)"`**：`@1.2` / `@+0.3` / `@-0.4`、`each:` / `chars:` / `words:` / `lines:`、`dur`・`ease`・`stagger`・`order` に対応。
+- **17 個のコンポーネントジェネレーター `data-make`**：`bars`、`line`、`ring`、`wave`、`steps`、`chapters`、`switches`、`pixels`、`wall`、`dust`、`circle-text`、`retro-grid`、`papercut`、`hills`、`torn`、`space`、`stage3d`。
 
-キャンバス（Canvas 2D）のパーティクルを使えるオプションモジュールです：星空、星雲、渦、ブラックホール、エネルギーボール、爆発、パーティクル文字、パーティクルの流れ。`fx.js` の後に読み込み、次のように書きます。
+---
 
-```html
-<script src="lib/fx-particles.js"></script>
+## 🌟 高度なビジュアル ＆ キャラクターモジュール
 
-<div class="layer" data-make="space"
-     data-fx="nebula@0 starfield@0(speed=0.15) vortex@1 form-text@4(text=HELLO)"></div>
-<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, SPACE</h1>
-```
+### 1. 本物の 3D アニメ VRM プレゼンター（`fx-vrm.js`）
 
-- `data-make="space"` 1 つが 1 枚のキャンバスです。その上に書いた各パーティクルエフェクトが 1 レイヤーになり、書いた順に**下から上へ**重なります（上の例では星雲が最下層、文字が最上層）。上の見出しは通常の DOM 要素で、キャンバスの上に重なります。
-- 共通パラメーター：`dur`（このレイヤーの長さ。デフォルトはシーン終了まで）、`fade` / `out`（フェードイン・アウトの秒数）、`x` / `y`（中心位置のパーセント）、`seed`。
-- 色のリストは `/` で区切ります。例：`colors=#6fd3ff/#ff8a4d`。
-- `form-text` には 3 つの時間があります。`dur` はレイヤー全体の長さ、`conv` は集まるのにかかる時間、`start` は最初に漂う時間です。スキンのタイトルフォントから形を取るので、中国語・英語のどちらも使えます。
-- キャンバスは通常の要素なので、他のエフェクトもそのまま付けられます。たとえば `to@3(scale=1.3)` でゆっくり寄れます。
-- 本体と同じく、フレームごとに再現できます。どのフレームも時間の純粋関数で、乱数にはシードが付きます。なお、遠近は 2D キャンバスで**擬似的に**表現しており、本物の 3D（WebGL）ではありません。本物の 3D が必要な場合は、次の `fx-3d.js` を使ってください。
-
-### 3D シーン（fx-3d.js）
-
-本物の 3D シーン（three.js / WebGL）を使えるオプションモジュールです：3D 星空、渦巻銀河、立体エネルギーボール、パーティクルトンネル、波のドットグリッド、ドットの地球、立体ブラックホール、立体爆発、立体パーティクル文字、都市、それにカメラ用のエフェクトが 2 つあります。**スクリプトは必ずこの順番で読み込んでください。**
+<div align="center">
+  <img src="docs/vrm-preview.gif" width="88%" alt="fx-vrm.js 3D VRM キャラクター + circuit + switches プレビュー" />
+</div>
 
 ```html
 <script src="lib/vendor/gsap.min.js"></script>
 <script src="lib/vendor/three-fx.min.js"></script>
+<script src="lib/vendor/three-vrm.min.js"></script>
 <script src="lib/fx.js"></script>
 <script src="lib/fx-3d.js"></script>
+<script src="lib/fx-vrm.js"></script>
 
-<div class="layer" data-make="stage3d" data-bloom="0.8"
-     data-fx="stars3d@0 galaxy3d@0 orb3d@0(in=1.5) orbit3d@0(turn=120,r=13,h=5,dur=6)"></div>
-<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, 3D</h1>
+<section class="scene overlay" data-t="0" data-d="30">
+  <div class="abs" style="left:20px;bottom:0;width:580px;height:900px;pointer-events:none"
+       data-make="stage3d" data-alpha="1" data-light="anime"
+       data-fov="26" data-cam="0,1.34,2.85" data-look="0,1.30,0"
+       data-fx="vrm3d@0(src=shino,headscale=1.18,ry=12)
+                vrm-pose@0(pose=wave,expr=happy,dur=0.45)
+                vrm-pose@4.0(pose=explain,expr=relaxed,look=right,emote=sparkle)
+                vrm-talk@0.3(dur=12.0,rate=7.5)"></div>
+</section>
 ```
 
-- `data-make="stage3d"` 1 つが 1 つの 3D ステージ（1 枚の WebGL キャンバスと 1 台のカメラ）です。上の見出しは通常の DOM 要素で、映像の上にそのまま重なります。
-- ステージに書くエフェクトは 2 種類あります。**ステージにものを置くもの**（`stars3d` `galaxy3d` `orb3d` `tunnel3d` `waves3d` `globe3d` `blackhole3d` `burst3d` `text3d` `city3d`）と、**カメラを動かすもの**（`cam3d` `orbit3d`）です。パラメーターはエフェクトカタログの「3D」の節にあります。
-- `fx-particles.js` との違い：パーティクルモジュールは 2D キャンバスで遠近を**擬似的に**表現するため軽く、他のライブラリも不要です。3D モジュールは本物のカメラ、本物の照明、グローを備え、パーティクルの数を 1〜2 桁多くできますが、three.js（`vendor/three-fx.min.js`、753 KB）に依存します。
-- 3D シーンは通常 `theme-space` と組み合わせます。専用のスキンはありません。
+### 2. 2D ラバーホース IK（`fx-rig.js`）・3D シーン（`fx-3d.js`）・2D パーティクル（`fx-particles.js`）
 
-**ステージの属性**
+- **`fx-rig.js`**：2 ボーン IK `FX.ik2` と連続ベジェ袖 `FX.hose`（`rig-idle`、`rig-pose`、`rig-talk`、`rig-nod`、`rig-wave`）。
+- **`fx-3d.js`**：`data-alpha="1"`（透過オーバーレイ＋自動 2× スーパーサンプリング）、`data-light="anime"`、`data-bloom`、`cam3d` / `orbit3d`。
+- **`fx-particles.js`**：`data-make="space"` キャンバス上に `nebula`、`starfield`、`vortex`、`blackhole`、`form-text` などを積層。
 
-| 属性 | 意味 |
-|---|---|
-| `data-bloom` | グローの強さ。`0` で無効 |
-| `data-threshold` | どのくらい明るい部分から光らせるか |
-| `data-radius` | グローの広がり |
-| `data-bg` | 背景色 |
-| `data-fog` | 霧の濃さ（0.003 前後。遠くが薄くなります） |
-| `data-fov` | カメラの画角 |
-| `data-cam="x,y,z"` | カメラの初期位置 |
-| `data-look="x,y,z"` | カメラが最初に向く先 |
-| `data-light="0"` | デフォルトの照明を切る |
+---
 
-**カメラ**：カメラは時間の純粋関数です。`cam3d` は今の位置から新しい位置（`x` `y` `z`）へ飛びながら、視線を新しい目標（`lx` `ly` `lz`）へ向けます。`orbit3d` は目標のまわりを回ります（`turn` は回る角度、`r` は終了時の距離、`h` は終了時の高さ）。書かなかったパラメーターは変わりません。**同じ時間帯で `cam3d` と `orbit3d` を重ねないでください。** カメラがどこへ向かうのか決まらなくなります。
+## 📜 ライセンス ＆ クレジット
 
-**オブジェクト共通のパラメーター**：`dur`（存在する長さ）、`fade` / `out`（フェードイン・アウトの秒数）、`px` / `py` / `pz`（配置位置）、`s`（全体のスケール）、`seed`。
+- **コアコード（`fx*.js`、`fx.css`）**：[MIT License](LICENSE)（サードパーティ表記は [NOTICE](NOTICE)）。
+- **3D ＆ VRM ランタイム**：[three.js](https://github.com/mrdoob/three.js)（MIT）および [@pixiv/three-vrm](https://github.com/pixiv/three-vrm)（MIT）。
+- **同梱 3D サンプルアバター（`assets/shino.vrm`、`assets/vita.vrm`）**：pixiv Inc. により **CC0 1.0 パブリックドメイン**で公開（[assets/README.md](assets/README.md)）。
+- **スポンサー**：**[HRouter (hrouter.net)](https://hrouter.net/)** — Claude / GPT / Gemini / Grok を 1 つの API キーで利用できる AI モデルルーター。
 
-**注意事項**
-
-- グローは、とても明るい文字をにじませます。`text3d` を使うときは `data-bloom` を 0.35〜0.5 に下げてください。
-- `stage3d` 1 つが WebGL コンテキスト 1 つです。1 本の動画では 7 つ以内にすることをおすすめします。
-- フレームごとに再現できます。パーティクルの位置は GPU 上で「属性 + 時間」から計算されるため、同じフレームを 2 回レンダリングしてもバイト単位で一致します。
-- レンダリングには WebGL が必要です。GPU アクセラレーションがあれば速く（5 秒の動画で約 16 秒）、ない環境ではソフトウェアレンダリングに切り替わり、ずっと遅くなります。
-- 3D の完成動画はビットレートが高いので、アップロード前に ffmpeg で圧縮することをおすすめします：`ffmpeg -i in.mp4 -c:v libx264 -crf 24 out.mp4`
-
-### 手書きでの補足
-
-ライブラリにないエフェクトは、GSAP を直接書きます。`at('シーンid', シーン内の秒数)` で絶対時間に換算できます。
-
-```js
-FX.build({
-  extra(tl, at) {
-    tl.to('#logo', { rotation: 360, duration: 1 }, at('s3', 0.5));
-  }
-});
-```
-
-新しいエフェクトとして登録すれば、以降は `data-fx` の中で使えます。
-
-```js
-FX.register('spin-in', '入场', '回転して入場', c => {
-  c.tl.from(c.els, { rotation: -180, opacity: 0, duration: +(c.o.dur || 0.6) }, c.t);
-});
-```
-
-> 第 2 引数はカタログで使うカテゴリーのキーです（`入场` 入場、`退场` 退場、`强调` 強調、`数据` データ、`文字` テキスト、`镜头` カメラ、`角色` キャラクター、`剪纸` 切り紙、`组件` コンポーネント、`转场` トランジション）。この中国語のキーはそのまま使ってください。
-
-**3 つの絶対ルール**：CSS の animation / transition は使わない。`setTimeout` / `requestAnimationFrame` は使わない。ランダムが必要なときは `FX.rand(シード)` を使い、`Math.random` は使わない。
-
-## 5 つのスキン
-
-ルート要素の class を 1 つ変えるだけで、動画全体のスタイルが変わります。
-
-| class | スタイル | 背景色 | タイトルフォント | アクセントカラー | 向いている用途 |
-|---|---|---|---|---|---|
-| `theme-violet` | 白紫テック | 白 `#fdfdfd` / 暗 `#171719`（シーンに `dark` / `light` を付けて切り替え） | YouSheBiaoTiHei | 紫 `#8453e8` / 薄紫 `#d5befe` | AI ツール、効率化、ワークフロー解説 |
-| `theme-gold` | 黒金シネマ | 濃い青黒 `#080a0f` + ぼかした実写 + ビネット | 金のグラデーション斜体 | 金 `#e4b256`、赤 `#ff5b56` は下落にのみ使用 | 経済、業界分析、ランキング |
-| `theme-pixel` | レトロピクセル | ベージュのドット紙 `#efe9dc` | Fusion Pixel ピクセルフォント | 緑 `#9fe07a` · 赤 · 黄 | アニメ風ホスト、気軽な解説 |
-| `theme-paper` | 切り紙コラージュ | ベージュの紙 `#efe6d6` + 純 CSS の紙の質感 | ZCOOL KuaiLe（站酷快乐体） | 切り紙の赤 `#c8322b` · 青緑 `#2f6b6e` · からし色 `#e3a83b` | 文化、二十四節気、ライフスタイル、子ども向け科学、手作り感のあるブランド |
-| `theme-space` | 深宇宙パーティクル | 濃紺 `#061226`（放射グラデーション） | 標準のタイトルフォント。シアンの発光つき（`.t-glow` 単体でも使えます） | シアン `#6fd3ff` · オレンジ `#ff8a4d` | テック、科学解説、宇宙、発表会のオープニング、コンセプト映像。字幕は `{style:'plain'}` と組み合わせます。`.scene.space-bg` もあります |
-
-色、フォント、角丸、字幕サイズはすべて `fx.css` の冒頭にある CSS 変数（`--fx-bg` `--fx-accent` `--fx-font-title` …）です。変数を変えれば独自のスキンを作れます。
-
-**よく使うスタイルクラス**
-
-| 種類 | クラス名 |
-|---|---|
-| 文字 | `t-hero` `t-title` `t-h2` `t-h3` `t-body` `t-small` `t-en`（英語の小さな副題）`t-num`（大きな数字）`t-mono` `t-pixel` `accent` `muted` `unit` |
-| レイアウト | `layer`（全画面レイヤー）`abs` `center` `row` `col` |
-| カード | `card` `shot`（スクリーンショットカード）`glass`（ガラスカード）`qcard`（はてなマークのプレースホルダーカード）`stat`（大きな数字のカード） |
-| ラベル | `pill` `note`（スクリーンショット上の黒い注釈）`tag` `speed`（×3.5 の早送りバッジ）`ptag`（ピクセルタグ） |
-| コンポーネント | `fx-window`（mac ウィンドウ。`.pixel` を付けるとピクセルウィンドウ）`fx-chat`（チャットの吹き出し）`fx-check`（チェックリスト）`fx-cursor`（マウスカーソル）`pbar`（ピクセルのエネルギーバー）`fx-hbar`（横棒） |
-| 背景 | `bg-footage`（ぼかした実写）`vignette`（ビネット） |
-| キャラクター | `host`（立ち絵のコンテナ。中に複数の `[data-pose]` 画像を置き、`pose` / `lipsync` と併用） |
-| 切り紙 | `paper`（紙片。`.red` `.teal` `.mustard` `.ink` `.tilt-l` `.tilt-r` を追加可）`paper-tag`（破れ縁のラベル）`tape`（テープ）`fx-torn-shadow`（破れ縁の要素に影を付けるラッパー）`scene.paper-bg`（どのスキンでもシーンに紙の質感の背景を敷く）。新しい変数 `--fx-font-round`（丸ゴシック系フォント） |
-
-## よくある質問
-
-**スクリーンショットは正常なのに、完成動画の下部が切れて字幕が消えています。**
-レンダリング時に `chrome-tall.sh` を指定していません。「クイックスタート」のステップ 3 を参照してください。
-
-**あるエフェクトが表示されません。**
-まず名前のスペルミスを確認してください。名前が間違っていてもレンダリングは中断されず、コンソールに `FX：没有这个动效`（そのようなエフェクトはありません）と出力されるだけです。`npx hyperframes validate` かブラウザのコンソールで確認できます。また、時間がシーンの長さを超えていないかも確認してください。
-
-**中国語が豆腐（四角）になる、またはフォントが違います。**
-本文には、システムの PingFang SC を使っています。macOS 以外の環境では Noto Sans SC をインストールし、`--fx-font-body` に追加してください。
-
-**`npx hyperframes lint` が `missing_timeline_registry` / `font_family_without_font_face` を報告します。**
-静的チェックの誤検知です。タイムラインは実行時に `fx.js` が登録し、フォントは `fx.css` の `@import` で宣言されています。`snapshot` で書き出した映像を基準にしてください。
-
-**グラデーション文字を分割すると消えてしまいます。**
-`background-clip:text` で作ったグラデーション文字（黒金スキンの金色の文字など）は、`chars:`・`type`・`roll` のような文字分割系エフェクトと組み合わせると消えます。1 文字ずつ動かす部分は単色（例：`color:#e4b256`）にしてください。
-
-**ナレーションと合わせたいのですが。**
-ナレーションのタイムスタンプを使って、各シーンの `data-t` / `data-d` と `FX.subtitles` の時間を設定してください。エフェクトの時間はすべてシーンの冒頭からの相対値なので、変更は不要です。
-
-**パーティクルが表示されません。**
-`lib/fx-particles.js` が（`fx.js` の後に）読み込まれているか、パーティクルエフェクトが `data-make="space"` の要素に書かれているかを確認してください。それ以外の要素に書いても何も描画されません。
-
-**3D の映像が真っ黒です / 表示されません。**
-次の 3 点を確認してください。スクリプトが `gsap` → `three-fx.min.js` → `fx.js` → `fx-3d.js` の順に読み込まれていること、3D エフェクトが `data-make="stage3d"` の要素に書かれていること、レンダリングするマシンが WebGL に対応していること。
-
-## ライセンス
-
-- コード：[MIT](LICENSE)。サードパーティについては [NOTICE](NOTICE) を参照してください。
-- GSAP：GreenSock の [Standard License](https://gsap.com/standard-license) のもとで使用しています（商用利用を含め無料）。
-- フォント：[fonts/README.md](fonts/README.md) を参照してください。
-- three.js：[MIT](https://github.com/mrdoob/three.js)（`vendor/three-fx.min.js` に r187 とポストプロセスのモジュールをまとめて収録しています。ライセンスは [vendor/three-LICENSE.txt](vendor/three-LICENSE.txt)）。
-
-## クレジット
-
-v1.1 の新しいエフェクトとスキンは、次のオープンソースプロジェクトにインスピレーションを受けています。
-
-- [animate.css](https://github.com/animate-css/animate.css)（MIT）
-- [Magic UI](https://github.com/magicuidesign/magicui)（MIT）
-- [React Bits](https://github.com/DavidHDev/react-bits)（MIT + Commons Clause）
-
-これらは CSS アニメーションや React コンポーネントで、フレーム単位でレンダリングする仕組みからは制御できません。motion-lib は、シークでき結果が再現できるタイムラインのために対応するエフェクトを作り直しました。借りたのはアイデアとエフェクト名（カタログの括弧内の元の名前）だけで、**コードは一切コピーしていません**。
-
-3D モジュールは [three.js](https://github.com/mrdoob/three.js)（MIT）をもとにしています。
+---
 
 <!-- CATALOG:START -->
 ## エフェクトカタログ（エフェクト 153 種 + トランジション 20 種）

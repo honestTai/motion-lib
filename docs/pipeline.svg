@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 164" width="1200" height="164" role="img" aria-label="motion-lib deterministic HTML to MP4 pipeline">
+  <defs>
+    <linearGradient id="pBg" x1="0" y1="0" x2="1200" y2="164" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0b0b14"/>
+      <stop offset="1" stop-color="#111022"/>
+    </linearGradient>
+    <style>
+      .f-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; }
+      .f-mono { font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="164" rx="18" fill="url(#pBg)" stroke="#282542" stroke-width="1.2"/>
+
+  <!-- Stage 1 -->
+  <rect x="28" y="24" width="266" height="116" rx="14" fill="#131322" stroke="#53389e" stroke-width="1.2"/>
+  <text x="48" y="50" class="f-mono" font-size="11" font-weight="700" fill="#b692f6">01 · DECLARATIVE DOM</text>
+  <text x="48" y="78" class="f-sans" font-size="17" font-weight="800" fill="#f5f5fa">HTML + data-fx="..."</text>
+  <text x="48" y="103" class="f-mono" font-size="11.5" fill="#8e8ba8">rise-in@0.2 · count@0.8</text>
+  <text x="48" y="122" class="f-mono" font-size="11.5" fill="#8e8ba8">vrm3d@0 · galaxy3d@1.2</text>
+
+  <!-- Connector 1 -->
+  <line x1="294" y1="82" x2="336" y2="82" stroke="#47387a" stroke-width="2" stroke-dasharray="4 4"/>
+  <polygon points="330,77 338,82 330,87" fill="#9b72ff"/>
+  <circle r="3.5" fill="#d5befe">
+    <animateMotion dur="1.4s" repeatCount="indefinite" path="M 294 82 L 336 82"/>
+  </circle>
+
+  <!-- Stage 2 -->
+  <rect x="338" y="24" width="250" height="116" rx="14" fill="#131322" stroke="#2d74a8" stroke-width="1.2"/>
+  <text x="358" y="50" class="f-mono" font-size="11" font-weight="700" fill="#6fd3ff">02 · PURE TIME ENGINE</text>
+  <text x="358" y="78" class="f-sans" font-size="17" font-weight="800" fill="#f5f5fa">FX.build() Timeline</text>
+  <text x="358" y="103" class="f-mono" font-size="11.5" fill="#8e8ba8">1 paused GSAP timeline</text>
+  <text x="358" y="122" class="f-mono" font-size="11.5" fill="#8e8ba8">FX.rand(seed) + IK / WebGL</text>
+
+  <!-- Connector 2 -->
+  <line x1="588" y1="82" x2="630" y2="82" stroke="#28587a" stroke-width="2" stroke-dasharray="4 4"/>
+  <polygon points="624,77 632,82 624,87" fill="#6fd3ff"/>
+  <circle r="3.5" fill="#6fd3ff">
+    <animateMotion dur="1.4s" begin="-0.45s" repeatCount="indefinite" path="M 588 82 L 630 82"/>
+  </circle>
+
+  <!-- Stage 3 -->
+  <rect x="632" y="24" width="250" height="116" rx="14" fill="#131322" stroke="#2d8f74" stroke-width="1.2"/>
+  <text x="652" y="50" class="f-mono" font-size="11" font-weight="700" fill="#68e6b2">03 · PARALLEL SEEK</text>
+  <text x="652" y="78" class="f-sans" font-size="17" font-weight="800" fill="#f5f5fa">HyperFrames Capture</text>
+  <text x="652" y="103" class="f-mono" font-size="11.5" fill="#8e8ba8">seek(frame N) → screenshot</text>
+  <text x="652" y="122" class="f-mono" font-size="11.5" fill="#8e8ba8">Multi-worker deterministic</text>
+
+  <!-- Connector 3 -->
+  <line x1="882" y1="82" x2="924" y2="82" stroke="#2d7a58" stroke-width="2" stroke-dasharray="4 4"/>
+  <polygon points="918,77 926,82 918,87" fill="#a8ff57"/>
+  <circle r="3.5" fill="#a8ff57">
+    <animateMotion dur="1.4s" begin="-0.9s" repeatCount="indefinite" path="M 882 82 L 924 82"/>
+  </circle>
+
+  <!-- Stage 4 -->
+  <rect x="926" y="24" width="246" height="116" rx="14" fill="#131b16" stroke="#65a844" stroke-width="1.2"/>
+  <text x="946" y="50" class="f-mono" font-size="11" font-weight="700" fill="#a8ff57">04 · STUDIO OUTPUT</text>
+  <text x="946" y="78" class="f-sans" font-size="17" font-weight="800" fill="#f5f5fa">1080p / 60fps MP4</text>
+  <text x="946" y="103" class="f-mono" font-size="11.5" fill="#9cb8a6">Byte-identical re-renders</text>
+  <text x="946" y="122" class="f-mono" font-size="11.5" fill="#9cb8a6">Zero npm / Zero network</text>
+</svg>
