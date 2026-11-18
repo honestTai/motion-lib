@@ -6,8 +6,10 @@
 <title>motion-lib promo</title>
 <link rel="stylesheet" href="lib/fx.css" />
 <script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/vendor/three-fx.min.js"></script>
 <script src="lib/fx.js"></script>
 <script src="lib/fx-particles.js"></script>
+<script src="lib/fx-3d.js"></script>
 <style>
   .hd { position: absolute; left: 120px; top: 90px; display: flex; align-items: baseline; gap: 26px; }
   .hd .n { font-family: var(--fx-font-title); font-size: 96px; color: #d5befe; line-height: 1; }
@@ -173,6 +175,17 @@ FX.build();</div>
   <div class="layer" data-make="space" data-fx="nebula@0 starfield@0(speed=0,n=420) orb@0.3(in=1.3,explode=2.7,dur=4.4,detail=1,r=230,y=54) vortex@3.9(dur=3.5,fade=0.7,out=0.6,y=54) blackhole@6.9(r=150,y=55,dur=4.2,fade=0.8)"></div>
   <div class="hd" data-fx="slide-in@0.05(dir=right,dist=40)"><span class="u">粒子</span><span class="n" style="color:#6fd3ff" data-cat="粒子">8</span><span class="u">种</span><span class="d" style="color:#8fa9c9">starfield · nebula · vortex · blackhole · orb · burst · form-text · stream</span></div>
   <div class="abs t-mono" style="left:120px;top:880px;font-size:34px;color:#6fd3ff" data-fx="fade-in@0.5 text@3.9(v=vortex · 粒子旋涡) text@6.9(v=blackhole · 黑洞)">orb · 能量球</div>
+</section>
+
+<!-- 7e 真 3D（v1.3） -->
+<section class="scene theme-space" id="p7e" data-d="5" data-in="flash(dur=0.3)" style="background:#02060f">
+  <div class="layer" data-make="stage3d" data-cam="34,22,34" data-fx="stars3d@0 galaxy3d@0 orb3d@0(in=1.4,explode=3.9) orbit3d@0(turn=110,r=13,h=5,dur=5,ease=inout)"></div>
+  <div class="hd" data-fx="slide-in@0.05(dir=right,dist=40)"><span class="u">真 3D</span><span class="n" style="color:#6fd3ff" data-cat="3D">12</span><span class="u">种</span><span class="d" style="color:#8fa9c9">galaxy3d · orb3d · tunnel3d · blackhole3d · city3d · globe3d · text3d · cam3d · orbit3d …</span></div>
+  <div class="abs t-mono" style="left:120px;top:880px;font-size:34px;color:#6fd3ff" data-fx="fade-in@0.5">galaxy3d + orb3d · 6 万粒子 · 环绕镜头</div>
+</section>
+<section class="scene theme-space" id="p7f" data-d="6" data-in="blur-cross(dur=0.4)" style="background:#1a1230">
+  <div class="layer" data-make="stage3d" data-bg="#1a1230" data-fog="0.003" data-bloom="0.6" data-cam="0,90,70" data-look="0,10,-180" data-fx="city3d@0 cam3d@0.2(x=0,y=7,z=-170,lx=0,ly=16,lz=-460,dur=5.6)"></div>
+  <div class="abs t-mono" style="left:120px;top:880px;font-size:34px;color:#ffd9a0;text-shadow:0 2px 10px rgba(0,0,0,.8)" data-fx="fade-in@0.5">city3d + cam3d · 城市沿街飞行</div>
 </section>
 
 <!-- 8 转场连切 -->

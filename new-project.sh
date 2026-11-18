@@ -6,5 +6,5 @@ set -e
 LIB="$(cd "$(dirname "$0")" && pwd)"
 DIR="${1:?用法: new-project.sh <项目目录>}"
 mkdir -p "$DIR/lib"
-rsync -a --delete "$LIB/fx.js" "$LIB/fx-particles.js" "$LIB/fx.css" "$LIB/chrome-tall.sh" "$LIB/fonts" "$LIB/vendor" "$DIR/lib/"
+rsync -a --delete "$LIB/fx.js" "$LIB/fx-particles.js" "$LIB/fx-3d.js" "$LIB/fx.css" "$LIB/chrome-tall.sh" "$LIB/fonts" "$LIB/vendor" "$DIR/lib/"
 echo "✓ 动效库已装到 $DIR/lib"

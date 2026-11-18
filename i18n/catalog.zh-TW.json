@@ -43,6 +43,10 @@
     "粒子": {
       "title": "粒子",
       "intro": "畫布（Canvas 2D）粒子，需要額外載入 `fx-particles.js`。寫在 `data-make=\"space\"` 的畫布容器上，每個動效是畫布裡的一層，依書寫順序由下往上疊。通用參數：`dur`（這一層持續多久）、`fade` / `out`（淡入淡出秒數）、`x` / `y`（中心位置百分比）、`seed`。"
+    },
+    "3D": {
+      "title": "3D",
+      "intro": "真 3D 場景（three.js），需要額外載入 `vendor/three-fx.min.js` 和 `fx-3d.js`。寫在 `data-make=\"stage3d\"` 的舞台上：一類動效往舞台裡放東西，一類移動攝影機（`cam3d`、`orbit3d`）。物件的通用參數：`dur`（存在多久）、`fade` / `out`（淡入淡出秒數）、`px` / `py` / `pz`（擺放位置）、`s`（整體縮放）、`seed`。"
     }
   },
   "stats": {
@@ -201,6 +205,18 @@
     "粒子/orb": "能量球：由三角碎片拼成的發光球體，緩慢自轉、內核發光；可以從散落的碎片聚攏成球，也可以炸開。參數 r=半徑、detail=細分（1=80 片，2=320 片）、gap=碎片間隙、spin、in=聚攏秒數、explode=第幾秒炸開、c1=亮面色、c2=暗面色、edge=描邊色、core=內核色",
     "粒子/burst": "爆炸：一團粒子和三角碎片從中心炸開，帶白閃和衝擊波光環，越飛越慢最後消散。參數 n、power=力道、shards=碎片占比 0~1、life=持續秒數、colors、ring=0 關掉衝擊波、flash=0 關掉白閃",
     "粒子/form-text": "粒子聚字：散落翻滾的小方塊從四面八方飛來，拼成一行字（中英文都行）。參數 text=文字、size=字級、font、weight、color、n=最多多少粒、start=先飄多久、conv=聚攏秒數、glow=0 關掉字的光暈、spacing=字距像素",
-    "粒子/stream": "粒子流：一條條帶拖尾的光點沿著起伏的流線橫向穿過畫面（資料流、訊號）。參數 n、speed、amp=起伏幅度、waves=橫向有幾個波、tail=拖尾長度、colors、reverse=1 反向"
+    "粒子/stream": "粒子流：一條條帶拖尾的光點沿著起伏的流線橫向穿過畫面（資料流、訊號）。參數 n、speed、amp=起伏幅度、waves=橫向有幾個波、tail=拖尾長度、colors、reverse=1 反向",
+    "3D/stars3d": "3D 星空：一大團星星散布在空間裡，鏡頭移動時有遠近層次。參數 n、r=分布半徑、size、colors",
+    "3D/galaxy3d": "漩渦星系：幾萬個粒子排成旋臂繞中心轉，內圈快外圈慢。參數 n、arms=旋臂數、r=半徑、inner=中心留空半徑、spin=轉速、twist=旋臂彎曲程度、colors（依旋臂交替）、size、bright",
+    "3D/orb3d": "立體能量球：帶真實光照的金屬三角碎片拼成的球，內核發光；可以從散落的碎片聚攏成球，也可以炸開。參數 r=半徑、detail=細分（1=80 片，2=320 片）、gap=碎片間隙、spin、in=聚攏秒數、explode=第幾秒炸開、power=炸開力道、color=碎片色、emissive=自發光色、core=內核色",
+    "3D/tunnel3d": "粒子隧道：粒子和光環排成一條隧道朝鏡頭湧來（把攝影機放在隧道裡朝裡看）。參數 n、r=隧道半徑、len=長度、speed、twist=螺旋程度、rings=光環數（0 不要）、colors",
+    "3D/waves3d": "波浪點陣：一大片點組成的地面像水面一樣起伏。參數 nx / nz=點數、w / d=寬和深、amp=浪高、freq=浪的密度、speed、c1=低處色、c2=高處色",
+    "3D/globe3d": "點陣球：由點組成的球體緩慢自轉，表面有光弧在兩點之間飛過（全球網路、資料連線）。參數 r=半徑、n=點數、arcs=光弧數、spin、color=點的顏色、arc=光弧顏色",
+    "3D/blackhole3d": "立體黑洞：黑色球體 + 始終朝向鏡頭的光環 + 粒子吸積盤，鏡頭可以繞著它轉。參數 r=黑洞半徑、n、disk=吸積盤外半徑（r 的倍數）、speed、c1=內圈色、c2=外圈色",
+    "3D/burst3d": "立體爆炸：幾萬個粒子從中心朝四面八方炸開，越飛越慢，帶一次強閃光。參數 n、power=力道、life=持續秒數、colors",
+    "3D/text3d": "立體粒子字：空間裡的粒子從四面八方聚成一行有厚度的字，鏡頭可以繞著看（中英文都行）。參數 text、w=字在場景裡的寬度、depth=厚度層數、start=先飄多久、conv=聚攏秒數、color、n=最多多少粒、font、weight、scatter=散開半徑",
+    "3D/city3d": "城市：一條大街兩旁的樓群，窗戶發光、樓體有描邊、路上有車燈流動，盡頭可以放一輪落日。搭配 cam3d 讓鏡頭沿街飛行。街道沿 -z 方向延伸。參數 rows=縱深幾排、cols=每側幾列、road=路寬、lit=亮窗比例、colors=窗戶顏色、wall=牆面色、edge=描邊色（edge=0 不描邊）、sun=落日顏色（sun=0 不要）、traffic=0 關掉車流",
+    "3D/cam3d": "移動攝影機：從目前位置飛到新位置，同時把視線轉向新目標。參數 x / y / z=飛到哪、lx / ly / lz=看向哪、fov=視角、dur、ease（dur=0 就是直接切過去）。沒寫的參數維持不變",
+    "3D/orbit3d": "環繞鏡頭：攝影機繞著目標轉圈，可以同時拉近 / 升高。參數 turn=轉多少度（負數反向）、from=起始角度（不寫就從目前位置開始）、r=結束時離目標多遠、h=結束時的高度、lx / ly / lz=繞著哪裡轉、dur、ease"
   }
 }

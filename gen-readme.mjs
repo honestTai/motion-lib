@@ -12,10 +12,11 @@ new Function("window", fs.readFileSync(path.join(here, "fx.js"), "utf8"))(win);
 {
   const fake = () => ({ getContext: () => new Proxy({}, { get: () => () => ({ data: [0, 0, 0, 0], addColorStop() {} }) }), width: 0, height: 0 });
   new Function("window", "document", fs.readFileSync(path.join(here, "fx-particles.js"), "utf8"))(win, { createElement: fake });
+  new Function("window", "document", fs.readFileSync(path.join(here, "fx-3d.js"), "utf8"))(win, { createElement: fake });
 }
 const { catalog, make } = win.FX;
 
-const ORDER = ["入场", "退场", "强调", "文字", "数据", "镜头", "角色", "剪纸", "粒子", "组件", "转场"];
+const ORDER = ["入场", "退场", "强调", "文字", "数据", "镜头", "角色", "剪纸", "粒子", "3D", "组件", "转场"];
 const WHAT = {
   入场: "元素出现的方式。默认从「入场前」状态回到元素本来的样子，所以元素自己写的 CSS 位置、旋转都会保留。",
   退场: "元素离开的方式。一般写成 `@-0.4`（场景结束前 0.4 秒）。",
@@ -26,6 +27,7 @@ const WHAT = {
   角色: "给立绘 / 小人用：换姿势、口型、点头、跳、走。",
   剪纸: "剪纸 / 纸艺拼贴风：展开、剪开、撕开、贴上、逐层升起，以及每秒 12 格的定格手工感。和 `theme-paper` 皮肤最配，但任何皮肤都能用。",
   粒子: "画布粒子，需要额外加载 `fx-particles.js`。写在 `data-make=\"space\"` 的画布容器上，每个动效是画布里的一层，按书写顺序从下往上叠。通用参数：`dur`（这一层持续多久）、`fade` / `out`（淡入淡出秒数）、`x` / `y`（中心位置百分比）、`seed`。",
+  "3D": "真 3D 场景（three.js），需要额外加载 `vendor/three-fx.min.js` 和 `fx-3d.js`。写在 `data-make=\"stage3d\"` 的舞台上：一类动效往舞台里放东西，一类移动摄像机（`cam3d`、`orbit3d`）。物体的通用参数：`dur`（存在多久）、`fade` / `out`（淡入淡出秒数）、`px` / `py` / `pz`（摆放位置）、`s`（整体缩放）、`seed`。",
   组件: "配合 `data-make` 生成的组件使用。",
   转场: "写在**后一个**场景上：`<section class=\"scene\" data-in=\"blur-cross(dur=0.5)\">`。",
 };

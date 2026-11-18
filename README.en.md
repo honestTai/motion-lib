@@ -4,6 +4,8 @@
 
 **A declarative motion library for HTML → video.** Write one line, `data-fx="effect-name@seconds"`, on an element to get the motion you see in talking-head explainers and tech videos, then render it frame by frame to MP4 with [HyperFrames](https://hyperframes.heygen.com).
 
+> **New in v1.3**: the optional 3D module `fx-3d.js` (real 3D scenes: galaxy, energy orb, tunnel, black hole, city fly-through, dot globe, 3D particle text and more, 12 effects in all, with bloom and a programmable camera).
+>
 > **New in v1.2**: the optional particle module `fx-particles.js` (8 particle effects: starfield, nebula, vortex, black hole, energy orb, explosion, particle text, particle stream) + a 5th theme, `theme-space` (deep-space particles).
 >
 > **New in v1.1**: 40 effects + 4 transitions (`paper-slide` `tear` `glitch-cut` `open`) + 5 component generators (`circle-text` `retro-grid` `papercut` `hills` `torn`); 2 new categories, Text and Papercut; a 4th theme, `theme-paper` (papercut collage). Inspired by animate.css, Magic UI and React Bits; see Credits at the bottom.
@@ -15,9 +17,9 @@
 <!-- STATS:START -->
 | | Count |
 |---|---|
-| Effects | **124** (Enter 26 · Exit 9 · Emphasis 37 · Text 9 · Data 6 · Camera 11 · Character 5 · Papercut 10 · Particles 8 · Components 3) |
+| Effects | **136** (Enter 26 · Exit 9 · Emphasis 37 · Text 9 · Data 6 · Camera 11 · Character 5 · Papercut 10 · Particles 8 · 3D 12 · Components 3) |
 | Transitions | **14** |
-| Component generators | **15** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `space`) |
+| Component generators | **16** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `space` `stage3d`) |
 | Skins | **5** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles) |
 <!-- STATS:END -->
 
@@ -48,14 +50,15 @@ motion-lib/
 ├── fx.js            the library: effects, transitions, component generators, subtitles, preview player
 ├── fx.css           base styles, component styles, five themes
 ├── fx-particles.js  optional particle module (space, vortex, black hole, explosion, particle text)
+├── fx-3d.js         optional 3D module (real 3D scenes, bloom, programmable camera; needs three.js)
 ├── fonts/           YouSheBiaoTiHei, Smiley Sans, Fusion Pixel, ZCOOL KuaiLe (licenses in fonts/README.md)
-├── vendor/          GSAP 3.15 (a local copy)
+├── vendor/          GSAP 3.15 and three.js r187 with bloom post-processing (three-fx.min.js); local copies
 ├── new-project.sh   install the library into a video project (also used to update)
 ├── chrome-tall.sh   Chrome wrapper for rendering (keeps the bottom subtitles from being cut off)
 ├── gen-readme.mjs   generates the count table and effect catalog in this file (node gen-readme.mjs)
 ├── demo/            demo page: 6 scenes using the first three themes
 ├── promo/           promo source + final video
-└── examples/        one full example per theme (five in all) + a showreel
+└── examples/        one full example per theme (five in all) + a real-3D example + a showreel
 ```
 
 ## Requirements
@@ -112,6 +115,8 @@ mkdir my-video
 ```
 
 > For particle effects, add one more line after `fx.js`: `<script src="lib/fx-particles.js"></script>` (`new-project.sh` already copies it into `lib/`).
+>
+> For 3D effects, add one script before and one after `fx.js`; see the "3D scenes" section below (`new-project.sh` already copies `fx-3d.js` and `vendor/three-fx.min.js` into `lib/`).
 
 
 **3. Preview, snapshot, render**
@@ -137,8 +142,9 @@ Each of the five themes has a full example (motion only, no voice-over). The sou
 | Retro pixel `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
 | Papercut collage `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
 | Deep-space particles `theme-space` | [![space](examples/space/cover.jpg)](examples/space/space.mp4) | [`examples/space/index.html`](examples/space/index.html) |
+| Real 3D scene `fx-3d.js` | [![three](examples/three/cover.jpg)](examples/three/three.mp4) | [`examples/three/index.html`](examples/three/index.html) |
 
-All five combined: [`examples/showreel.mp4`](examples/showreel.mp4).
+All six combined: [`examples/showreel.mp4`](examples/showreel.mp4).
 
 ## Syntax
 
@@ -214,6 +220,7 @@ Let the library generate repetitive DOM, then pair it with the matching effect:
 | `hills` | `data-layers` (number of layers) `data-colors` (colors from back to front) `data-seed` | `layer-rise`, `parallax` | Layered paper hills; each layer is a child element |
 | `torn` | `data-edges` (`top,right,bottom,left`, default `top,bottom`) `data-depth` `data-teeth` `data-seed` | `stick-on`, `rise-in` | Cuts an element's edges into a ragged torn-paper strip; `clip-path` clips shadows, so wrap it in `fx-torn-shadow` if you want one |
 | `space` | particle effects go in `data-fx` (needs `fx-particles.js`) | `nebula` `starfield` `vortex` `blackhole` `form-text` and other Particles effects | A canvas container: one canvas, each particle effect is a layer |
+| `stage3d` | `data-bloom` (bloom strength, 0 turns it off) `data-threshold` `data-radius` `data-bg` `data-fog` `data-fov` `data-cam` `data-look` `data-light` | `stars3d` `galaxy3d` `orb3d` `cam3d` `orbit3d` and other 3D effects | A 3D stage: one WebGL canvas and one camera (needs `three-fx.min.js` and `fx-3d.js`) |
 
 ### Subtitles
 
@@ -250,7 +257,53 @@ An optional module with canvas (Canvas 2D) particles: starfield, nebula, vortex,
 - Color lists are separated with `/`, e.g. `colors=#6fd3ff/#ff8a4d`.
 - `form-text` has three different times: `dur` is the length of the whole layer, `conv` is how long the gathering takes, and `start` is how long the particles drift first. It samples the theme's title font, so Chinese and English both work.
 - The canvas is a normal element, so you can add other effects to it as usual, e.g. `to@3(scale=1.3)` for a push-in.
-- Like the rest of the library it is frame-exact: every frame is a pure function of time, and randomness is seeded. Note that perspective is **simulated** on a 2D canvas; it is not real 3D (WebGL).
+- Like the rest of the library it is frame-exact: every frame is a pure function of time, and randomness is seeded. Note that perspective is **simulated** on a 2D canvas; it is not real 3D (WebGL); for real 3D use `fx-3d.js`, described below.
+
+### 3D scenes (fx-3d.js)
+
+An optional module for real 3D scenes (three.js / WebGL): 3D starfield, spiral galaxy, 3D energy orb, particle tunnel, wave grid, dot globe, 3D black hole, 3D explosion, 3D particle text and a city, plus two camera effects. **Load the scripts in exactly this order:**
+
+```html
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/vendor/three-fx.min.js"></script>
+<script src="lib/fx.js"></script>
+<script src="lib/fx-3d.js"></script>
+
+<div class="layer" data-make="stage3d" data-bloom="0.8"
+     data-fx="stars3d@0 galaxy3d@0 orb3d@0(in=1.5) orbit3d@0(turn=120,r=13,h=5,dur=6)"></div>
+<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, 3D</h1>
+```
+
+- One `data-make="stage3d"` is one 3D stage (one WebGL canvas and one camera). The heading above is a normal DOM element laid directly over the picture.
+- The effects you write on a stage come in two kinds: those that **put things into the stage** (`stars3d` `galaxy3d` `orb3d` `tunnel3d` `waves3d` `globe3d` `blackhole3d` `burst3d` `text3d` `city3d`) and those that **move the camera** (`cam3d` `orbit3d`). Their parameters are in the 3D section of the effect catalog.
+- How it differs from `fx-particles.js`: the particle module **simulates** perspective on a 2D canvas, is lightweight and needs nothing else; the 3D module has a real camera, real lighting and bloom and can handle one to two orders of magnitude more particles, but depends on three.js (`vendor/three-fx.min.js`, 753 KB).
+- 3D scenes usually go with `theme-space`; there is no dedicated theme.
+
+**Stage attributes**
+
+| Attribute | Meaning |
+|---|---|
+| `data-bloom` | Bloom strength; `0` turns it off |
+| `data-threshold` | How bright something must be to glow |
+| `data-radius` | How far the bloom spreads |
+| `data-bg` | Background color |
+| `data-fog` | Fog density (around 0.003; distant things fade out) |
+| `data-fov` | Camera field of view |
+| `data-cam="x,y,z"` | Initial camera position |
+| `data-look="x,y,z"` | Where the camera initially looks |
+| `data-light="0"` | Turns off the default lighting |
+
+**Camera**: the camera is a pure function of time. `cam3d` flies from the current position to a new one (`x` `y` `z`) while turning the view toward a new target (`lx` `ly` `lz`); `orbit3d` circles a target (`turn` is how many degrees, `r` the distance at the end, `h` the height at the end). Parameters you leave out stay unchanged. **Do not overlap `cam3d` and `orbit3d` in the same time span**, or it is unclear where the camera should go.
+
+**Common object parameters**: `dur` (how long it exists), `fade` / `out` (fade in / out seconds), `px` / `py` / `pz` (placement), `s` (overall scale), `seed`.
+
+**Notes**
+
+- Bloom smears very bright text: when you use `text3d`, lower `data-bloom` to 0.35 to 0.5.
+- Each `stage3d` is a WebGL context, so keep it to 7 or fewer per video.
+- Frame-exact: particle positions are computed on the GPU from "attributes + time", and the same frame rendered twice is byte-for-byte identical.
+- Rendering needs WebGL. With GPU acceleration it is fast (a 5-second clip renders in about 16 seconds); a machine without it falls back to software rendering, which is much slower.
+- 3D output has a high bitrate; compress it with ffmpeg before uploading: `ffmpeg -i in.mp4 -c:v libx264 -crf 24 out.mp4`.
 
 ### Hand-written extras
 
@@ -326,11 +379,15 @@ Use the voice-over timestamps to fill each scene's `data-t` / `data-d` and the t
 **Particles not showing up?**
 Check that `lib/fx-particles.js` is loaded (after `fx.js`), and that the particle effects are written on an element with `data-make="space"`; on any other element they draw nothing.
 
+**The 3D picture is black / not showing up?**
+Check three things: the scripts load in the order `gsap` → `three-fx.min.js` → `fx.js` → `fx-3d.js`; the 3D effects are written on an element with `data-make="stage3d"`; and the machine doing the rendering supports WebGL.
+
 ## License
 
 - Code: [MIT](LICENSE). Third-party notes: [NOTICE](NOTICE).
 - GSAP: used under GreenSock's [Standard License](https://gsap.com/standard-license) (free, including commercial use).
 - Fonts: see [fonts/README.md](fonts/README.md).
+- three.js: [MIT](https://github.com/mrdoob/three.js) (`vendor/three-fx.min.js` bundles r187 and the post-processing modules; license in [vendor/three-LICENSE.txt](vendor/three-LICENSE.txt)).
 
 ## Credits
 
@@ -342,8 +399,10 @@ The new effects and theme in v1.1 were inspired by these open-source projects:
 
 Those projects are CSS animations or React components, which a frame-by-frame renderer cannot drive. motion-lib re-implements the corresponding effects for a seekable, reproducible timeline. We borrowed only the ideas and effect names (the original names in parentheses in the catalog) and **did not copy any of their code**.
 
+The 3D module is built on [three.js](https://github.com/mrdoob/three.js) (MIT).
+
 <!-- CATALOG:START -->
-## Effect catalog (124 effects + 14 transitions)
+## Effect catalog (136 effects + 14 transitions)
 
 > This section is generated from `fx.js` by `node gen-readme.mjs`. Do not edit it by hand.
 > All effects accept the common parameters `dur` (duration), `ease` (easing) and `stagger`; the tables below list only each effect's own parameters.
@@ -531,6 +590,25 @@ Canvas particles; requires loading the extra `fx-particles.js`. Write them on a 
 | `burst` | Explosion: a cloud of particles and triangular shards blows out from the center with a white flash and a shockwave ring, slowing down until it fades away. Params: n, power=force, shards=share of shards 0~1, life=duration in seconds, colors, ring=0 turns the shockwave off, flash=0 turns the flash off |
 | `form-text` | Particle text: tumbling little squares fly in from all sides and assemble a line of text (Chinese or English). Params: text, size=font size, font, weight, color, n=max particle count, start=how long they drift first, conv=gather seconds, glow=0 turns the text halo off, spacing=letter spacing in px |
 | `stream` | Particle stream: trailing points of light flow sideways across the frame along wavy streamlines (data flow, signals). Params: n, speed, amp=wave amplitude, waves=number of waves across, tail=trail length, colors, reverse=1 reverses direction |
+
+### 3D (12)
+
+Real 3D scenes (three.js); requires loading the extra `vendor/three-fx.min.js` and `fx-3d.js`. Write them on a stage made with `data-make="stage3d"`: some effects put objects into the stage, others move the camera (`cam3d`, `orbit3d`). Common parameters for objects: `dur` (how long it exists), `fade` / `out` (fade in / out seconds), `px` / `py` / `pz` (placement), `s` (overall scale), `seed`.
+
+| Name | What it does / parameters |
+|---|---|
+| `stars3d` | 3D starfield: a large cloud of stars scattered through space, with depth layers as the camera moves. Params: n, r=spread radius, size, colors |
+| `galaxy3d` | Spiral galaxy: tens of thousands of particles arranged in spiral arms rotating around the center, faster inside and slower outside. Params: n, arms=number of arms, r=radius, inner=empty radius at the center, spin=rotation speed, twist=how much the arms curve, colors (alternate per arm), size, bright |
+| `orb3d` | 3D energy orb: a sphere built from metallic triangular shards with real lighting and a glowing core; the shards can gather from scattered pieces into a sphere, or blow apart. Params: r=radius, detail=subdivision (1=80 shards, 2=320 shards), gap=gap between shards, spin, in=seconds to gather, explode=at which second to blow apart, power=blast strength, color=shard color, emissive=self-glow color, core=core color |
+| `tunnel3d` | Particle tunnel: particles and light rings line up in a tunnel rushing toward the camera (put the camera inside the tunnel looking down it). Params: n, r=tunnel radius, len=length, speed, twist=how much it spirals, rings=number of rings (0 for none), colors |
+| `waves3d` | Wave grid: a large ground of dots that undulates like water. Params: nx / nz=number of dots, w / d=width and depth, amp=wave height, freq=wave density, speed, c1=color at the troughs, c2=color at the crests |
+| `globe3d` | Dot globe: a sphere made of dots that rotates slowly, with arcs of light flying between pairs of points on its surface (global network, data links). Params: r=radius, n=number of dots, arcs=number of arcs, spin, color=dot color, arc=arc color |
+| `blackhole3d` | 3D black hole: a black sphere + a light ring that always faces the camera + a particle accretion disk; the camera can orbit around it. Params: r=black hole radius, n, disk=outer radius of the disk (multiple of r), speed, c1=inner color, c2=outer color |
+| `burst3d` | 3D explosion: tens of thousands of particles blast outward in every direction, slowing as they fly, with one strong flash. Params: n, power=strength, life=duration in seconds, colors |
+| `text3d` | 3D particle text: particles in space converge from all directions into a line of text with thickness, and the camera can circle it (Chinese and English both work). Params: text, w=text width in the scene, depth=number of thickness layers, start=how long they drift first, conv=seconds to converge, color, n=max particle count, font, weight, scatter=scatter radius |
+| `city3d` | City: a street lined with buildings on both sides, lit windows, outlined walls, headlights flowing along the road, and an optional setting sun at the far end. Pair it with cam3d to fly down the street. The street runs along -z. Params: rows=how many rows deep, cols=how many columns per side, road=road width, lit=fraction of lit windows, colors=window colors, wall=wall color, edge=outline color (edge=0 for no outline), sun=sun color (sun=0 for none), traffic=0 turns off the traffic |
+| `cam3d` | Move the camera: fly from the current position to a new one while turning the view toward a new target. Params: x / y / z=where to fly to, lx / ly / lz=where to look, fov=field of view, dur, ease (dur=0 cuts straight there). Any parameter you omit stays unchanged |
+| `orbit3d` | Orbit camera: the camera circles a target, optionally moving in or rising at the same time. Params: turn=degrees to turn (negative goes the other way), from=start angle (omit to start from the current position), r=distance from the target at the end, h=height at the end, lx / ly / lz=what to circle around, dur, ease |
 
 ### Components (3)
 

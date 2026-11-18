@@ -4,6 +4,8 @@
 
 **HTML → 影片的宣告式動效庫。** 在元素上寫一行 `data-fx="動效名@秒數"`，就能做出知識口播、科技解說這類影片裡常見的動效，再用 [HyperFrames](https://hyperframes.heygen.com) 逐格渲染成 MP4。
 
+> **v1.3 新增**：選用的 3D 模組 `fx-3d.js`（真 3D 場景：星系、能量球、隧道、黑洞、城市飛行、點陣球、立體粒子字等 12 個動效，帶輝光和可程式化攝影機）。
+>
 > **v1.2 新增**：選用的粒子模組 `fx-particles.js`（8 個粒子動效：星空、星雲、漩渦、黑洞、能量球、爆炸、粒子聚字、粒子流）+ 第 5 套外觀主題 `theme-space`（深空粒子）。
 >
 > **v1.1 新增**：40 種動效 + 4 個轉場（`paper-slide` `tear` `glitch-cut` `open`）+ 5 個元件產生器（`circle-text` `retro-grid` `papercut` `hills` `torn`）；2 個新分類「文字」「剪紙」；第 4 套外觀主題 `theme-paper`（剪紙拼貼）。靈感來自 animate.css、Magic UI、React Bits，見文末「致謝」。
@@ -15,9 +17,9 @@
 <!-- STATS:START -->
 | | 數量 |
 |---|---|
-| 動效 | **124** 種（入場 26 · 退場 9 · 強調 37 · 文字 9 · 資料 6 · 鏡頭 11 · 角色 5 · 剪紙 10 · 粒子 8 · 元件 3） |
+| 動效 | **136** 種（入場 26 · 退場 9 · 強調 37 · 文字 9 · 資料 6 · 鏡頭 11 · 角色 5 · 剪紙 10 · 粒子 8 · 3D 12 · 元件 3） |
 | 轉場 | **14** 種 |
-| 元件產生器 | **15** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `space`） |
+| 元件產生器 | **16** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `space` `stage3d`） |
 | 外觀主題 | **5** 套（白紫科技 · 黑金電影 · 像素復古 · 剪紙拼貼 · 深空粒子） |
 <!-- STATS:END -->
 
@@ -48,14 +50,15 @@ motion-lib/
 ├── fx.js            動效庫本體：動效、轉場、元件產生器、字幕、預覽播放器
 ├── fx.css           基礎樣式、元件樣式、五套外觀主題
 ├── fx-particles.js  選用的粒子模組（宇宙、漩渦、黑洞、爆炸、粒子聚字）
+├── fx-3d.js         選用的 3D 模組（真 3D 場景、輝光、可程式化攝影機；需要 three.js）
 ├── fonts/           優設標題黑、得意黑、Fusion Pixel 像素字型、站酷快樂體（授權見 fonts/README.md）
-├── vendor/          GSAP 3.15（本機一份）
+├── vendor/          GSAP 3.15、three.js r187（含輝光後製，three-fx.min.js；本機一份）
 ├── new-project.sh   把動效庫裝進一個影片專案（也用來更新）
 ├── chrome-tall.sh   渲染用 Chrome 包裝（避免成片底部字幕被截掉）
 ├── gen-readme.mjs   從 fx.js 自動產生本文的數量表和動效目錄（node gen-readme.mjs）
 ├── demo/            示範頁：6 個場景，三套外觀主題都用到
 ├── promo/           宣傳片原始碼 + 成片
-└── examples/        五套外觀主題各一支完整範例片 + 合輯
+└── examples/        五套外觀主題各一支完整範例片 + 一支真 3D 範例 + 合輯
 ```
 
 ## 環境需求
@@ -112,6 +115,8 @@ mkdir my-video
 ```
 
 > 要用粒子動效時，在 `fx.js` 後面多加一行：`<script src="lib/fx-particles.js"></script>`（`new-project.sh` 已經把它複製進 `lib/` 了）。
+>
+> 要用 3D 動效時，在 `fx.js` 前後各加一個腳本，見下面的「3D 場景」一節（`new-project.sh` 已經把 `fx-3d.js` 和 `vendor/three-fx.min.js` 複製進 `lib/` 了）。
 
 
 **3. 預覽、截圖、輸出成片**
@@ -137,8 +142,9 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 | 像素復古 `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
 | 剪紙拼貼 `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
 | 深空粒子 `theme-space` | [![space](examples/space/cover.jpg)](examples/space/space.mp4) | [`examples/space/index.html`](examples/space/index.html) |
+| 真 3D 場景 `fx-3d.js` | [![three](examples/three/cover.jpg)](examples/three/three.mp4) | [`examples/three/index.html`](examples/three/index.html) |
 
-五支合在一起：[`examples/showreel.mp4`](examples/showreel.mp4)。
+六支合在一起：[`examples/showreel.mp4`](examples/showreel.mp4)。
 
 ## 寫法
 
@@ -214,6 +220,7 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 | `hills` | `data-layers`（層數）`data-colors`（從後到前的顏色）`data-seed` | `layer-rise`、`parallax` | 層疊紙山；每層是一個子元素 |
 | `torn` | `data-edges`（`top,right,bottom,left`，預設 `top,bottom`）`data-depth` `data-teeth` `data-seed` | `stick-on`、`rise-in` | 把元素的邊剪成毛邊紙條；`clip-path` 會裁掉陰影，要投影請在外面套一層 `fx-torn-shadow` |
 | `space` | 在 `data-fx` 裡寫粒子動效（需載入 `fx-particles.js`） | `nebula` `starfield` `vortex` `blackhole` `form-text` 等「粒子」類 | 畫布容器：一塊畫布，每個粒子動效是一層 |
+| `stage3d` | `data-bloom`（輝光強度，0 關閉）`data-threshold` `data-radius` `data-bg` `data-fog` `data-fov` `data-cam` `data-look` `data-light` | `stars3d` `galaxy3d` `orb3d` `cam3d` `orbit3d` 等「3D」類 | 3D 舞台：一塊 WebGL 畫布 + 一台攝影機（需載入 `three-fx.min.js` 和 `fx-3d.js`） |
 
 ### 字幕
 
@@ -250,7 +257,53 @@ FX.subtitles([
 - 顏色清單用 `/` 分隔，例如 `colors=#6fd3ff/#ff8a4d`。
 - `form-text` 要分清三個時間：`dur` 是整層時長，`conv` 是聚攏要多久，`start` 是先飄多久。它會用外觀主題的標題字型取樣，中英文都行。
 - 畫布是一般元素，可以照常加其他動效，例如 `to@3(scale=1.3)` 做推近。
-- 和主庫一樣逐幀可重現：每一幀都是時間的純函數，隨機帶種子。請注意這是用 2D 畫布**模擬**透視，不是真 3D（WebGL）。
+- 和主庫一樣逐幀可重現：每一幀都是時間的純函數，隨機帶種子。請注意這是用 2D 畫布**模擬**透視，不是真 3D（WebGL）；要真 3D 請用下面的 `fx-3d.js`。
+
+### 3D 場景（fx-3d.js）
+
+選用模組，真 3D 場景（three.js / WebGL）：3D 星空、漩渦星系、立體能量球、粒子隧道、波浪點陣、點陣球、立體黑洞、立體爆炸、立體粒子字、城市，再加上兩個攝影機動效。**腳本要照這個順序載入**：
+
+```html
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/vendor/three-fx.min.js"></script>
+<script src="lib/fx.js"></script>
+<script src="lib/fx-3d.js"></script>
+
+<div class="layer" data-make="stage3d" data-bloom="0.8"
+     data-fx="stars3d@0 galaxy3d@0 orb3d@0(in=1.5) orbit3d@0(turn=120,r=13,h=5,dur=6)"></div>
+<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, 3D</h1>
+```
+
+- 一個 `data-make="stage3d"` 就是一個 3D 舞台（一塊 WebGL 畫布 + 一台攝影機）。上面的標題是一般 DOM 元素，直接疊在畫面上。
+- 寫在舞台上的動效分兩類：**往舞台裡放東西的**（`stars3d` `galaxy3d` `orb3d` `tunnel3d` `waves3d` `globe3d` `blackhole3d` `burst3d` `text3d` `city3d`），和**移動攝影機的**（`cam3d` `orbit3d`）。詳細參數見「動效目錄」的「3D」一節。
+- 和 `fx-particles.js` 的差別：粒子模組是用 2D 畫布**模擬**透視，輕量，不依賴其他函式庫；3D 模組是真攝影機、真光照、輝光，粒子數量能多一到兩個數量級，但依賴 three.js（`vendor/three-fx.min.js`，753 KB）。
+- 3D 場景一般搭配 `theme-space`；沒有專屬外觀主題。
+
+**舞台屬性**
+
+| 屬性 | 意義 |
+|---|---|
+| `data-bloom` | 輝光強度，`0` 關閉 |
+| `data-threshold` | 多亮的地方才發光 |
+| `data-radius` | 輝光擴散範圍 |
+| `data-bg` | 背景色 |
+| `data-fog` | 霧的濃度（0.003 左右，遠處變淡） |
+| `data-fov` | 攝影機視角 |
+| `data-cam="x,y,z"` | 攝影機初始位置 |
+| `data-look="x,y,z"` | 攝影機初始看向哪裡 |
+| `data-light="0"` | 關掉預設燈光 |
+
+**攝影機**：攝影機是時間的純函數。`cam3d` 從目前位置飛到新位置（`x` `y` `z`），同時把視線轉向新目標（`lx` `ly` `lz`）；`orbit3d` 繞著目標轉圈（`turn` 轉多少度，`r` 結束時的距離，`h` 結束時的高度）。沒寫的參數維持不變。**同一段時間裡 `cam3d` 和 `orbit3d` 不要重疊**，否則攝影機該往哪走就說不清了。
+
+**物件通用參數**：`dur`（存在多久）、`fade` / `out`（淡入淡出秒數）、`px` / `py` / `pz`（擺放位置）、`s`（整體縮放）、`seed`。
+
+**注意事項**
+
+- 輝光會讓很亮的字變模糊：有 `text3d` 時，把 `data-bloom` 降到 0.35~0.5。
+- 一個 `stage3d` 就是一個 WebGL 上下文，一支影片裡建議不要超過 7 個。
+- 逐幀可重現：粒子位置在顯示卡裡由「屬性 + 時間」算出，同一幀兩次渲染逐位元組一致。
+- 渲染需要 WebGL。有顯示卡加速時很快（5 秒的片子約 16 秒渲完）；沒有顯示卡加速的機器會退回軟體渲染，慢很多。
+- 3D 成片的位元率很高，上傳前建議用 ffmpeg 壓一遍：`ffmpeg -i in.mp4 -c:v libx264 -crf 24 out.mp4`。
 
 ### 手寫補充
 
@@ -326,11 +379,15 @@ FX.register('spin-in', '入场', '旋轉入場', c => {
 **粒子沒出來？**
 檢查是否載入了 `lib/fx-particles.js`（要在 `fx.js` 之後），以及粒子動效是否寫在 `data-make="space"` 的元素上；寫在別的元素上不會有任何畫面。
 
+**3D 畫面是黑的 / 沒出來？**
+檢查三件事：腳本載入順序是否為 `gsap` → `three-fx.min.js` → `fx.js` → `fx-3d.js`；3D 動效是否寫在 `data-make="stage3d"` 的元素上；渲染的機器是否支援 WebGL。
+
 ## 授權
 
 - 程式碼：[MIT](LICENSE)；第三方元件說明見 [NOTICE](NOTICE)。
 - GSAP：使用 GreenSock 的 [Standard License](https://gsap.com/standard-license)（免費，含商用）。
 - 字型：見 [fonts/README.md](fonts/README.md)。
+- three.js：[MIT](https://github.com/mrdoob/three.js)（`vendor/three-fx.min.js` 內含 r187 與後製模組，授權見 [vendor/three-LICENSE.txt](vendor/three-LICENSE.txt)）。
 
 ## 致謝 / Credits
 
@@ -342,8 +399,10 @@ v1.1 的新動效和外觀主題受到下列開源專案的啟發：
 
 這些專案是 CSS 動畫或 React 元件，渲染器無法逐格控制。本動效庫依照「逐格可 seek、結果可重現」的需求重新實作了對應的效果：只借用了它們的創意和效果名稱（說明裡括號中的原名），**沒有複製它們的程式碼**。
 
+3D 模組基於 [three.js](https://github.com/mrdoob/three.js)（MIT）。
+
 <!-- CATALOG:START -->
-## 動效目錄（124 種動效 + 14 種轉場）
+## 動效目錄（136 種動效 + 14 種轉場）
 
 > 本節由 `node gen-readme.mjs` 從 `fx.js` 自動產生，請勿手動修改。
 > 所有動效都支援通用參數 `dur`（時長）、`ease`（緩動）、`stagger`（錯峰）；下表只列出各自特有的參數。
@@ -531,6 +590,25 @@ v1.1 的新動效和外觀主題受到下列開源專案的啟發：
 | `burst` | 爆炸：一團粒子和三角碎片從中心炸開，帶白閃和衝擊波光環，越飛越慢最後消散。參數 n、power=力道、shards=碎片占比 0~1、life=持續秒數、colors、ring=0 關掉衝擊波、flash=0 關掉白閃 |
 | `form-text` | 粒子聚字：散落翻滾的小方塊從四面八方飛來，拼成一行字（中英文都行）。參數 text=文字、size=字級、font、weight、color、n=最多多少粒、start=先飄多久、conv=聚攏秒數、glow=0 關掉字的光暈、spacing=字距像素 |
 | `stream` | 粒子流：一條條帶拖尾的光點沿著起伏的流線橫向穿過畫面（資料流、訊號）。參數 n、speed、amp=起伏幅度、waves=橫向有幾個波、tail=拖尾長度、colors、reverse=1 反向 |
+
+### 3D (12)
+
+真 3D 場景（three.js），需要額外載入 `vendor/three-fx.min.js` 和 `fx-3d.js`。寫在 `data-make="stage3d"` 的舞台上：一類動效往舞台裡放東西，一類移動攝影機（`cam3d`、`orbit3d`）。物件的通用參數：`dur`（存在多久）、`fade` / `out`（淡入淡出秒數）、`px` / `py` / `pz`（擺放位置）、`s`（整體縮放）、`seed`。
+
+| 名稱 | 作用 / 參數 |
+|---|---|
+| `stars3d` | 3D 星空：一大團星星散布在空間裡，鏡頭移動時有遠近層次。參數 n、r=分布半徑、size、colors |
+| `galaxy3d` | 漩渦星系：幾萬個粒子排成旋臂繞中心轉，內圈快外圈慢。參數 n、arms=旋臂數、r=半徑、inner=中心留空半徑、spin=轉速、twist=旋臂彎曲程度、colors（依旋臂交替）、size、bright |
+| `orb3d` | 立體能量球：帶真實光照的金屬三角碎片拼成的球，內核發光；可以從散落的碎片聚攏成球，也可以炸開。參數 r=半徑、detail=細分（1=80 片，2=320 片）、gap=碎片間隙、spin、in=聚攏秒數、explode=第幾秒炸開、power=炸開力道、color=碎片色、emissive=自發光色、core=內核色 |
+| `tunnel3d` | 粒子隧道：粒子和光環排成一條隧道朝鏡頭湧來（把攝影機放在隧道裡朝裡看）。參數 n、r=隧道半徑、len=長度、speed、twist=螺旋程度、rings=光環數（0 不要）、colors |
+| `waves3d` | 波浪點陣：一大片點組成的地面像水面一樣起伏。參數 nx / nz=點數、w / d=寬和深、amp=浪高、freq=浪的密度、speed、c1=低處色、c2=高處色 |
+| `globe3d` | 點陣球：由點組成的球體緩慢自轉，表面有光弧在兩點之間飛過（全球網路、資料連線）。參數 r=半徑、n=點數、arcs=光弧數、spin、color=點的顏色、arc=光弧顏色 |
+| `blackhole3d` | 立體黑洞：黑色球體 + 始終朝向鏡頭的光環 + 粒子吸積盤，鏡頭可以繞著它轉。參數 r=黑洞半徑、n、disk=吸積盤外半徑（r 的倍數）、speed、c1=內圈色、c2=外圈色 |
+| `burst3d` | 立體爆炸：幾萬個粒子從中心朝四面八方炸開，越飛越慢，帶一次強閃光。參數 n、power=力道、life=持續秒數、colors |
+| `text3d` | 立體粒子字：空間裡的粒子從四面八方聚成一行有厚度的字，鏡頭可以繞著看（中英文都行）。參數 text、w=字在場景裡的寬度、depth=厚度層數、start=先飄多久、conv=聚攏秒數、color、n=最多多少粒、font、weight、scatter=散開半徑 |
+| `city3d` | 城市：一條大街兩旁的樓群，窗戶發光、樓體有描邊、路上有車燈流動，盡頭可以放一輪落日。搭配 cam3d 讓鏡頭沿街飛行。街道沿 -z 方向延伸。參數 rows=縱深幾排、cols=每側幾列、road=路寬、lit=亮窗比例、colors=窗戶顏色、wall=牆面色、edge=描邊色（edge=0 不描邊）、sun=落日顏色（sun=0 不要）、traffic=0 關掉車流 |
+| `cam3d` | 移動攝影機：從目前位置飛到新位置，同時把視線轉向新目標。參數 x / y / z=飛到哪、lx / ly / lz=看向哪、fov=視角、dur、ease（dur=0 就是直接切過去）。沒寫的參數維持不變 |
+| `orbit3d` | 環繞鏡頭：攝影機繞著目標轉圈，可以同時拉近 / 升高。參數 turn=轉多少度（負數反向）、from=起始角度（不寫就從目前位置開始）、r=結束時離目標多遠、h=結束時的高度、lx / ly / lz=繞著哪裡轉、dur、ease |
 
 ### 元件 (3)
 

@@ -309,6 +309,8 @@ html, body { width: var(--fx-w); height: var(--fx-h); overflow: hidden; backgrou
 
 /* ═════════════ 皮肤 5：space（深空粒子，配 fx-particles.js） ═════════════ */
 .fx-space { position: absolute; inset: 0; pointer-events: none; }
+.fx-3d { position: absolute; inset: 0; pointer-events: none; }
+.fx-3d > canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
 .fx-space > canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
 .theme-space {
   --fx-bg: #061226; --fx-ink: #eef6ff; --fx-sub: #8fa9c9; --fx-line: rgba(255,255,255,.1);

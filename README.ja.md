@@ -4,6 +4,8 @@
 
 **HTML → 動画のための宣言型モーションライブラリです。** 要素に `data-fx="エフェクト名@秒数"` と 1 行書くだけで、トーク系の解説動画やテック解説動画でよく見るモーションが作れます。あとは [HyperFrames](https://hyperframes.heygen.com) でフレームごとに MP4 へレンダリングします。
 
+> **v1.3 の新機能**：オプションの 3D モジュール `fx-3d.js`（本物の 3D シーン：銀河、エネルギーボール、トンネル、ブラックホール、都市の飛行、ドットの地球、立体パーティクル文字など 12 種のエフェクト。グロー効果とプログラムできるカメラ付き）。
+>
 > **v1.2 の新機能**：オプションのパーティクルモジュール `fx-particles.js`（パーティクルエフェクト 8 種：星空、星雲、渦、ブラックホール、エネルギーボール、爆発、パーティクル文字、パーティクルの流れ）と、5 つ目のスキン `theme-space`（深宇宙パーティクル）。
 >
 > **v1.1 の新機能**：エフェクト 40 種 + トランジション 4 種（`paper-slide` `tear` `glitch-cut` `open`）+ コンポーネントジェネレーター 5 個（`circle-text` `retro-grid` `papercut` `hills` `torn`）、新カテゴリー 2 つ（テキスト・切り紙）、4 つ目のスキン `theme-paper`（切り紙コラージュ）。animate.css、Magic UI、React Bits にインスピレーションを受けています。末尾の「クレジット」をご覧ください。
@@ -15,9 +17,9 @@
 <!-- STATS:START -->
 | | 数 |
 |---|---|
-| エフェクト | **124** 種（入場 26 · 退場 9 · 強調 37 · テキスト 9 · データ 6 · カメラ 11 · キャラクター 5 · 切り紙 10 · パーティクル 8 · コンポーネント 3） |
+| エフェクト | **136** 種（入場 26 · 退場 9 · 強調 37 · テキスト 9 · データ 6 · カメラ 11 · キャラクター 5 · 切り紙 10 · パーティクル 8 · 3D 12 · コンポーネント 3） |
 | トランジション | **14** 種 |
-| コンポーネントジェネレーター | **15** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `space`） |
+| コンポーネントジェネレーター | **16** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `space` `stage3d`） |
 | スキン | **5** 種（白紫テック · 黒金シネマ · レトロピクセル · 切り紙コラージュ · 深宇宙パーティクル） |
 <!-- STATS:END -->
 
@@ -48,14 +50,15 @@ motion-lib/
 ├── fx.js            ライブラリ本体：エフェクト、トランジション、コンポーネントジェネレーター、字幕、プレビュープレーヤー
 ├── fx.css           基本スタイル、コンポーネントのスタイル、5 つのスキン
 ├── fx-particles.js  オプションのパーティクルモジュール（宇宙、渦、ブラックホール、爆発、パーティクル文字）
+├── fx-3d.js         オプションの 3D モジュール（本物の 3D シーン、グロー、プログラムできるカメラ。three.js が必要）
 ├── fonts/           YouSheBiaoTiHei、Smiley Sans、Fusion Pixel、ZCOOL KuaiLe（ライセンスは fonts/README.md）
-├── vendor/          GSAP 3.15（ローカルコピー）
+├── vendor/          GSAP 3.15、three.js r187（グローのポストエフェクト込み、three-fx.min.js。ローカルコピー）
 ├── new-project.sh   ライブラリを動画プロジェクトに組み込む（更新にも使う）
 ├── chrome-tall.sh   レンダリング用の Chrome ラッパー（下部の字幕が切れるのを防ぐ）
 ├── gen-readme.mjs   このファイルの数量表とエフェクトカタログを自動生成（node gen-readme.mjs）
 ├── demo/            デモページ：6 シーン、3 つのスキンすべてを使用
 ├── promo/           プロモーション動画のソース + 完成動画
-└── examples/        5 つのスキンごとに 1 本ずつの完全なサンプル + まとめ動画
+└── examples/        5 つのスキンごとに 1 本ずつの完全なサンプル + 本物の 3D のサンプル + まとめ動画
 ```
 
 ## 動作環境
@@ -112,6 +115,8 @@ mkdir my-video
 ```
 
 > パーティクルエフェクトを使うときは、`fx.js` の後ろに 1 行追加します：`<script src="lib/fx-particles.js"></script>`（`new-project.sh` が `lib/` にコピー済みです）。
+>
+> 3D エフェクトを使うときは、`fx.js` の前後にスクリプトを 1 つずつ追加します。下の「3D シーン」の節を参照してください（`new-project.sh` が `fx-3d.js` と `vendor/three-fx.min.js` を `lib/` にコピー済みです）。
 
 
 **3. プレビュー、フレームの書き出し、レンダリング**
@@ -137,8 +142,9 @@ HYPERFRAMES_BROWSER_PATH="$PWD/lib/chrome-tall.sh" \
 | レトロピクセル `theme-pixel` | [![pixel](examples/pixel/cover.jpg)](examples/pixel/pixel.mp4) | [`examples/pixel/index.html`](examples/pixel/index.html) |
 | 切り紙コラージュ `theme-paper` | [![paper](examples/paper/cover.jpg)](examples/paper/paper.mp4) | [`examples/paper/index.html`](examples/paper/index.html) |
 | 深宇宙パーティクル `theme-space` | [![space](examples/space/cover.jpg)](examples/space/space.mp4) | [`examples/space/index.html`](examples/space/index.html) |
+| 本物の 3D シーン `fx-3d.js` | [![three](examples/three/cover.jpg)](examples/three/three.mp4) | [`examples/three/index.html`](examples/three/index.html) |
 
-5 本をまとめたもの：[`examples/showreel.mp4`](examples/showreel.mp4)。
+6 本をまとめたもの：[`examples/showreel.mp4`](examples/showreel.mp4)。
 
 ## 書き方
 
@@ -214,6 +220,7 @@ GSAP の元の名前を直接書くこともできます。例：`ease=power4.ou
 | `hills` | `data-layers`（層の数）`data-colors`（奥から手前への色）`data-seed` | `layer-rise`、`parallax` | 重なる紙の山。各層が子要素になります |
 | `torn` | `data-edges`（`top,right,bottom,left`、既定は `top,bottom`）`data-depth` `data-teeth` `data-seed` | `stick-on`、`rise-in` | 要素の縁をギザギザの破れ紙にします。`clip-path` は影も切り取るため、影が必要なら外側を `fx-torn-shadow` で包みます |
 | `space` | `data-fx` にパーティクルエフェクトを書きます（`fx-particles.js` が必要） | `nebula` `starfield` `vortex` `blackhole` `form-text` などの「パーティクル」系 | キャンバスコンテナ：1 枚のキャンバスで、各パーティクルエフェクトが 1 レイヤー |
+| `stage3d` | `data-bloom`（グローの強さ。0 で無効）`data-threshold` `data-radius` `data-bg` `data-fog` `data-fov` `data-cam` `data-look` `data-light` | `stars3d` `galaxy3d` `orb3d` `cam3d` `orbit3d` などの「3D」系 | 3D ステージ：1 枚の WebGL キャンバスと 1 台のカメラ（`three-fx.min.js` と `fx-3d.js` が必要） |
 
 ### 字幕
 
@@ -250,7 +257,53 @@ FX.subtitles([
 - 色のリストは `/` で区切ります。例：`colors=#6fd3ff/#ff8a4d`。
 - `form-text` には 3 つの時間があります。`dur` はレイヤー全体の長さ、`conv` は集まるのにかかる時間、`start` は最初に漂う時間です。スキンのタイトルフォントから形を取るので、中国語・英語のどちらも使えます。
 - キャンバスは通常の要素なので、他のエフェクトもそのまま付けられます。たとえば `to@3(scale=1.3)` でゆっくり寄れます。
-- 本体と同じく、フレームごとに再現できます。どのフレームも時間の純粋関数で、乱数にはシードが付きます。なお、遠近は 2D キャンバスで**擬似的に**表現しており、本物の 3D（WebGL）ではありません。
+- 本体と同じく、フレームごとに再現できます。どのフレームも時間の純粋関数で、乱数にはシードが付きます。なお、遠近は 2D キャンバスで**擬似的に**表現しており、本物の 3D（WebGL）ではありません。本物の 3D が必要な場合は、次の `fx-3d.js` を使ってください。
+
+### 3D シーン（fx-3d.js）
+
+本物の 3D シーン（three.js / WebGL）を使えるオプションモジュールです：3D 星空、渦巻銀河、立体エネルギーボール、パーティクルトンネル、波のドットグリッド、ドットの地球、立体ブラックホール、立体爆発、立体パーティクル文字、都市、それにカメラ用のエフェクトが 2 つあります。**スクリプトは必ずこの順番で読み込んでください。**
+
+```html
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/vendor/three-fx.min.js"></script>
+<script src="lib/fx.js"></script>
+<script src="lib/fx-3d.js"></script>
+
+<div class="layer" data-make="stage3d" data-bloom="0.8"
+     data-fx="stars3d@0 galaxy3d@0 orb3d@0(in=1.5) orbit3d@0(turn=120,r=13,h=5,dur=6)"></div>
+<h1 class="t-hero" data-fx="rise-in@0.6">HELLO, 3D</h1>
+```
+
+- `data-make="stage3d"` 1 つが 1 つの 3D ステージ（1 枚の WebGL キャンバスと 1 台のカメラ）です。上の見出しは通常の DOM 要素で、映像の上にそのまま重なります。
+- ステージに書くエフェクトは 2 種類あります。**ステージにものを置くもの**（`stars3d` `galaxy3d` `orb3d` `tunnel3d` `waves3d` `globe3d` `blackhole3d` `burst3d` `text3d` `city3d`）と、**カメラを動かすもの**（`cam3d` `orbit3d`）です。パラメーターはエフェクトカタログの「3D」の節にあります。
+- `fx-particles.js` との違い：パーティクルモジュールは 2D キャンバスで遠近を**擬似的に**表現するため軽く、他のライブラリも不要です。3D モジュールは本物のカメラ、本物の照明、グローを備え、パーティクルの数を 1〜2 桁多くできますが、three.js（`vendor/three-fx.min.js`、753 KB）に依存します。
+- 3D シーンは通常 `theme-space` と組み合わせます。専用のスキンはありません。
+
+**ステージの属性**
+
+| 属性 | 意味 |
+|---|---|
+| `data-bloom` | グローの強さ。`0` で無効 |
+| `data-threshold` | どのくらい明るい部分から光らせるか |
+| `data-radius` | グローの広がり |
+| `data-bg` | 背景色 |
+| `data-fog` | 霧の濃さ（0.003 前後。遠くが薄くなります） |
+| `data-fov` | カメラの画角 |
+| `data-cam="x,y,z"` | カメラの初期位置 |
+| `data-look="x,y,z"` | カメラが最初に向く先 |
+| `data-light="0"` | デフォルトの照明を切る |
+
+**カメラ**：カメラは時間の純粋関数です。`cam3d` は今の位置から新しい位置（`x` `y` `z`）へ飛びながら、視線を新しい目標（`lx` `ly` `lz`）へ向けます。`orbit3d` は目標のまわりを回ります（`turn` は回る角度、`r` は終了時の距離、`h` は終了時の高さ）。書かなかったパラメーターは変わりません。**同じ時間帯で `cam3d` と `orbit3d` を重ねないでください。** カメラがどこへ向かうのか決まらなくなります。
+
+**オブジェクト共通のパラメーター**：`dur`（存在する長さ）、`fade` / `out`（フェードイン・アウトの秒数）、`px` / `py` / `pz`（配置位置）、`s`（全体のスケール）、`seed`。
+
+**注意事項**
+
+- グローは、とても明るい文字をにじませます。`text3d` を使うときは `data-bloom` を 0.35〜0.5 に下げてください。
+- `stage3d` 1 つが WebGL コンテキスト 1 つです。1 本の動画では 7 つ以内にすることをおすすめします。
+- フレームごとに再現できます。パーティクルの位置は GPU 上で「属性 + 時間」から計算されるため、同じフレームを 2 回レンダリングしてもバイト単位で一致します。
+- レンダリングには WebGL が必要です。GPU アクセラレーションがあれば速く（5 秒の動画で約 16 秒）、ない環境ではソフトウェアレンダリングに切り替わり、ずっと遅くなります。
+- 3D の完成動画はビットレートが高いので、アップロード前に ffmpeg で圧縮することをおすすめします：`ffmpeg -i in.mp4 -c:v libx264 -crf 24 out.mp4`
 
 ### 手書きでの補足
 
@@ -326,11 +379,15 @@ FX.register('spin-in', '入场', '回転して入場', c => {
 **パーティクルが表示されません。**
 `lib/fx-particles.js` が（`fx.js` の後に）読み込まれているか、パーティクルエフェクトが `data-make="space"` の要素に書かれているかを確認してください。それ以外の要素に書いても何も描画されません。
 
+**3D の映像が真っ黒です / 表示されません。**
+次の 3 点を確認してください。スクリプトが `gsap` → `three-fx.min.js` → `fx.js` → `fx-3d.js` の順に読み込まれていること、3D エフェクトが `data-make="stage3d"` の要素に書かれていること、レンダリングするマシンが WebGL に対応していること。
+
 ## ライセンス
 
 - コード：[MIT](LICENSE)。サードパーティについては [NOTICE](NOTICE) を参照してください。
 - GSAP：GreenSock の [Standard License](https://gsap.com/standard-license) のもとで使用しています（商用利用を含め無料）。
 - フォント：[fonts/README.md](fonts/README.md) を参照してください。
+- three.js：[MIT](https://github.com/mrdoob/three.js)（`vendor/three-fx.min.js` に r187 とポストプロセスのモジュールをまとめて収録しています。ライセンスは [vendor/three-LICENSE.txt](vendor/three-LICENSE.txt)）。
 
 ## クレジット
 
@@ -342,8 +399,10 @@ v1.1 の新しいエフェクトとスキンは、次のオープンソースプ
 
 これらは CSS アニメーションや React コンポーネントで、フレーム単位でレンダリングする仕組みからは制御できません。motion-lib は、シークでき結果が再現できるタイムラインのために対応するエフェクトを作り直しました。借りたのはアイデアとエフェクト名（カタログの括弧内の元の名前）だけで、**コードは一切コピーしていません**。
 
+3D モジュールは [three.js](https://github.com/mrdoob/three.js)（MIT）をもとにしています。
+
 <!-- CATALOG:START -->
-## エフェクトカタログ（エフェクト 124 種 + トランジション 14 種）
+## エフェクトカタログ（エフェクト 136 種 + トランジション 14 種）
 
 > このセクションは `node gen-readme.mjs` が `fx.js` から自動生成します。手で編集しないでください。
 > すべてのエフェクトで共通パラメーター `dur`（長さ）、`ease`（イージング）、`stagger`（時間差）が使えます。下の表には各エフェクト固有のパラメーターのみを載せています。
@@ -531,6 +590,25 @@ v1.1 の新しいエフェクトとスキンは、次のオープンソースプ
 | `burst` | 爆発：パーティクルと三角形の破片が中心から弾け飛び、白いフラッシュと衝撃波のリングを伴い、だんだん減速して消えていきます。パラメーター：n、power=勢い、shards=破片の割合 0~1、life=持続秒数、colors、ring=0 で衝撃波を消す、flash=0 でフラッシュを消す |
 | `form-text` | パーティクル文字：回転しながら散らばった小さな四角が四方から飛んできて、1 行の文字（中国語・英語どちらも可）を組み上げます。パラメーター：text=文字、size=文字サイズ、font、weight、color、n=最大粒数、start=最初に漂う長さ、conv=集まる秒数、glow=0 で文字のにじみを消す、spacing=字間（px） |
 | `stream` | パーティクルの流れ：尾を引く光の点が、うねる流線に沿って画面を横切ります（データの流れ、信号）。パラメーター：n、speed、amp=うねりの幅、waves=横方向の波の数、tail=尾の長さ、colors、reverse=1 で逆向き |
+
+### 3D (12)
+
+本物の 3D シーン（three.js）です。別ファイル `vendor/three-fx.min.js` と `fx-3d.js` の読み込みが必要です。`data-make="stage3d"` のステージに書きます。シーンにオブジェクトを置くエフェクトと、カメラを動かすエフェクト（`cam3d`、`orbit3d`）があります。オブジェクト共通のパラメーター：`dur`（存在する長さ）、`fade` / `out`（フェードイン・アウトの秒数）、`px` / `py` / `pz`（配置位置）、`s`（全体のスケール）、`seed`。
+
+| 名前 | 動作 / パラメーター |
+|---|---|
+| `stars3d` | 3D 星空：たくさんの星が空間に散らばり、カメラが動くと遠近の奥行きが出ます。パラメーター：n、r=分布の半径、size、colors |
+| `galaxy3d` | 渦巻銀河：数万個のパーティクルが渦巻の腕を作って中心のまわりを回ります。内側ほど速く外側ほどゆっくりです。パラメーター：n、arms=腕の数、r=半径、inner=中心の空き半径、spin=回転速度、twist=腕の曲がり具合、colors（腕ごとに交互）、size、bright |
+| `orb3d` | 立体エネルギーボール：本物の照明を受ける金属の三角形の破片でできた球で、核が光ります。散らばった破片が集まって球になることも、弾け飛ぶこともできます。パラメーター：r=半径、detail=分割数（1=80 枚、2=320 枚）、gap=破片の隙間、spin、in=集まる秒数、explode=何秒目に弾けるか、power=弾ける力、color=破片の色、emissive=自発光の色、core=核の色 |
+| `tunnel3d` | パーティクルトンネル：パーティクルと光のリングがトンネル状に並び、カメラに向かって押し寄せます（カメラをトンネルの中に置いて奥を向けます）。パラメーター：n、r=トンネルの半径、len=長さ、speed、twist=螺旋の度合い、rings=リングの数（0 でなし）、colors |
+| `waves3d` | 波のドットグリッド：ドットでできた広い地面が水面のようにうねります。パラメーター：nx / nz=ドット数、w / d=幅と奥行き、amp=波の高さ、freq=波の密度、speed、c1=低い所の色、c2=高い所の色 |
+| `globe3d` | ドットの地球：ドットでできた球体がゆっくり自転し、表面の 2 点の間を光の弧が飛びます（グローバルネットワーク、データ接続）。パラメーター：r=半径、n=ドット数、arcs=光の弧の数、spin、color=ドットの色、arc=光の弧の色 |
+| `blackhole3d` | 立体ブラックホール：黒い球体 + 常にカメラを向く光のリング + パーティクルの降着円盤で、カメラがまわりを回れます。パラメーター：r=ブラックホールの半径、n、disk=降着円盤の外側の半径（r の倍数）、speed、c1=内側の色、c2=外側の色 |
+| `burst3d` | 立体爆発：数万個のパーティクルが中心から四方八方へ弾け、飛ぶほど遅くなり、強い閃光が一度入ります。パラメーター：n、power=強さ、life=続く秒数、colors |
+| `text3d` | 立体パーティクル文字：空間のパーティクルが四方八方から集まり、厚みのある 1 行の文字になります。カメラでまわりを回って見せられます（日本語・英語どちらも使えます）。パラメーター：text、w=シーン内での文字の幅、depth=厚みの層数、start=最初に漂う秒数、conv=集まる秒数、color、n=最大パーティクル数、font、weight、scatter=散らばる半径 |
+| `city3d` | 都市：大通りの両側にビルが並び、窓が光り、ビルに輪郭線が入り、道路をヘッドライトが流れ、突き当たりに夕日を置くこともできます。cam3d と組み合わせてカメラで通りを飛びます。通りは -z 方向に伸びます。パラメーター：rows=奥行き方向の列数、cols=片側のビルの数、road=道幅、lit=明かりのついた窓の割合、colors=窓の色、wall=壁の色、edge=輪郭線の色（edge=0 で輪郭なし）、sun=夕日の色（sun=0 でなし）、traffic=0 で車の流れを消す |
+| `cam3d` | カメラ移動：今の位置から新しい位置へ飛びながら、視線も新しい目標へ向けます。パラメーター：x / y / z=飛んでいく先、lx / ly / lz=見る先、fov=画角、dur、ease（dur=0 ならその場で切り替え）。書かなかったパラメーターは変わりません |
+| `orbit3d` | 周回カメラ：カメラが目標のまわりを回ります。同時に近づいたり上昇したりもできます。パラメーター：turn=回る角度（負の値で逆回り）、from=開始角度（省略すると今の位置から）、r=終了時の目標からの距離、h=終了時の高さ、lx / ly / lz=回る中心、dur、ease |
 
 ### コンポーネント (3)
 
