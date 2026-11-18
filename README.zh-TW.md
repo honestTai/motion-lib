@@ -4,6 +4,10 @@
 
 **HTML → 影片的宣告式動效庫。** 在元素上寫一行 `data-fx="動效名@秒數"`，就能做出知識口播、科技解說這類影片裡常見的動效，再用 [HyperFrames](https://hyperframes.heygen.com) 逐格渲染成 MP4。
 
+> **v1.5 新增**：選用的真 3D 二次元角色模組 `fx-vrm.js`（基於 `@pixiv/three-vrm` MIT 標準：支援任意 `.vrm` 3D 模型與 `.vrma` 動捕片段，內建 MToon 賽璐璐描邊著色、解析式雙骨 3D IK `FX.ik3d`、6 節脊柱相位波、自動鎖骨連動、13 套全身口播姿態、五元音口型同步 `aa/ih/ou/ee/oh`、2× 超採樣抗鋸齒與決定性 60Hz `SpringBone` 頭髮/裙擺物理；儲存庫內附兩套 CC0 公共領域模型 `assets/shino.vrm` 與 `assets/vita.vrm`）。
+>
+> **v1.4 新增**：選用的 2D 柔性骨骼與軟蒙皮模組 `fx-rig.js`（雙骨 IK `FX.ik2` + RubberHose 連續貝茲無接縫軟袖管 `FX.hose` + 宣告式 `[data-bone]` / `[data-follow]`）+ 6 種新轉場（`shatter` `diagonal-split` `blinds` `crt-off` `portal-spin` `halftone`）+ 6 種新動效（`circuit` `overload` `scan` `callout` `scatter-out` `toggle`）+ `switches` 開關元件。
+>
 > **v1.3 新增**：選用的 3D 模組 `fx-3d.js`（真 3D 場景：星系、能量球、隧道、黑洞、城市飛行、點陣球、立體粒子字等 12 個動效，帶輝光和可程式化攝影機）。
 >
 > **v1.2 新增**：選用的粒子模組 `fx-particles.js`（8 個粒子動效：星空、星雲、漩渦、黑洞、能量球、爆炸、粒子聚字、粒子流）+ 第 5 套外觀主題 `theme-space`（深空粒子）。
@@ -17,9 +21,9 @@
 <!-- STATS:START -->
 | | 數量 |
 |---|---|
-| 動效 | **136** 種（入場 26 · 退場 9 · 強調 37 · 文字 9 · 資料 6 · 鏡頭 11 · 角色 5 · 剪紙 10 · 粒子 8 · 3D 12 · 元件 3） |
-| 轉場 | **14** 種 |
-| 元件產生器 | **16** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `space` `stage3d`） |
+| 動效 | **153** 種（入場 26 · 退場 10 · 強調 41 · 文字 9 · 資料 6 · 鏡頭 11 · 角色 16 · 剪紙 10 · 粒子 8 · 3D 12 · 元件 4） |
+| 轉場 | **20** 種 |
+| 元件產生器 | **17** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d`） |
 | 外觀主題 | **5** 套（白紫科技 · 黑金電影 · 像素復古 · 剪紙拼貼 · 深空粒子） |
 <!-- STATS:END -->
 
@@ -51,8 +55,11 @@ motion-lib/
 ├── fx.css           基礎樣式、元件樣式、五套外觀主題
 ├── fx-particles.js  選用的粒子模組（宇宙、漩渦、黑洞、爆炸、粒子聚字）
 ├── fx-3d.js         選用的 3D 模組（真 3D 場景、輝光、可程式化攝影機；需要 three.js）
+├── fx-rig.js        選用的 2D 柔性骨骼與連續貝茲軟蒙皮模組（適用於任意自訂 SVG 角色）
+├── fx-vrm.js        選用的真 3D 二次元 VRM 角色模組（FX.ik3d、MToon 賽璐璐、五元音口型與頭髮物理）
+├── assets/          內建 CC0 1.0 公共領域 3D 二次元範例模型（shino.vrm、vita.vrm）
 ├── fonts/           優設標題黑、得意黑、Fusion Pixel 像素字型、站酷快樂體（授權見 fonts/README.md）
-├── vendor/          GSAP 3.15、three.js r187（含輝光後製，three-fx.min.js；本機一份）
+├── vendor/          GSAP 3.15、three.js r187（three-fx.min.js）、@pixiv/three-vrm 3.5（three-vrm.min.js）
 ├── new-project.sh   把動效庫裝進一個影片專案（也用來更新）
 ├── chrome-tall.sh   渲染用 Chrome 包裝（避免成片底部字幕被截掉）
 ├── gen-readme.mjs   從 fx.js 自動產生本文的數量表和動效目錄（node gen-readme.mjs）
@@ -402,7 +409,7 @@ v1.1 的新動效和外觀主題受到下列開源專案的啟發：
 3D 模組基於 [three.js](https://github.com/mrdoob/three.js)（MIT）。
 
 <!-- CATALOG:START -->
-## 動效目錄（136 種動效 + 14 種轉場）
+## 動效目錄（153 種動效 + 20 種轉場）
 
 > 本節由 `node gen-readme.mjs` 從 `fx.js` 自動產生，請勿手動修改。
 > 所有動效都支援通用參數 `dur`（時長）、`ease`（緩動）、`stagger`（錯峰）；下表只列出各自特有的參數。
@@ -440,7 +447,7 @@ v1.1 的新動效和外觀主題受到下列開源專案的啟發：
 | `light-speed-in` | 光速入場：帶著斜切從一側高速衝進來，衝過頭再回正（animate.css lightSpeedIn）。參數 dir=left/right（往哪邊運動）、dist |
 | `jack-in` | 彈簧盒：從底部一點一點彈出來，左右晃兩下站穩（animate.css jackInTheBox） |
 
-### 退場 (9)
+### 退場 (10)
 
 元素離開的方式。通常寫成 `@-0.4`（場景結束前 0.4 秒）。
 
@@ -455,8 +462,9 @@ v1.1 的新動效和外觀主題受到下列開源專案的啟發：
 | `wipe-out` | 遮罩擦除消失 |
 | `hinge` | 鉸鏈掉落：左上角像釘了一根釘子，晃兩下後掉出畫面（animate.css hinge）。參數 dist |
 | `fall-out` | 文字掉落：每個字帶著旋轉往下掉出畫面（FallingText），一般搭配 chars: 使用。參數 dist、seed |
+| `scatter-out` | 四散彈飛：元素向四周帶著旋轉與拋物線重力炸飛清場（適合一鍵清理、破除誤區）。參數 power=力道、dur、seed |
 
-### 強調 (37)
+### 強調 (41)
 
 元素已經在畫面上，唸到它時做一下強調；也包括移動、變色、內容切換。
 
@@ -499,6 +507,10 @@ v1.1 的新動效和外觀主題受到下列開源專案的啟發：
 | `orbit` | 環繞：把容器的子元素均勻擺在一個圓上，繞中心轉，子元素始終保持正立（OrbitingCircles）。寫在容器上。參數 r=半徑、turns=圈數、dur、reverse=1 反轉 |
 | `beam` | 連接光束：在兩個元素之間畫一條弧線，一團光沿線流過去（AnimatedBeam，適合畫「A 把資料傳給 B」）。寫在起點元素上，to=#終點。參數 curve=彎曲度、color、n=流幾次、dur |
 | `flip-swap` | 翻面換內容：元素繞垂直軸翻過去，背面換成第二個子元素再翻回來（翻牌、揭曉答案）。元素裡放兩個子元素：第一個是正面，第二個是背面。參數 axis=y/x |
+| `circuit` | 直角電路連接：在兩個元素之間畫橫平豎直的折線電路並傳輸發光脈衝包（適合架構圖、協定資料流）。寫在起點上，to=#終點。參數 mid=折彎比例、packets=脈衝數、color、dur |
+| `overload` | 過載紅溫警報：元素高頻急促抖動 + 紅光閃爍（適合上下文爆滿、算力過載、報錯）。參數 amp=幅度、color、dur、seed |
+| `scan` | 雷射掃描線：一道發光掃描帶掃過視窗或卡片（適合程式碼讀取、文件檢索、圖表診斷）。參數 dir=down/right、color、n=次數、dur |
+| `callout` | 折線引線批註：從元素邊緣拉出折線引線並彈出文字標籤（適合圖表峰值、重點數據旁註）。參數 text=文字、dx、dy、color |
 
 ### 文字 (9)
 
@@ -547,7 +559,7 @@ v1.1 的新動效和外觀主題受到下列開源專案的啟發：
 | `bg-scroll` | 背景圖案捲動：讓 background（網格、紋理、條紋）依速度持續平移，搭配 retro-grid 元件使用。參數 x、y=每秒像素 |
 | `parallax` | 視差：容器裡的各層依前後順序以不同速度平移（後面的層動得少、前面的層動得多），搭配 hills 層疊紙山使用。寫在容器上。參數 x、y=最前層的總位移、dur |
 
-### 角色 (5)
+### 角色 (16)
 
 給立繪 / 小人使用：換姿勢、口型、點頭、跳、走。
 
@@ -558,6 +570,17 @@ v1.1 的新動效和外觀主題受到下列開源專案的啟發：
 | `talk` | 說話時的小幅上下點動。參數 dur=說多久、rate=每秒幾下 |
 | `hop` | 原地跳一下（驚訝、高興）。參數 h=高度、n=次數 |
 | `walk` | 走過去：水平移動 + 一步一顛。參數 x=位移 或 to=#目標、steps=步數；像素角色加 ease=steps(8) |
+| `rig-idle` | 柔性待機呼吸：驅動任意綁定角色的自然胸腔呼吸、髮絲微擺與依種子隨機眨眼。參數 dur、seed |
+| `rig-pose` | 柔性切換姿態：依預設名或手部 IK 座標(lx,ly,rx,ry)平滑過渡，連續貝茲袖管自動彎曲無接縫。參數 pose、lx/ly/rx/ry、look、face、emote、dur |
+| `rig-talk` | 多口型語音同步：依種子在多套 [data-viseme] 口型間自然切換並附帶微點頭，說完自動回到目前表情嘴。參數 dur、frames、nod=1、seed |
+| `rig-nod` | 柔性點頭/搖頭：驅動頸部樞軸並自動觸發髮絲呆毛次級彈簧擺動。參數 shake=1（搖頭）、n、amp、dur |
+| `rig-wave` | 柔性揮手：在指定軟肢體(arm=R/L)的手部 IK 目標上疊加圓弧往復揮動，整條袖管自然連動。參數 arm=R/L、n、amp、dur |
+| `vrm3d` | 載入真 3D 二次元 VRM 角色（MToon 賽璐璐著色 + 54 骨骼 + 五元音口型 + 決定性頭髮物理），寫在 stage3d 上。參數 src=模型路徑、ry=朝向角度、x/y/z、s=縮放、breathe/blink/sway/spring |
+| `vrm-pose` | 切換 3D VRM 角色姿態、臉部表情與視線：pose=idle/wave/explain/point/point-up/think/shock/clasp/reject/shrug/proud/cheer/bow，expr=neutral/happy/relaxed/angry/sad/surprised，look=cam/right/left/up/down，ry=轉身角度 |
+| `vrm-talk` | 驅動 3D VRM 角色五元音口型（aa/ih/ou/ee/oh）與說話頭部微節奏：dur=說話秒數、rate=音節速率、amp=張嘴幅度、seed |
+| `vrm-nod` | 為 3D VRM 角色疊加點頭、搖頭或歪頭動作：kind=nod/shake/tilt、n=次數、amp=幅度、dur |
+| `vrm-move` | 移動 3D VRM 角色位置（如從畫面底部彈出登場或橫向讓位）：x/y/z、fromY=起始高度、dur、ease |
+| `vrm-anim` | 播放標準 .vrma (VRM Animation) 3D 動作捕捉片段，仍維持逐幀時間軸可跳轉：src=檔案路徑、dur |
 
 ### 剪紙 (10)
 
@@ -610,7 +633,7 @@ v1.1 的新動效和外觀主題受到下列開源專案的啟發：
 | `cam3d` | 移動攝影機：從目前位置飛到新位置，同時把視線轉向新目標。參數 x / y / z=飛到哪、lx / ly / lz=看向哪、fov=視角、dur、ease（dur=0 就是直接切過去）。沒寫的參數維持不變 |
 | `orbit3d` | 環繞鏡頭：攝影機繞著目標轉圈，可以同時拉近 / 升高。參數 turn=轉多少度（負數反向）、from=起始角度（不寫就從目前位置開始）、r=結束時離目標多遠、h=結束時的高度、lx / ly / lz=繞著哪裡轉、dur、ease |
 
-### 元件 (3)
+### 元件 (4)
 
 搭配 `data-make` 產生的元件使用。
 
@@ -619,8 +642,9 @@ v1.1 的新動效和外觀主題受到下列開源專案的啟發：
 | `step` | 步驟導覽切換：搭配 data-make="steps"，把第 i 個膠囊點亮（從 1 數起），其餘熄滅 |
 | `chapter` | 章節進度條：搭配 data-make="chapters"，醒目區塊滑到第 i 章（從 1 數起） |
 | `check` | 清單打勾：搭配 .fx-check 元件，勾畫出來、文字變實 |
+| `toggle` | 撥動開關：搭配 data-make="switches"，把第 i 個開關（支援 2/3/5 批次）撥到開(on=1)或關(on=0)。參數 i、on=0/1、stagger |
 
-### 轉場 (14)
+### 轉場 (20)
 
 寫在**後一個**場景上：`<section class="scene" data-in="blur-cross(dur=0.5)">`。
 
@@ -640,4 +664,10 @@ v1.1 的新動效和外觀主題受到下列開源專案的啟發：
 | `tear` | 撕紙：新畫面沿一條參差的撕裂邊從一側露出來（剪紙風換場景）。參數 dir=right/left/down/up、jag、teeth |
 | `glitch-cut` | 故障閃切：新畫面帶紅藍錯位閃幾下再穩定下來（科技感切換） |
 | `open` | 開門：新畫面從中間一條縫向兩邊拉開。參數 dir=x（左右拉開）/y（上下拉開） |
+| `shatter` | 碎裂崩塌：畫面裂成 3D 碎片翻轉墜落，露出下一幕（適合崩潰、破局、反轉）。參數 cols、colors=色1/色2、dur、seed |
+| `diagonal-split` | 斜切拉開：一道發光刀光斜劈畫面，向兩側凌厲拉開露出新場景（動漫分鏡感）。參數 angle=斜度、color、dur |
+| `blinds` | 百葉窗翻轉：新畫面切成多根條帶，依波浪順序逐條翻開蓋住舊畫面。參數 n=條數、dir=x/y、dur |
+| `crt-off` | 老電視換台：舊畫面壓扁成高亮掃描線收縮，隨即閃開新畫面（復古極客感）。參數 color、dur |
+| `portal-spin` | 漩渦穿越：舊畫面旋轉吸入中心，新畫面從旋轉模糊中甩出定格。參數 deg=旋轉角度、dur |
+| `halftone` | 漫畫網點波紋：圓點陣列沿對角線放大鋪滿再收縮揭開新畫面（二次元/像素風絕配）。參數 cols、color、dur |
 <!-- CATALOG:END -->

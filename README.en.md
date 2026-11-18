@@ -4,6 +4,10 @@
 
 **A declarative motion library for HTML → video.** Write one line, `data-fx="effect-name@seconds"`, on an element to get the motion you see in talking-head explainers and tech videos, then render it frame by frame to MP4 with [HyperFrames](https://hyperframes.heygen.com).
 
+> **New in v1.5**: the optional 3D anime avatar module `fx-vrm.js` (built on `@pixiv/three-vrm` MIT: loads any standard `.vrm` 0.x/1.0 avatar and `.vrma` mocap clip with MToon cel-shading, closed-form two-bone 3D IK `FX.ik3d`, 6-segment spine wave, auto-clavicle coupling, 13 full-body presenter poses, 5-vowel lip-sync `aa/ih/ou/ee/oh`, 2× supersampling, and deterministic 60Hz `SpringBone` hair/skirt physics; includes two CC0 public-domain avatars `assets/shino.vrm` & `assets/vita.vrm`).
+>
+> **New in v1.4**: the optional 2D soft-rig module `fx-rig.js` (two-bone IK `FX.ik2` + seamless continuous Bezier RubberHose limbs `FX.hose` + declarative `[data-bone]` / `[data-follow]` / `[data-hose]` for any custom SVG character) + 6 new transitions (`shatter` `diagonal-split` `blinds` `crt-off` `portal-spin` `halftone`) + 6 new effects (`circuit` `overload` `scan` `callout` `scatter-out` `toggle`) + the `switches` component.
+>
 > **New in v1.3**: the optional 3D module `fx-3d.js` (real 3D scenes: galaxy, energy orb, tunnel, black hole, city fly-through, dot globe, 3D particle text and more, 12 effects in all, with bloom and a programmable camera).
 >
 > **New in v1.2**: the optional particle module `fx-particles.js` (8 particle effects: starfield, nebula, vortex, black hole, energy orb, explosion, particle text, particle stream) + a 5th theme, `theme-space` (deep-space particles).
@@ -17,9 +21,9 @@
 <!-- STATS:START -->
 | | Count |
 |---|---|
-| Effects | **136** (Enter 26 · Exit 9 · Emphasis 37 · Text 9 · Data 6 · Camera 11 · Character 5 · Papercut 10 · Particles 8 · 3D 12 · Components 3) |
-| Transitions | **14** |
-| Component generators | **16** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `space` `stage3d`) |
+| Effects | **153** (Enter 26 · Exit 10 · Emphasis 41 · Text 9 · Data 6 · Camera 11 · Character 16 · Papercut 10 · Particles 8 · 3D 12 · Components 4) |
+| Transitions | **20** |
+| Component generators | **17** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d`) |
 | Skins | **5** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles) |
 <!-- STATS:END -->
 
@@ -51,8 +55,11 @@ motion-lib/
 ├── fx.css           base styles, component styles, five themes
 ├── fx-particles.js  optional particle module (space, vortex, black hole, explosion, particle text)
 ├── fx-3d.js         optional 3D module (real 3D scenes, bloom, programmable camera; needs three.js)
+├── fx-rig.js        optional 2D soft-bone & RubberHose skinning module for any custom SVG character
+├── fx-vrm.js        optional 3D VRM anime avatar module (FX.ik3d, MToon cel-shading, 5-vowel lip-sync, hair physics)
+├── assets/          built-in CC0 1.0 public-domain 3D VRM sample avatars (shino.vrm, vita.vrm)
 ├── fonts/           YouSheBiaoTiHei, Smiley Sans, Fusion Pixel, ZCOOL KuaiLe (licenses in fonts/README.md)
-├── vendor/          GSAP 3.15 and three.js r187 with bloom post-processing (three-fx.min.js); local copies
+├── vendor/          GSAP 3.15, three.js r187 (three-fx.min.js), @pixiv/three-vrm 3.5 (three-vrm.min.js)
 ├── new-project.sh   install the library into a video project (also used to update)
 ├── chrome-tall.sh   Chrome wrapper for rendering (keeps the bottom subtitles from being cut off)
 ├── gen-readme.mjs   generates the count table and effect catalog in this file (node gen-readme.mjs)
@@ -402,7 +409,7 @@ Those projects are CSS animations or React components, which a frame-by-frame re
 The 3D module is built on [three.js](https://github.com/mrdoob/three.js) (MIT).
 
 <!-- CATALOG:START -->
-## Effect catalog (136 effects + 14 transitions)
+## Effect catalog (153 effects + 20 transitions)
 
 > This section is generated from `fx.js` by `node gen-readme.mjs`. Do not edit it by hand.
 > All effects accept the common parameters `dur` (duration), `ease` (easing) and `stagger`; the tables below list only each effect's own parameters.
@@ -440,7 +447,7 @@ How elements appear. By default they animate from a "pre-entry" state back to th
 | `light-speed-in` | Light-speed entrance: rushes in from one side with a skew, overshoots, then straightens (animate.css lightSpeedIn). Params: dir=left/right (direction of motion), dist |
 | `jack-in` | Jack-in-the-box: pops up gradually from the bottom, wobbles left and right twice and settles (animate.css jackInTheBox) |
 
-### Exit (9)
+### Exit (10)
 
 How elements leave. Usually written as `@-0.4` (0.4 s before the scene ends).
 
@@ -455,8 +462,9 @@ How elements leave. Usually written as `@-0.4` (0.4 s before the scene ends).
 | `wipe-out` | Disappear with a mask wipe |
 | `hinge` | Hinge drop: pinned at the top-left corner, it swings twice, then falls out of frame (animate.css hinge). Param: dist |
 | `fall-out` | Falling text: each character tumbles down out of frame with some rotation (FallingText); usually used with chars:. Params: dist, seed |
+| `scatter-out` | Scatter burst exit: elements fly outward in all directions with rotation and parabolic gravity (great for clearing clutter or busting myths). Params: power=force, dur, seed |
 
-### Emphasis (37)
+### Emphasis (41)
 
 For elements already on screen: emphasize them when the narration reaches them. Also covers movement, color changes and content swaps.
 
@@ -499,6 +507,10 @@ For elements already on screen: emphasize them when the narration reaches them. 
 | `orbit` | Orbit: spreads the container's children evenly on a circle and rotates them around the center while keeping each child upright (OrbitingCircles). Put it on the container. Params: r=radius, turns=number of turns, dur, reverse=1 to reverse |
 | `beam` | Connecting beam: draws an arc between two elements and a glow flows along it (AnimatedBeam, good for "A sends data to B"). Put it on the start element, to=#end. Params: curve=curvature, color, n=number of flows, dur |
 | `flip-swap` | Flip and swap: the element flips around its vertical axis, the back shows the second child, then flips back (flip cards, reveal an answer). Put two children inside: the first is the front, the second is the back. Param: axis=y/x |
+| `circuit` | Orthogonal circuit link: draws a Manhattan right-angled trace between two elements and sends glowing data packets along it (architecture diagrams, protocol flows). Put it on the start element, to=#end. Params: mid=bend ratio, packets=pulse count, color, dur |
+| `overload` | Overload alarm: rapid jitter + flashing red warning glow (context overflow, system overload, errors). Params: amp, color, dur, seed |
+| `scan` | Laser scanline: a glowing scanner band sweeps across a window or card (code reading, document retrieval, chart diagnostics). Params: dir=down/right, color, n=count, dur |
+| `callout` | Leader-line callout: pulls an angled leader line from an element's edge and pops a text label (chart peaks, key data notes). Params: text, dx, dy, color |
 
 ### Text (9)
 
@@ -547,7 +559,7 @@ Applied to a whole container: push in, pan, 3D tilt, shake.
 | `bg-scroll` | Background pattern scroll: keeps the background (grid, texture, stripes) translating at a set speed; use it with the retro-grid component. Params: x, y=px per second |
 | `parallax` | Parallax: layers inside the container translate at different speeds by order (back layers move less, front layers more); use it with the hills layered paper hills. Put it on the container. Params: x, y=total displacement of the front layer, dur |
 
-### Character (5)
+### Character (16)
 
 For stand-up portraits and little characters: switch poses, lip sync, nod, hop, walk.
 
@@ -558,6 +570,17 @@ For stand-up portraits and little characters: switch poses, lip sync, nod, hop, 
 | `talk` | Small up-and-down bobbing while talking. Params: dur=how long it talks, rate=bobs per second |
 | `hop` | Hop in place (surprise, joy). Params: h=height, n=count |
 | `walk` | Walk over: horizontal movement + a bounce per step. Params: x=displacement or to=#target, steps=number of steps; for pixel characters add ease=steps(8) |
+| `rig-idle` | Soft rig breathing: drives natural chest breathing, subtle hair sway, and seeded blinking on any bound SVG character. Params: dur, seed |
+| `rig-pose` | Soft rig pose: smoothly transitions to a named pose or IK hand targets (lx, ly, rx, ry) with seamless continuous Bezier sleeves. Params: pose, lx/ly/rx/ry, look, face, emote, dur |
+| `rig-talk` | Multi-viseme lip-sync: cycles naturally through [data-viseme] mouth shapes with subtle head rhythm, returning to the resting mouth when done. Params: dur, frames, nod=1, seed |
+| `rig-nod` | Soft nod / head-shake: drives neck pivot and triggers spring follow-through on hair and accessories. Params: shake=1 (head-shake), n, amp, dur |
+| `rig-wave` | Soft arm wave: arcs the IK hand target back and forth on a soft limb (arm=R/L) so the entire sleeve sways fluidly. Params: arm=R/L, n, amp, dur |
+| `vrm3d` | 3D VRM anime avatar: loads any standard .vrm model onto a stage3d (MToon cel-shading + 54 humanoid bones + 5-vowel lip-sync + deterministic SpringBone hair physics). Params: src, ry, x/y/z, s, breathe/blink/sway/spring |
+| `vrm-pose` | 3D VRM pose & expression: smoothly blends across 13 full-body anime presenter poses (idle, wave, explain, point, point-up, think, shock, clasp, reject, shrug, proud, cheer, bow), facial expressions (neutral, happy, relaxed, angry, sad, surprised), and eye gaze (look=cam/right/left/up/down, ry) |
+| `vrm-talk` | 3D VRM 5-vowel lip-sync: drives aa/ih/ou/ee/oh morph targets with seeded syllable pauses and subtle speech head rhythm. Params: dur, rate, amp, seed |
+| `vrm-nod` | 3D VRM head nod/shake/tilt: layers an additive 3D head/neck impulse on top of the active pose. Params: kind=nod/shake/tilt, n, amp, dur |
+| `vrm-move` | 3D VRM stage move: translates or pops the 3D avatar root (e.g. pop-in from bottom or side step). Params: x/y/z, fromY, dur, ease |
+| `vrm-anim` | 3D VRM mocap clip: plays standard .vrma (VRM Animation) motion-capture files deterministically on the timeline. Params: src, dur |
 
 ### Papercut (10)
 
@@ -610,7 +633,7 @@ Real 3D scenes (three.js); requires loading the extra `vendor/three-fx.min.js` a
 | `cam3d` | Move the camera: fly from the current position to a new one while turning the view toward a new target. Params: x / y / z=where to fly to, lx / ly / lz=where to look, fov=field of view, dur, ease (dur=0 cuts straight there). Any parameter you omit stays unchanged |
 | `orbit3d` | Orbit camera: the camera circles a target, optionally moving in or rising at the same time. Params: turn=degrees to turn (negative goes the other way), from=start angle (omit to start from the current position), r=distance from the target at the end, h=height at the end, lx / ly / lz=what to circle around, dur, ease |
 
-### Components (3)
+### Components (4)
 
 Used together with components generated by `data-make`.
 
@@ -619,8 +642,9 @@ Used together with components generated by `data-make`.
 | `step` | Step navigation switch: use with data-make="steps"; lights up the i-th pill (1-based) and turns the rest off |
 | `chapter` | Chapter progress bar: use with data-make="chapters"; the highlight block slides to chapter i (1-based) |
 | `check` | Checklist tick: use with the .fx-check component; the check mark is drawn and the text turns solid |
+| `toggle` | Flip switches: pair with data-make="switches" to flip switch i (supports 2/3/5 batch) ON (on=1) or OFF (on=0). Params: i, on=0/1, stagger |
 
-### Transitions (14)
+### Transitions (20)
 
 Written on the **later** scene: `<section class="scene" data-in="blur-cross(dur=0.5)">`.
 
@@ -640,4 +664,10 @@ Written on the **later** scene: `<section class="scene" data-in="blur-cross(dur=
 | `tear` | Paper tear: the new scene is revealed from one side along a jagged torn edge (papercut-style scene change). Params: dir=right/left/down/up, jag, teeth |
 | `glitch-cut` | Glitch cut: the new scene flickers a few times with a red/blue split, then stabilizes (tech-style cut) |
 | `open` | Doors open: the new scene opens outward from a slit in the middle. Param: dir=x (opens left/right)/y (opens up/down) |
+| `shatter` | 3D shatter: fractures the frame into 3D shards that tumble and fall away to reveal the next scene. Params: cols, colors=c1/c2, dur, seed |
+| `diagonal-split` | Diagonal slash split: a glowing diagonal slash cuts the frame and pulls apart to reveal the next scene. Params: angle, color, dur |
+| `blinds` | Venetian blinds: slices the incoming scene into slats that flip open in a wave over the previous scene. Params: n=slats, dir=x/y, dur |
+| `crt-off` | Retro CRT switch: collapses the outgoing scene into a bright horizontal scanline before flashing open the next scene. Params: color, dur |
+| `portal-spin` | Vortex spin: twists the outgoing scene into the center while untwisting the incoming scene into focus. Params: deg, dur |
+| `halftone` | Comic halftone wave: a grid of dots expands diagonally to cover the screen and shrinks away to unveil the next scene. Params: cols, color, dur |
 <!-- CATALOG:END -->

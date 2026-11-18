@@ -323,6 +323,27 @@ html, body { width: var(--fx-w); height: var(--fx-h); overflow: hidden; backgrou
 .theme-space .t-en { color: rgba(238,246,255,.55); letter-spacing: .42em; }
 .theme-space .fx-subs[data-style="plain"] .fx-sub span { font-family: var(--fx-font-body); font-weight: 600; font-size: 38px; text-shadow: 0 2px 10px rgba(0,0,0,.8); }
 
+/* ───────────── v1.4 新增：骨骼角色 · 开关面板 · 电路与引线批注 ───────────── */
+.fx-rig { position: absolute; left: 0; bottom: 0; width: 520px; height: 720px; z-index: 420; pointer-events: none; }
+.fx-rig > svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.fx-switches { display: flex; flex-direction: column; gap: 14px; }
+.fx-switch { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 20px;
+  background: var(--fx-card); color: var(--fx-card-ink); border-radius: var(--fx-card-r); box-shadow: var(--fx-card-shadow);
+  border: 1px solid var(--fx-line); font-size: 26px; font-weight: 700; }
+.fx-sw-track { position: relative; width: 72px; height: 38px; border-radius: 99px; background: #9ca3af; flex-shrink: 0; }
+.fx-sw-knob { position: absolute; left: 4px; top: 4px; width: 30px; height: 30px; border-radius: 50%; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,.25); }
+.theme-pixel .fx-switch { border: 4px solid #1d1b19; border-radius: 0; box-shadow: 5px 5px 0 #1d1b19; font-family: var(--fx-font-pixel); font-weight: 400; }
+.theme-pixel .fx-sw-track { border-radius: 0; border: 3px solid #1d1b19; height: 38px; width: 76px; }
+.theme-pixel .fx-sw-knob { border-radius: 0; border: 3px solid #1d1b19; top: 3px; left: 3px; width: 26px; height: 26px; box-shadow: none; }
+.fx-circuit { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 590; }
+.fx-callout { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 620; }
+.fx-callout-tag { position: absolute; padding: 8px 18px; background: #1d1b19; color: #fff; font-family: var(--fx-font-body); font-size: 24px; font-weight: 800;
+  border-radius: 8px; white-space: nowrap; pointer-events: none; z-index: 625; box-shadow: 0 8px 24px rgba(0,0,0,.28); }
+.theme-pixel .fx-callout-tag { border-radius: 0; border: 3px solid #1d1b19; font-family: var(--fx-font-pixel); font-weight: 400; box-shadow: 4px 4px 0 #1d1b19; }
+.fx-scan-bar { position: absolute; pointer-events: none; z-index: 8; }
+.abs.fx-switches, .abs.fx-rig { position: absolute; }
+.abs.fx-3d, .abs.fx-space { inset: auto; position: absolute; }
+
 /* ───────────── 预览播放器（?play，仅预览，不参与渲染） ───────────── */
 .fx-playing, .fx-playing body { width: 100vw; height: 100vh; background: #0b0b0d; }
 .fx-playing [data-composition-id] { position: absolute; top: 0; left: 0; }

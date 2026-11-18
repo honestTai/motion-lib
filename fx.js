@@ -1464,6 +1464,270 @@
     return d;
   });
 
+  /* ── v1.4 新增转场（6 种）与文案驱动动效 ── */
+
+  defT('shatter', '碎裂崩塌：画面裂成 3D 碎片翻转坠落，露出下一幕（适合崩溃、破局、反转）。参数 cols、colors=色1/色2、dur、seed', function (tl, t, prev, next, o) {
+    var d = num(o.dur, 0.85), cols = num(o.cols, 10), W = STAGE.offsetWidth || 1920, H = STAGE.offsetHeight || 1080;
+    var size = Math.ceil(W / cols), rows = Math.ceil(H / size), r = FX.rand(num(o.seed, 19));
+    var pal = slashList(o.colors);
+    if (!pal.length) pal = ['#1d1b19', '#d8432b', '#ffcf3f', '#fbf6ea', '#2f7de1'];
+    var wrap = document.createElement('div');
+    wrap.className = 'fx-overlay';
+    wrap.style.cssText += ';opacity:1;background:none;perspective:900px;overflow:hidden;visibility:hidden';
+    var shards = [];
+    for (var y = 0; y < rows; y++) for (var x = 0; x < cols; x++) {
+      var s = document.createElement('i'), col = pal[Math.floor(r() * pal.length)];
+      s.style.cssText = 'position:absolute;left:' + x * size + 'px;top:' + y * size + 'px;width:' + (size + 2) + 'px;height:' + (size + 2) +
+        'px;background:' + col + ';border:2px solid rgba(0,0,0,.45);box-sizing:border-box;visibility:hidden;backface-visibility:visible';
+      wrap.appendChild(s);
+      shards.push({ el: s, k: r(), cx: (x + 0.5) / cols - 0.5, cy: (y + 0.5) / rows - 0.5 });
+    }
+    STAGE.appendChild(wrap);
+    var pre = 0.14;
+    tl.set(wrap, { visibility: 'visible' }, Math.max(0, t - pre));
+    shards.sort(function (a, b) { return a.k - b.k; }).forEach(function (sh, i) {
+      var appear = Math.max(0, t - pre) + (i / shards.length) * (pre * 0.85);
+      tl.set(sh.el, { visibility: 'visible', opacity: 1, x: 0, y: 0, scale: 1, rotation: 0, rotationX: 0, rotationY: 0 }, appear);
+      var vx = sh.cx * (420 + r() * 380) + (r() - 0.5) * 160;
+      var vy = sh.cy * 260 + 520 + r() * 420;
+      var dur = d * (0.65 + r() * 0.35);
+      tl.to(sh.el, {
+        x: vx, y: vy, rotation: (r() - 0.5) * 260, rotationX: (r() - 0.5) * 520, rotationY: (r() - 0.5) * 520,
+        scale: 0.25, opacity: 0, duration: dur, ease: 'power2.in'
+      }, t + (i / shards.length) * 0.08);
+    });
+    tl.set(wrap, { visibility: 'hidden' }, t + d + 0.1);
+    return 0;
+  });
+
+  defT('diagonal-split', '斜切拉开：一道发光刀光斜劈画面，向两侧凌厉拉开露出新场景（动漫分镜感）。参数 angle=斜度、color、dur', function (tl, t, prev, next, o) {
+    var d = num(o.dur, 0.65), s = num(o.angle, 18), col = o.color || 'var(--fx-accent)';
+    var p = { v: 0 };
+    var svg = svgEl('svg', { viewBox: '0 0 100 100', preserveAspectRatio: 'none', 'class': 'fx-overlay' });
+    svg.style.cssText += ';opacity:1;background:none;visibility:hidden';
+    var l1 = svgEl('line', { 'stroke-width': '0.9', stroke: col }), l2 = svgEl('line', { 'stroke-width': '0.9', stroke: col });
+    svg.appendChild(l1); svg.appendChild(l2); STAGE.appendChild(svg);
+    var paint = function () {
+      if (p.v >= 0.999) { next.style.clipPath = 'none'; return; }
+      var w = p.v * (70 + Math.abs(s));
+      var a1 = 50 + s - w, a2 = 50 + s + w, b1 = 50 - s - w, b2 = 50 - s + w;
+      next.style.clipPath = 'polygon(' + a1.toFixed(2) + '% 0%,' + a2.toFixed(2) + '% 0%,' + b2.toFixed(2) + '% 100%,' + b1.toFixed(2) + '% 100%)';
+      l1.setAttribute('x1', a1.toFixed(2)); l1.setAttribute('y1', '0'); l1.setAttribute('x2', b1.toFixed(2)); l1.setAttribute('y2', '100');
+      l2.setAttribute('x1', a2.toFixed(2)); l2.setAttribute('y1', '0'); l2.setAttribute('x2', b2.toFixed(2)); l2.setAttribute('y2', '100');
+    };
+    tl.set(svg, { visibility: 'visible', opacity: 1 }, t);
+    tl.fromTo(p, { v: 0 }, { v: 1, duration: d, ease: EZ(o.ease, 'expo.inOut'), onUpdate: paint }, t);
+    tl.to(svg, { opacity: 0, duration: 0.18 }, t + d * 0.78);
+    tl.set(svg, { visibility: 'hidden' }, t + d + 0.02);
+    return d;
+  });
+
+  defT('blinds', '百叶窗翻转：新画面切成多根条带，按波浪顺序逐条翻开盖住旧画面。参数 n=条数、dir=x|y、dur', function (tl, t, prev, next, o) {
+    var d = num(o.dur, 0.7), n = Math.max(2, num(o.n, 10)), vert = (o.dir || 'x') !== 'y', span = 0.45, p = { v: 0 };
+    var paint = function () {
+      if (p.v >= 0.999) { next.style.clipPath = 'none'; return; }
+      var pts = [];
+      for (var i = 0; i < n; i++) {
+        var u = clamp((p.v * (1 + span) - (i / n) * span), 0, 1);
+        u = u * u * (3 - 2 * u);
+        var a = (i / n) * 100, b = ((i + u) / n) * 100 + (u > 0 ? 0.08 : 0);
+        if (vert) pts.push(a.toFixed(2) + '% 0%,' + a.toFixed(2) + '% 100%,' + b.toFixed(2) + '% 100%,' + b.toFixed(2) + '% 0%');
+        else pts.push('0% ' + a.toFixed(2) + '%,100% ' + a.toFixed(2) + '%,100% ' + b.toFixed(2) + '%,0% ' + b.toFixed(2) + '%');
+      }
+      next.style.clipPath = 'polygon(' + pts.join(',') + ')';
+    };
+    tl.fromTo(p, { v: 0 }, { v: 1, duration: d, ease: 'none', onUpdate: paint }, t);
+    return d;
+  });
+
+  defT('crt-off', '老电视换台：旧画面压扁成高亮扫描线收缩，随即闪开新画面（复古极客感）。参数 color、dur', function (tl, t, prev, next, o) {
+    var d = num(o.dur, 0.65), h1 = d * 0.45, h2 = d * 0.55, col = o.color || '#ffffff';
+    STAGE.style.backgroundColor = STAGE.style.backgroundColor || '#09090d';
+    var line = document.createElement('div');
+    line.className = 'fx-overlay';
+    line.style.cssText += ';background:none;opacity:1;visibility:hidden;display:grid;place-items:center';
+    var beam = document.createElement('i');
+    beam.style.cssText = 'width:100%;height:8px;background:' + col + ';box-shadow:0 0 28px ' + col + ',0 0 60px var(--fx-accent)';
+    line.appendChild(beam); STAGE.appendChild(line);
+    if (prev) {
+      tl.to(prev, { scaleY: 0.008, scaleX: 1.06, filter: 'brightness(3.2)', duration: h1, ease: 'power3.in' }, Math.max(0, t - h1));
+      tl.set(prev, { scaleY: 1, scaleX: 1, filter: 'none' }, t + 0.02);
+    }
+    tl.set(line, { visibility: 'visible' }, Math.max(0, t - 0.06));
+    tl.fromTo(beam, { scaleX: 1, scaleY: 1.6, opacity: 1 }, { scaleX: 0.02, scaleY: 3, opacity: 0, duration: 0.18, ease: 'power2.out' }, Math.max(0, t - 0.04));
+    tl.set(line, { visibility: 'hidden' }, t + 0.16);
+    tl.fromTo(next, { scaleY: 0.012, filter: 'brightness(2.6)' }, { scaleY: 1, filter: 'brightness(1)', duration: h2, ease: 'expo.out' }, t);
+    return 0;
+  });
+
+  defT('portal-spin', '旋涡穿越：旧画面旋转吸入中心，新画面从旋转模糊中甩出定格。参数 deg=旋转角度、dur', function (tl, t, prev, next, o) {
+    var d = num(o.dur, 0.7), deg = num(o.deg, 72);
+    if (prev) tl.to(prev, { scale: 0.12, rotation: deg, opacity: 0, filter: 'blur(12px)', duration: d * 0.62, ease: 'power3.in' }, t);
+    tl.fromTo(next, { scale: 1.45, rotation: -deg * 0.55, opacity: 0, filter: 'blur(14px)' },
+      { scale: 1, rotation: 0, opacity: 1, filter: 'blur(0px)', duration: d * 0.72, ease: 'expo.out' }, t + d * 0.28);
+    return d;
+  });
+
+  defT('halftone', '漫画网点波纹：圆点阵列沿对角线放大铺满再收缩揭开新画面（二次元/像素风绝配）。参数 cols、color、dur', function (tl, t, prev, next, o) {
+    var d = num(o.dur, 0.8), cols = num(o.cols, 20), W = STAGE.offsetWidth || 1920, H = STAGE.offsetHeight || 1080;
+    var cell = W / cols, rows = Math.ceil(H / cell), col = o.color || '#1d1b19';
+    var wrap = document.createElement('div'), cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    wrap.className = 'fx-overlay';
+    wrap.style.cssText += ';opacity:1;background:none;visibility:hidden';
+    wrap.appendChild(cv); STAGE.appendChild(wrap);
+    var ctx = cv.getContext('2d'), p = { v: 0 };
+    var paint = function () {
+      ctx.clearRect(0, 0, W, H);
+      if (p.v <= 0.002 || p.v >= 0.998) return;
+      ctx.fillStyle = col;
+      var grow = p.v <= 0.5, u = grow ? p.v * 2 : (p.v - 0.5) * 2;
+      for (var y = 0; y < rows; y++) for (var x = 0; x < cols; x++) {
+        var w = (x / cols + y / rows) * 0.5;
+        var k = grow ? clamp((u * 1.55 - w * 0.55), 0, 1) : 1 - clamp((u * 1.55 - w * 0.55), 0, 1);
+        if (k <= 0.01) continue;
+        ctx.beginPath();
+        ctx.arc((x + 0.5) * cell, (y + 0.5) * cell, cell * 0.78 * k, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
+    tl.set(wrap, { visibility: 'visible' }, Math.max(0, t - d / 2));
+    tl.fromTo(p, { v: 0 }, { v: 1, duration: d, ease: 'none', onUpdate: paint }, Math.max(0, t - d / 2));
+    tl.set(wrap, { visibility: 'hidden' }, t + d / 2 + 0.02);
+    return 0;
+  });
+
+  def('scatter-out', '退场', '四散弹飞：元素向四周带着旋转与抛物线重力炸飞清场（适合一键清理、破除误区）。参数 power=力度、dur、seed', function (c) {
+    var r = FX.rand(num(c.o.seed, 23)), pw = num(c.o.power, 1), d = num(c.o.dur, 0.75);
+    var box = FX.rect(c.el);
+    c.els.forEach(function (el, i) {
+      var R = FX.rect(el), ang = c.els.length > 1 && box ? Math.atan2(R.cy - box.cy, R.cx - box.cx) + (r() - 0.5) * 0.6 : (r() * Math.PI * 2);
+      var dx = Math.cos(ang) * (420 + r() * 380) * pw, up = -(120 + r() * 180) * pw, down = (580 + r() * 340) * pw;
+      var t0 = c.t + i * num(c.o.stagger, 0.025);
+      c.tl.to(el, { x: rel(dx), rotation: rel((r() - 0.5) * 240), duration: d, ease: 'power1.out' }, t0);
+      c.tl.to(el, { keyframes: [{ y: rel(up), duration: d * 0.32, ease: 'power2.out' }, { y: rel(down), opacity: 0, duration: d * 0.68, ease: 'power2.in' }] }, t0);
+    });
+  });
+
+  def('circuit', '强调', '直角电路连接：在两个元素之间画横平竖直的折线电路并传输发光脉冲包（适合架构图、MCP 协议流）。写在起点上，to=#终点。参数 mid=折弯比例、packets=脉冲数、color、dur', function (c) {
+    var sc = hostOf(c), b = FX.rect($(c.o.to)), a = FX.rect(c.el);
+    if (!b) { console.warn('FX circuit：找不到终点', c.o.to); return; }
+    var horiz = Math.abs(b.cx - a.cx) >= Math.abs(b.cy - a.cy);
+    var ax = horiz ? (b.cx >= a.cx ? a.x + a.w : a.x) : a.cx;
+    var ay = horiz ? a.cy : (b.cy >= a.cy ? a.y + a.h : a.y);
+    var bx = horiz ? (b.cx >= a.cx ? b.x : b.x + b.w) : b.cx;
+    var by = horiz ? b.cy : (b.cy >= a.cy ? b.y : b.y + b.h);
+    var mid = num(c.o.mid, 0.5), dpath;
+    if (horiz) { var mx = ax + (bx - ax) * mid; dpath = 'M' + ax.toFixed(1) + ' ' + ay.toFixed(1) + ' L' + mx.toFixed(1) + ' ' + ay.toFixed(1) + ' L' + mx.toFixed(1) + ' ' + by.toFixed(1) + ' L' + bx.toFixed(1) + ' ' + by.toFixed(1); }
+    else { var my = ay + (by - ay) * mid; dpath = 'M' + ax.toFixed(1) + ' ' + ay.toFixed(1) + ' L' + ax.toFixed(1) + ' ' + my.toFixed(1) + ' L' + bx.toFixed(1) + ' ' + my.toFixed(1) + ' L' + bx.toFixed(1) + ' ' + by.toFixed(1); }
+    var col = c.o.color || 'var(--fx-accent)';
+    var svg = svgEl('svg', { 'class': 'fx-circuit' });
+    var wire = svgEl('path', { d: dpath, fill: 'none', stroke: col, 'stroke-width': num(c.o.w, 4), 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+    wire.style.opacity = '0.38';
+    var pulse = svgEl('path', { d: dpath, fill: 'none', stroke: col, 'stroke-width': num(c.o.w, 4) + 3, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+    pulse.style.filter = 'drop-shadow(0 0 8px ' + col + ')';
+    var dotA = svgEl('circle', { cx: ax.toFixed(1), cy: ay.toFixed(1), r: 6, fill: col });
+    var dotB = svgEl('circle', { cx: bx.toFixed(1), cy: by.toFixed(1), r: 6, fill: col });
+    svg.appendChild(wire); svg.appendChild(pulse); svg.appendChild(dotA); svg.appendChild(dotB); sc.appendChild(svg);
+    var L = wire.getTotalLength() || 200, seg = Math.max(18, L * 0.16), pk = num(c.o.packets, 3), d = num(c.o.dur, 0.9);
+    pulse.setAttribute('stroke-dasharray', seg.toFixed(1) + ' ' + (L + seg * 2).toFixed(1));
+    gsap.set([dotA, dotB], { scale: 0, transformOrigin: '50% 50%' });
+    c.tl.to(dotA, { scale: 1, duration: 0.2, ease: 'back.out(2)' }, c.t);
+    c.tl.fromTo(wire, { strokeDasharray: L + ' ' + L, strokeDashoffset: L }, { strokeDashoffset: 0, duration: 0.4, ease: 'power2.out' }, c.t);
+    c.tl.to(dotB, { scale: 1, duration: 0.2, ease: 'back.out(2)' }, c.t + 0.35);
+    gsap.set(pulse, { strokeDashoffset: seg });
+    for (var k = 0; k < pk; k++) {
+      c.tl.fromTo(pulse, { strokeDashoffset: seg }, { strokeDashoffset: -L, duration: d, ease: 'none', immediateRender: false }, c.t + 0.25 + k * (d * 0.72));
+    }
+  });
+
+  def('overload', '强调', '过载红温警报：元素高频急促抖动 + 红光闪烁（适合上下文爆满、算力过载、报错）。参数 amp=幅度、color、dur、seed', function (c) {
+    var r = FX.rand(num(c.o.seed, 31)), a = num(c.o.amp, 8), d = num(c.o.dur, 0.9), col = c.o.color || '#ff4d4f', step = 1 / 20;
+    c.els.forEach(function (el) {
+      var origShadow = el.style.boxShadow || '';
+      for (var t = 0; t < d; t += step) {
+        var hi = Math.floor(t / step) % 3 === 0;
+        c.tl.set(el, {
+          x: rel((r() * 2 - 1) * a), y: rel((r() * 2 - 1) * a * 0.6),
+          boxShadow: hi ? '0 0 0 5px ' + col + ', 0 0 36px ' + col : origShadow
+        }, c.t + t);
+        c.tl.set(el, { x: 0, y: 0 }, c.t + t + step * 0.9);
+      }
+      c.tl.set(el, { x: 0, y: 0, boxShadow: origShadow }, c.t + d);
+    });
+  });
+
+  def('scan', '强调', '激光扫描线：一道发光扫描带扫过窗口或卡片（适合代码读取、文档检索、图表诊断）。参数 dir=down|right、color、n=次数、dur', function (c) {
+    var col = c.o.color || 'var(--fx-accent)', dir = c.o.dir || 'down', d = num(c.o.dur, 1.0), n = num(c.o.n, 1);
+    c.els.forEach(function (el) {
+      relPos(el);
+      el.style.overflow = 'hidden';
+      var bar = document.createElement('i');
+      bar.className = 'fx-scan-bar';
+      if (dir === 'right') {
+        bar.style.cssText = 'top:0;bottom:0;left:0;width:90px;background:linear-gradient(90deg,transparent,' + col + ');border-right:4px solid #fff;opacity:0';
+        el.appendChild(bar);
+        for (var k = 0; k < n; k++) {
+          var t0 = c.t + k * (d + 0.15);
+          c.tl.fromTo(bar, { left: '-90px', opacity: 0.75 }, { left: '100%', opacity: 0.75, duration: d, ease: 'power1.inOut', immediateRender: false }, t0);
+          c.tl.set(bar, { opacity: 0 }, t0 + d);
+        }
+      } else {
+        bar.style.cssText = 'left:0;right:0;top:0;height:80px;background:linear-gradient(180deg,transparent,' + col + ');border-bottom:4px solid #fff;opacity:0';
+        el.appendChild(bar);
+        for (var m = 0; m < n; m++) {
+          var tm = c.t + m * (d + 0.15);
+          c.tl.fromTo(bar, { top: '-80px', opacity: 0.72 }, { top: '100%', opacity: 0.72, duration: d, ease: 'power1.inOut', immediateRender: false }, tm);
+          c.tl.set(bar, { opacity: 0 }, tm + d);
+        }
+      }
+    });
+  });
+
+  def('callout', '强调', '折线引线批注：从元素边缘拉出折线引线并弹出文字标签（适合图表峰值、重点数据旁注）。参数 text=文字、dx、dy、color', function (c) {
+    var sc = hostOf(c), col = c.o.color || '#d8432b', dx = num(c.o.dx, 110), dy = num(c.o.dy, -68), txt = String(c.o.text || '重点');
+    c.els.forEach(function (el) {
+      var R = FX.rect(el);
+      if (!R) return;
+      var sx = dx >= 0 ? R.x + R.w - 6 : R.x + 6, sy = dy <= 0 ? R.y + 8 : R.y + R.h - 8;
+      var kx = sx + dx * 0.55, ky = sy + dy, ex = sx + dx;
+      var svg = svgEl('svg', { 'class': 'fx-callout' });
+      var dot = svgEl('circle', { cx: sx.toFixed(1), cy: sy.toFixed(1), r: 6, fill: col });
+      var path = svgEl('path', { d: 'M' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ' L' + kx.toFixed(1) + ' ' + ky.toFixed(1) + ' L' + ex.toFixed(1) + ' ' + ky.toFixed(1),
+        fill: 'none', stroke: col, 'stroke-width': 4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+      svg.appendChild(path); svg.appendChild(dot); sc.appendChild(svg);
+      var tag = document.createElement('div');
+      tag.className = 'fx-callout-tag';
+      tag.style.background = col;
+      tag.style.left = (dx >= 0 ? ex + 6 : ex - 6) + 'px';
+      tag.style.top = (ky - 22) + 'px';
+      if (dx < 0) tag.style.transform = 'translateX(-100%)';
+      tag.textContent = txt;
+      sc.appendChild(tag);
+      var L = path.getTotalLength() || 140;
+      gsap.set(dot, { scale: 0, transformOrigin: '50% 50%' });
+      gsap.set(tag, { opacity: 0, scale: 0.7 });
+      c.tl.to(dot, { scale: 1, duration: 0.18, ease: 'back.out(2)' }, c.t);
+      c.tl.fromTo(path, { strokeDasharray: L + ' ' + L, strokeDashoffset: L }, { strokeDashoffset: 0, duration: 0.35, ease: 'power2.out' }, c.t + 0.06);
+      c.tl.to(tag, { opacity: 1, scale: 1, duration: 0.28, ease: 'back.out(2)' }, c.t + 0.28);
+    });
+  });
+
+  def('toggle', '组件', '拨动开关：配 data-make="switches"，把第 i 个开关（支持 2/3/5 批量）拨到开(on=1)或关(on=0)。参数 i、on=0|1、stagger', function (c) {
+    var rows = $$('.fx-switch', c.el), idxs = slashList(c.o.i || 1).map(function (x) { return clamp(+x - 1, 0, rows.length - 1); });
+    var on = num(c.o.on, 0) ? 1 : 0, st = num(c.o.stagger, 0.14), d = num(c.o.dur, 0.28);
+    var onCol = c.el.getAttribute('data-on-color') || '#3fbf5a', offCol = c.el.getAttribute('data-off-color') || '#9ca3af';
+    idxs.forEach(function (idx, k) {
+      var row = rows[idx];
+      if (!row) return;
+      var track = $('.fx-sw-track', row), knob = $('.fx-sw-knob', row), t0 = c.t + k * st;
+      var travel = (track.offsetWidth || 74) - (knob.offsetWidth || 28) - 10;
+      c.tl.to(knob, { x: on ? Math.max(28, travel) : 0, duration: d, ease: 'back.out(2)' }, t0);
+      c.tl.to(track, { backgroundColor: on ? onCol : offCol, duration: d * 0.8 }, t0);
+      if (c.o.dim !== 0) c.tl.to(row, { opacity: on ? 1 : 0.52, duration: d }, t0);
+    });
+  });
+
   /* ── 组件生成器 ── */
 
   var attr = function (el, k, d) { var v = el.getAttribute('data-' + k); return v === null || v === '' ? d : v; };
@@ -1533,6 +1797,21 @@
     for (i = n - 1; i >= 0; i--) pts.push([i / n * 100, 100 - (has('bottom') ? r() * dp : 0)]);
     for (i = n - 1; i >= 1; i--) pts.push([has('left') ? r() * dp * 0.5 : 0, i / n * 100]);
     el.style.clipPath = 'polygon(' + pts.map(function (q) { return q[0].toFixed(2) + '% ' + q[1].toFixed(2) + '%'; }).join(',') + ')';
+  };
+
+  /** 开关列表：data-labels="项1,项2,项3"、data-on="1,3"（或 all），配 toggle 动效拨动开关 */
+  FX.make.switches = function (el) {
+    var labels = list(el, 'labels'), rawOn = attr(el, 'on', 'all'), onSet = {};
+    if (rawOn === 'all') labels.forEach(function (_, i) { onSet[i + 1] = 1; });
+    else list(el, 'on').forEach(function (v) { onSet[+v] = 1; });
+    var onCol = attr(el, 'on-color', '#3fbf5a'), offCol = attr(el, 'off-color', '#9ca3af');
+    el.classList.add('fx-switches');
+    el.innerHTML = labels.map(function (lb, i) {
+      var isOn = !!onSet[i + 1];
+      return '<div class="fx-switch" style="opacity:' + (isOn ? 1 : 0.52) + '"><span>' + lb + '</span>' +
+        '<span class="fx-sw-track" style="background:' + (isOn ? onCol : offCol) + '">' +
+        '<i class="fx-sw-knob" style="transform:translateX(' + (isOn ? 36 : 0) + 'px)"></i></span></div>';
+    }).join('');
   };
 
   /* ═════════════════════════ 字幕 ═════════════════════════
@@ -1623,7 +1902,7 @@
         else if (f.time[0] === '-') t = base + dur + parseFloat(f.time);
         else t = base + parseFloat(f.time);
         last = t;
-        var els = f.mod === 'each' ? Array.prototype.slice.call(el.children).filter(function (k) { return !/^fx-(box|ping|sheen|overlay)/.test(k.className && k.className.baseVal !== undefined ? k.className.baseVal : k.className); })
+        var els = f.mod === 'each' ? Array.prototype.slice.call(el.children).filter(function (k) { return !/^fx-(box|ping|sheen|overlay|scan)/.test(k.className && k.className.baseVal !== undefined ? k.className.baseVal : k.className); })
                 : f.mod === 'chars' ? splitChars(el) : f.mod === 'words' ? splitWords(el) : f.mod === 'lines' ? splitLines(el) : [el];
         if (f.mod === 'chars' && f.opts.stagger === undefined) f.opts.stagger = 0.03;
         fn({ tl: tl, el: el, els: els, t: t, o: f.opts, scene: s, sceneDur: s ? Math.max(0.1, base + dur - t) : total - t, total: total });
@@ -1652,8 +1931,8 @@
     // 把时间线补到总时长，渲染器才知道片子有多长
     tl.set({}, {}, total);
 
-    g.__timelines = g.__timelines || {};
-    g.__timelines[id] = tl;
+    window.__timelines = window.__timelines || {};
+    window.__timelines[id] = tl;
     tl.seek(0);
     FX.timeline = tl;
 

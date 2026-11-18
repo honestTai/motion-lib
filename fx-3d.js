@@ -35,19 +35,26 @@
     if (el.__s3) return;
     need();
     var W = el.offsetWidth || 1920, H = el.offsetHeight || 1080, at = function (k, d) { var v = el.getAttribute('data-' + k); return v === null || v === '' ? d : v; };
-    var bg = new T.Color(at('bg', '#02060f'));
-    var renderer = new T.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
-    renderer.setPixelRatio(1); renderer.setSize(W, H, false); renderer.setClearColor(bg, 1);
+    var isAlpha = at('alpha') === '1', bg = new T.Color(at('bg', '#02060f'));
+    var dpr = clamp(num(at('dpr'), isAlpha ? 2 : 1), 1, 3);
+    var renderer = new T.WebGLRenderer({ antialias: true, alpha: isAlpha, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(dpr); renderer.setSize(W, H, false);
+    if (isAlpha) renderer.setClearColor(0x000000, 0); else renderer.setClearColor(bg, 1);
     el.classList.add('fx-3d');
     el.insertBefore(renderer.domElement, el.firstChild);
     var scene = new T.Scene(), cam = new T.PerspectiveCamera(num(at('fov'), 50), W / H, 0.1, 4000);
-    scene.background = bg;                                              // 用场景背景而不是清屏色：开辉光时清屏色会被多转一次亮度，背景发灰
-    if (num(at('fog'), 0) > 0) scene.fog = new T.FogExp2(bg, num(at('fog'), 0));
-    if (at('light') !== '0') {
+    if (!isAlpha) scene.background = bg;                                // 用场景背景而不是清屏色：开辉光时清屏色会被多转一次亮度，背景发灰
+    if (!isAlpha && num(at('fog'), 0) > 0) scene.fog = new T.FogExp2(bg, num(at('fog'), 0));
+    if (at('light') === 'anime') {
+      scene.add(new T.AmbientLight(0xfff7f0, 0.82));
+      var aKey = new T.DirectionalLight(0xfffdf9, 2.50); aKey.position.set(1.2, 1.9, 2.8); scene.add(aKey);
+      var aRim = new T.DirectionalLight(0xdbeafe, 0.62); aRim.position.set(-1.8, 1.8, -2.2); scene.add(aRim);
+      var aTop = new T.DirectionalLight(0xfff0f5, 0.42); aTop.position.set(0.2, 2.8, -1.2); scene.add(aTop);
+    } else if (at('light') !== '0') {
       scene.add(new T.AmbientLight(0x3a4a70, 1.6));
       var key = new T.DirectionalLight(0xcfe2ff, 2); key.position.set(-6, 10, 8); scene.add(key);
     }
-    var bloom = num(at('bloom'), 0.8), composer = null;
+    var bloom = num(at('bloom'), isAlpha ? 0 : 0.8), composer = null;
     if (bloom > 0) {
       composer = new T.EffectComposer(renderer); composer.setPixelRatio(1); composer.setSize(W, H);
       composer.addPass(new T.RenderPass(scene, cam));
@@ -55,7 +62,7 @@
       composer.addPass(new T.OutputPass());
     }
     var c0 = csv(at('cam'), [0, 4, 16]), l0 = csv(at('look'), [0, 0, 0]);
-    el.__s3 = { el: el, W: W, H: H, renderer: renderer, scene: scene, cam: cam, composer: composer, objs: [], cams: [], mats: [], blank: true,
+    el.__s3 = { el: el, W: W, H: H, alpha: isAlpha, renderer: renderer, scene: scene, cam: cam, composer: composer, objs: [], cams: [], mats: [], blank: true,
       cam0: { x: c0[0], y: c0[1], z: c0[2], lx: l0[0], ly: l0[1], lz: l0[2], fov: cam.fov } };
   };
 
@@ -81,7 +88,7 @@
       if (!on) continue;
       any = true;
       A = Math.min(1, O.fi > 0 ? lt / O.fi : 1) * Math.min(1, O.fo > 0 ? (O.dur - lt) / O.fo : 1);
-      O.update(lt, A);
+      O.update(lt, A, t);
     }
     if (!any) { if (!s3.blank) { s3.renderer.clear(); s3.blank = true; } return; }
     s3.blank = false;
@@ -118,6 +125,7 @@
     s3.redraw();
   }
   var def = function (name, desc, fn) { FX.register(name, '3D', desc, fn); };
+  FX._stage3d = { stage: stage, obj: obj, easeFn: easeFn, need: need };
 
   /* ── 显卡粒子：每个粒子的位置由一小段着色器代码 P() 根据属性和时间算出 ── */
   var V_HEAD = 'uniform float uTime; uniform float uPx; uniform float uSize; attribute vec3 col; attribute float sz; varying vec3 vCol; varying float vA;\n';

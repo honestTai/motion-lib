@@ -13,6 +13,8 @@ new Function("window", fs.readFileSync(path.join(here, "fx.js"), "utf8"))(win);
   const fake = () => ({ getContext: () => new Proxy({}, { get: () => () => ({ data: [0, 0, 0, 0], addColorStop() {} }) }), width: 0, height: 0 });
   new Function("window", "document", fs.readFileSync(path.join(here, "fx-particles.js"), "utf8"))(win, { createElement: fake });
   new Function("window", "document", fs.readFileSync(path.join(here, "fx-3d.js"), "utf8"))(win, { createElement: fake });
+  new Function("window", "document", fs.readFileSync(path.join(here, "fx-rig.js"), "utf8"))(win, { createElement: fake });
+  new Function("window", "document", fs.readFileSync(path.join(here, "fx-vrm.js"), "utf8"))(win, { createElement: fake });
 }
 const { catalog, make } = win.FX;
 

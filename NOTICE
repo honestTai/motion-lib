@@ -7,3 +7,5 @@ Third-party components bundled in this repository keep their own licenses:
 - vendor/gsap.min.js: GreenSock Standard License (https://gsap.com/standard-license)
 - fonts/: see fonts/README.md (SIL OFL 1.1 and vendor terms)
 - vendor/three-fx.min.js: three.js r187 and its examples/jsm post-processing modules, MIT License (https://github.com/mrdoob/three.js); license text in vendor/three-LICENSE.txt
+- vendor/three-vrm.min.js: @pixiv/three-vrm & @pixiv/three-vrm-animation v3.5.5 (MIT License, https://github.com/pixiv/three-vrm; license text in vendor/three-vrm-LICENSE.txt) and three.js GLTFLoader (MIT License)
+- assets/shino.vrm & assets/vita.vrm: VRoid Studio preset models "Sendagaya Shino" and "Vita" released under CC0 1.0 Public Domain Dedication by pixiv Inc. (http://creativecommons.org/publicdomain/zero/1.0/)

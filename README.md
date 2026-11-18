@@ -4,6 +4,10 @@
 
 **HTML → 视频的声明式动效库。** 在元素上写一行 `data-fx="动效名@秒数"`，就能做出知识口播、科技解说这类视频里常见的动效，再用 [HyperFrames](https://hyperframes.heygen.com) 逐帧渲染成 MP4。
 
+> **v1.5 新增**：可选真 3D 二次元角色模块 `fx-vrm.js`（基于 `@pixiv/three-vrm` MIT 标准：支持任意 VRoid / OpenSourceAvatars `.vrm` 3D 模型与 `.vrma` 动作捕捉，内置 MToon 赛璐璐描边着色、13 套全身口播姿态、五元音口型同步 `aa/ih/ou/ee/oh`、以及逐帧确定性的 3D 头发/裙摆物理惯性 `SpringBone`；仓库自带 CC0 示例角色 `assets/shino.vrm`）。
+>
+> **v1.4 新增**：可选柔性骨骼与软蒙皮模块 `fx-rig.js`（通用双骨 IK `FX.ik2` + RubberHose 连续贝塞尔无接缝软袖管 `FX.hose` + 声明式 `[data-bone]` / `[data-follow]` / `[data-hose]`，适用于任意自定义 SVG 角色，无木偶拼接感）+ 6 种新转场（`shatter` `diagonal-split` `blinds` `crt-off` `portal-spin` `halftone`）+ 6 种新动效（`circuit` `overload` `scan` `callout` `scatter-out` `toggle`）+ `switches` 开关组件。
+>
 > **v1.3 新增**：可选 3D 模块 `fx-3d.js`（真 3D 场景：星系、能量球、隧道、黑洞、城市飞行、点阵球、立体粒子字等 12 个动效，带辉光和可编程摄像机）。
 >
 > **v1.2 新增**：可选粒子模块 `fx-particles.js`（8 个粒子动效：星空、星云、旋涡、黑洞、能量球、爆炸、粒子聚字、粒子流）+ 第 5 套皮肤 `theme-space`（深空粒子）。
@@ -17,9 +21,9 @@
 <!-- STATS:START -->
 | | 数量 |
 |---|---|
-| 动效 | **136** 种（入场 26 · 退场 9 · 强调 37 · 文字 9 · 数据 6 · 镜头 11 · 角色 5 · 剪纸 10 · 粒子 8 · 3D 12 · 组件 3） |
-| 转场 | **14** 种 |
-| 组件生成器 | **16** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `space` `stage3d`） |
+| 动效 | **153** 种（入场 26 · 退场 10 · 强调 41 · 文字 9 · 数据 6 · 镜头 11 · 角色 16 · 剪纸 10 · 粒子 8 · 3D 12 · 组件 4） |
+| 转场 | **20** 种 |
+| 组件生成器 | **17** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d`） |
 | 皮肤 | **5** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴 · 深空粒子） |
 <!-- STATS:END -->
 
@@ -51,8 +55,11 @@ motion-lib/
 ├── fx.css           基础样式、组件样式、五套皮肤
 ├── fx-particles.js  可选的粒子模块（宇宙、旋涡、黑洞、爆炸、粒子聚字）
 ├── fx-3d.js         可选的 3D 模块（真 3D 场景、辉光、可编程摄像机；需要 three.js）
+├── fx-rig.js        可选的 2D 柔性骨骼与连续贝塞尔软蒙皮模块（适用于任意自定义 SVG 角色）
+├── fx-vrm.js        可选的真 3D 二次元角色模块（支持标准 .vrm 模型、MToon 赛璐璐、5 元音口型与头发物理）
+├── assets/          内置 CC0 1.0 公共领域 3D 二次元示例模型（shino.vrm）
 ├── fonts/           优设标题黑、得意黑、Fusion Pixel 像素字体、站酷快乐体（许可见 fonts/README.md）
-├── vendor/          GSAP 3.15、three.js r187（含辉光后期，three-fx.min.js；本地一份）
+├── vendor/          GSAP 3.15、three.js r187（three-fx.min.js）、@pixiv/three-vrm 3.5（three-vrm.min.js）
 ├── new-project.sh   把库装进一个视频项目（也用来更新）
 ├── chrome-tall.sh   渲染用 Chrome 包装（防止成片底部字幕被截掉）
 ├── gen-readme.mjs   从 fx.js 自动生成本文的数量表和动效目录（node gen-readme.mjs）
@@ -305,6 +312,33 @@ FX.subtitles([
 - 渲染需要 WebGL。有显卡加速时很快（5 秒的片子约 16 秒渲完）；没有显卡加速的机器会退回软件渲染，慢很多。
 - 3D 成片码率高，上传前建议用 ffmpeg 压一遍：`ffmpeg -i in.mp4 -c:v libx264 -crf 24 out.mp4`。
 
+### 真 3D 二次元口播角色（`fx-vrm.js`）
+
+想在知识口播片角落放一个带立体透视、头发随动作自然摆动、口型会发 `a/i/u/e/o` 五元音的真 3D 二次元主持人？加载 `vendor/three-vrm.min.js` + `fx-vrm.js`，把一个透明 `stage3d`（`data-alpha="1"`）放在 `overlay` 叠加层上即可：
+
+```html
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/vendor/three-fx.min.js"></script>
+<script src="lib/vendor/three-vrm.min.js"></script>
+<script src="lib/fx.js"></script>
+<script src="lib/fx-3d.js"></script>
+<script src="lib/fx-vrm.js"></script>
+
+<section class="scene overlay" data-t="0" data-d="30">
+  <div class="abs" style="left:-60px;bottom:0;width:740px;height:920px;pointer-events:none"
+       data-make="stage3d" data-alpha="1" data-light="anime"
+       data-fx="vrm3d@0(src=assets/shino.vrm,ry=12)
+                vrm-pose@0(pose=wave,expr=relaxed,dur=0.45)
+                vrm-pose@4.0(pose=explain,expr=happy,look=right)
+                vrm-pose@9.0(pose=think,expr=sad,look=up)
+                vrm-talk@0.3(dur=12.0)"></div>
+</section>
+```
+
+- **开放标准生态**：支持任何从 [VRoid Studio](https://vroid.com) 导出或 [Open Source Avatars](https://www.opensourceavatars.com) 下载的 `.vrm`（VRM 0.x / 1.0 自动识别）及 `.vrma` 动捕片段；内置身高自动归一化（`autofit=1`），换模型不会跑出取景框。
+- **13 套口播预设姿态**：`idle` `wave` `explain` `point` `point-up` `think` `shock` `clasp` `reject` `shrug` `proud` `cheer` `bow`。
+- **100% 逐帧确定性头发物理**：模型加载自动注册到 `window.__hf.buildReady`（无首帧空白），`SpringBone` 物理在任意帧 `t` 从 `t - 0.42s` 定步长推演，多进程并行渲染零抖动。
+
 ### 手写补充
 
 库里没有的动效，直接写 GSAP。用 `at('场景id', 场景内秒数)` 换算绝对时间：
@@ -400,7 +434,7 @@ v1.1 的新动效和皮肤受到下面这些开源项目的启发：
 3D 模块基于 [three.js](https://github.com/mrdoob/three.js)（MIT）。
 
 <!-- CATALOG:START -->
-## 动效目录（136 种动效 + 14 种转场）
+## 动效目录（153 种动效 + 20 种转场）
 
 > 这一节由 `node gen-readme.mjs` 从 `fx.js` 自动生成，不要手改。
 > 所有动效都支持通用参数 `dur`（时长）、`ease`（缓动）、`stagger`（错峰）；下表只列各自特有的参数。
@@ -438,7 +472,7 @@ v1.1 的新动效和皮肤受到下面这些开源项目的启发：
 | `light-speed-in` | 光速入场：带着斜切从一侧高速冲进来，冲过头再回正（animate.css lightSpeedIn）。参数 dir=left/right（往哪边运动）、dist |
 | `jack-in` | 弹簧盒：从底部一点点弹出来，左右晃两下站稳（animate.css jackInTheBox） |
 
-### 退场（9）
+### 退场（10）
 
 元素离开的方式。一般写成 `@-0.4`（场景结束前 0.4 秒）。
 
@@ -453,8 +487,9 @@ v1.1 的新动效和皮肤受到下面这些开源项目的启发：
 | `wipe-out` | 遮罩擦除消失 |
 | `hinge` | 铰链掉落：左上角像钉了一颗钉子，晃两下后掉出画面（animate.css hinge）。参数 dist |
 | `fall-out` | 文字掉落：每个字带着旋转往下掉出画面（FallingText），一般配 chars: 用。参数 dist、seed |
+| `scatter-out` | 四散弹飞：元素向四周带着旋转与抛物线重力炸飞清场（适合一键清理、破除误区）。参数 power=力度、dur、seed |
 
-### 强调（37）
+### 强调（41）
 
 元素已经在画面上，念到它时做一下强调；也包括移动、变色、内容切换。
 
@@ -497,6 +532,10 @@ v1.1 的新动效和皮肤受到下面这些开源项目的启发：
 | `orbit` | 环绕：把容器的子元素均匀摆在一个圆上，绕中心转，子元素始终保持正立（OrbitingCircles）。写在容器上。参数 r=半径、turns=圈数、dur、reverse=1 反转 |
 | `beam` | 连接光束：在两个元素之间画一条弧线，一团光沿线流过去（AnimatedBeam，适合画「A 把数据传给 B」）。写在起点元素上，to=#终点。参数 curve=弯曲度、color、n=流几次、dur |
 | `flip-swap` | 翻面换内容：元素绕竖轴翻过去，背面换成第二个子元素再翻回来（翻牌、揭晓答案）。元素里放两个子元素：第一个是正面，第二个是背面。参数 axis=y/x |
+| `circuit` | 直角电路连接：在两个元素之间画横平竖直的折线电路并传输发光脉冲包（适合架构图、MCP 协议流）。写在起点上，to=#终点。参数 mid=折弯比例、packets=脉冲数、color、dur |
+| `overload` | 过载红温警报：元素高频急促抖动 + 红光闪烁（适合上下文爆满、算力过载、报错）。参数 amp=幅度、color、dur、seed |
+| `scan` | 激光扫描线：一道发光扫描带扫过窗口或卡片（适合代码读取、文档检索、图表诊断）。参数 dir=down/right、color、n=次数、dur |
+| `callout` | 折线引线批注：从元素边缘拉出折线引线并弹出文字标签（适合图表峰值、重点数据旁注）。参数 text=文字、dx、dy、color |
 
 ### 文字（9）
 
@@ -545,7 +584,7 @@ v1.1 的新动效和皮肤受到下面这些开源项目的启发：
 | `bg-scroll` | 背景图案滚动：让 background（网格、纹理、条纹）按速度持续平移，配 retro-grid 组件用。参数 x、y=每秒像素 |
 | `parallax` | 视差：容器里的各层按前后顺序以不同速度平移（后面的层动得少、前面的层动得多），配 hills 层叠纸山用。写在容器上。参数 x、y=最前层的总位移、dur |
 
-### 角色（5）
+### 角色（16）
 
 给立绘 / 小人用：换姿势、口型、点头、跳、走。
 
@@ -556,6 +595,17 @@ v1.1 的新动效和皮肤受到下面这些开源项目的启发：
 | `talk` | 说话时的小幅上下点动。参数 dur=说多久、rate=每秒几下 |
 | `hop` | 原地跳一下（惊讶、高兴）。参数 h=高度、n=次数 |
 | `walk` | 走过去：水平移动 + 一步一颠。参数 x=位移 或 to=#目标、steps=步数；像素角色加 ease=steps(8) |
+| `rig-idle` | 柔性待机呼吸：驱动任意绑定角色的自然胸腔呼吸、发丝微摆与按种子随机眨眼。参数 dur、seed |
+| `rig-pose` | 柔性切换姿态：按预设名或手部 IK 坐标(lx,ly,rx,ry)平滑过渡，连续贝塞尔袖管自动弯曲无接缝。参数 pose、lx/ly/rx/ry、look、face、emote、dur |
+| `rig-talk` | 多口型语音同步：按种子在多套 [data-viseme] 口型间自然切换并附带微点头，说完自动回到当前表情嘴。参数 dur、frames、nod=1、seed |
+| `rig-nod` | 柔性点头/摇头：驱动颈部枢轴并自动触发发丝呆毛次级弹簧摆动。参数 shake=1（摇头）、n、amp、dur |
+| `rig-wave` | 柔性挥手：在指定软肢体(arm=R/L)的手部 IK 目标上叠加圆弧往复挥动，整条袖管自然连动。参数 arm=R/L、n、amp、dur |
+| `vrm3d` | 加载真 3D 二次元 VRM 角色（FX.ik3d 双骨逆解 + 6 节脊柱波 + 五元音口型 + 腮红漫符 + 头发物理），写在 stage3d 上。参数 src=shino/vita/路径、headscale=Q版头身比(默认1.20)、ry、x/y/z、breathe/blink/sway/spring |
+| `vrm-pose` | 切换 3D VRM 角色 IK 姿态、表情、视线与漫符：pose=idle/wave/explain/point/point-up/think/shock/clasp/reject/shrug/proud/cheer/bow（也支持 lx/ly/lz/rx/ry/rz 自定义手腕 3D IK 坐标），expr=neutral/happy/relaxed/angry/sad/surprised，emote=sweat/question/idea/anger/sparkle/excl，look=cam/right/left/up/down |
+| `vrm-talk` | 驱动 3D VRM 角色五元音口型（aa/ih/ou/ee/oh）并联动口播音节手势节拍：dur=说话秒数、rate=音节速率、amp=张嘴幅度、seed |
+| `vrm-nod` | 给 3D VRM 角色叠加点头、摇头或歪头动作：kind=nod/shake/tilt、n=次数、amp=幅度、dur |
+| `vrm-move` | 移动 3D VRM 角色位置（如从画面底部轻快弹出登场或横向小步让位）：x/y/z、fromY=起始高度、dur、ease |
+| `vrm-anim` | 播放标准 .vrma (VRM Animation) 3D 动作捕捉片段并自动叠加口型与眨眼：src=文件路径、dur |
 
 ### 剪纸（10）
 
@@ -608,7 +658,7 @@ v1.1 的新动效和皮肤受到下面这些开源项目的启发：
 | `cam3d` | 移动摄像机：从当前位置飞到新位置，同时把视线转向新目标。参数 x / y / z=飞到哪、lx / ly / lz=看向哪、fov=视角、dur、ease（dur=0 就是直接切过去）。没写的参数保持不变 |
 | `orbit3d` | 环绕镜头：摄像机绕着目标转圈，可以同时拉近 / 升高。参数 turn=转多少度（负数反向）、from=起始角度（不写就从当前位置开始）、r=结束时离目标多远、h=结束时的高度、lx / ly / lz=绕着哪里转、dur、ease |
 
-### 组件（3）
+### 组件（4）
 
 配合 `data-make` 生成的组件使用。
 
@@ -617,8 +667,9 @@ v1.1 的新动效和皮肤受到下面这些开源项目的启发：
 | `step` | 步骤导航切换：配 data-make="steps"，把第 i 个胶囊点亮（从 1 数），其余熄灭 |
 | `chapter` | 章节进度条：配 data-make="chapters"，高亮块滑到第 i 章（从 1 数） |
 | `check` | 清单打勾：配 .fx-check 组件，勾画出来、文字变实 |
+| `toggle` | 拨动开关：配 data-make="switches"，把第 i 个开关（支持 2/3/5 批量）拨到开(on=1)或关(on=0)。参数 i、on=0/1、stagger |
 
-### 转场（14）
+### 转场（20）
 
 写在**后一个**场景上：`<section class="scene" data-in="blur-cross(dur=0.5)">`。
 
@@ -638,4 +689,10 @@ v1.1 的新动效和皮肤受到下面这些开源项目的启发：
 | `tear` | 撕纸：新画面沿一条参差的撕裂边从一侧露出来（剪纸风换场景）。参数 dir=right/left/down/up、jag、teeth |
 | `glitch-cut` | 故障闪切：新画面带红蓝错位闪几下再稳定下来（科技感切换） |
 | `open` | 开门：新画面从中间一条缝向两边拉开。参数 dir=x（左右拉开）/y（上下拉开） |
+| `shatter` | 碎裂崩塌：画面裂成 3D 碎片翻转坠落，露出下一幕（适合崩溃、破局、反转）。参数 cols、colors=色1/色2、dur、seed |
+| `diagonal-split` | 斜切拉开：一道发光刀光斜劈画面，向两侧凌厉拉开露出新场景（动漫分镜感）。参数 angle=斜度、color、dur |
+| `blinds` | 百叶窗翻转：新画面切成多根条带，按波浪顺序逐条翻开盖住旧画面。参数 n=条数、dir=x/y、dur |
+| `crt-off` | 老电视换台：旧画面压扁成高亮扫描线收缩，随即闪开新画面（复古极客感）。参数 color、dur |
+| `portal-spin` | 旋涡穿越：旧画面旋转吸入中心，新画面从旋转模糊中甩出定格。参数 deg=旋转角度、dur |
+| `halftone` | 漫画网点波纹：圆点阵列沿对角线放大铺满再收缩揭开新画面（二次元/像素风绝配）。参数 cols、color、dur |
 <!-- CATALOG:END -->
