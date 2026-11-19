@@ -46,16 +46,17 @@
 <!-- STATS:START -->
 | | Count |
 |---|---|
-| Effects | **153** (Enter 26 · Exit 10 · Emphasis 41 · Text 9 · Data 6 · Camera 11 · Character 16 · Papercut 10 · Particles 8 · 3D 12 · Components 4) |
-| Transitions | **20** |
-| Component generators | **17** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d`) |
-| Skins | **5** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles) |
+| Effects | **190** (Enter 26 · Exit 10 · Emphasis 41 · Text 9 · Data 6 · Camera 11 · Character 25 · Papercut 10 · Particles 8 · 3D 12 · Space 21 · Stage 7 · Components 4) |
+| Transitions | **23** |
+| Component generators | **31** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini`) |
+| Skins | **6** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles · studio) |
 <!-- STATS:END -->
 
 <details open>
 <summary><b>✨ Release Highlights (v1.4: Real 3D VRM Presenters + 2D RubberHose IK + 12 New FX & Transitions)</b></summary>
 <br />
 
+- **New in v1.5 (World & Camera)**: optional module [`fx-world.js`](fx-world.js). Put `data-world` on the root element and every scene sits on one big canvas, so **changing scenes means the camera travels there** instead of flipping pages. Ships 21 new effects (in-place zoom, push-back blur, rack focus, deal-in, skeleton fill, depth tunnel, helix, 3D flip board, lift and make way, slice swap, walk-in road and more), 7 new generators, a 6th theme `theme-studio`, and a page lint `FX.lint()` (add `?lint` to the URL: it reports text that is too small, empty frames on camera arrival and clipped text).
 - **New in v1.4 (3D VRM Avatars & 2D Soft Rig & Cyber Transitions)**:
   - **Real 3D Anime VRM Module [`fx-vrm.js`](fx-vrm.js)**: Built on `@pixiv/three-vrm` (MIT) with a closed-form two-bone 3D analytical IK solver (`FX.ik3d`), universal cross-model retargeting, 6-segment spine wave, auto-clavicle coupling, 13 full-body presenter poses, C¹ 5-vowel lip-sync (`aa/ih/ou/ee/oh`), MToon cel-shading, 2× Retina supersampling, and continuous 60Hz `SpringBone` hair/skirt physics. Ships with two Pixiv **CC0 1.0 Public Domain** sample avatars (`assets/shino.vrm` & `assets/vita.vrm`).
   - **2D Soft-Bone & RubberHose Module [`fx-rig.js`](fx-rig.js)**: Generic 2D two-bone IK (`FX.ik2`) + seamless continuous Bezier soft-sleeve limbs (`FX.hose`) + declarative `[data-bone]` / `[data-follow]` / `[data-hose]` for any custom SVG character.
@@ -147,6 +148,9 @@ motion-lib/
 ├── fx-3d.js         optional WebGL 3D stage, UnrealBloom, anime lighting, programmable camera
 ├── fx-rig.js        optional 2D two-bone IK (FX.ik2) & continuous Bezier RubberHose limbs (FX.hose)
 ├── fx-vrm.js        optional real 3D VRM avatar module (FX.ik3d analytical IK, 5-vowel lip-sync, 60Hz hair physics)
+├── fx-world.js      optional module: world canvas, camera moves and image-set effects (scene change = camera travel)
+├── fx-puppet.js     optional module: sprite puppets (blink, breathe, lip-sync) and actors that follow the content
+├── fx-stage.js      optional module: stage play (backdrops, mosaic scene change, device picture-in-picture, illustration inserts, mini actors)
 ├── assets/          built-in CC0 1.0 Public Domain 3D VRM sample avatars (shino.vrm, vita.vrm)
 ├── fonts/           YouSheBiaoTiHei, Smiley Sans, Fusion Pixel, ZCOOL KuaiLe (licenses in fonts/README.md)
 ├── vendor/          GSAP 3.15, three.js r187 (three-fx.min.js), @pixiv/three-vrm 3.5 (three-vrm.min.js)
@@ -313,6 +317,100 @@ Chain multiple effects separated by spaces: `data-fx="rise-in@0.2 pulse@1.5 fade
 
 ## 🌟 Advanced Visual & Character Modules
 
+### 0. World Canvas & Camera (`fx-world.js`, new in v1.5)
+
+A film where scenes take turns as full-screen pages looks like a slide deck. Load `fx-world.js` and put `data-world` on the root element, and every scene becomes **a station on one big canvas**: on a scene change the camera travels diagonally to the next station (a slight pull-back first, 0.8 s), and keeps pushing in slowly while it rests. Existing scene markup does not change.
+
+```html
+<script src="lib/fx.js"></script>
+<script src="lib/fx-world.js"></script>
+
+<div id="root" class="theme-studio" data-composition-id="main" data-width="1920" data-height="1080"
+     data-world="snake" data-cols="4" data-wall="MOTION">
+  <section class="scene center" data-d="4.6" data-fx="cam-wide@0 cam-home@1.5">…</section>
+  <section class="scene" data-d="5.2">
+    <div class="abs" style="left:160px;top:260px;width:1600px;height:560px" data-make="fan"
+         data-fx="pick@0.8(i=2) pick@2.1(i=3)">
+      <img src="a.jpg" width="330" height="450"> <img src="b.jpg" width="330" height="450"> <img src="c.jpg" width="330" height="450">
+    </div>
+  </section>
+</div>
+```
+
+| Where | Syntax | What it does |
+|---|---|---|
+| Root | `data-world="snake\|row\|depth"` | Stations laid out as a snake / in a row / along depth (the camera flies inward) |
+| Root | `data-cols` `data-wall` `data-tilt` `data-travel` `data-drift` | Stations per row, background word wall, station tilt, travel time, push-in speed while resting |
+| Scene | `data-in="cam-jump"` | Hard cut for this change (the default `cam-to` travel needs no attribute) |
+| Element | `cam-look@t` / `cam-home@t` / `cam-wide@t` | Push in on an element / pull back / pull out to the whole canvas |
+| Element | `wake` `zoom-here` `push-back` `depth` `rack-focus` `bg-tint` | Place first and light up later, in-place zoom, background blur, depth layers, rack focus, background tint |
+| Image sets | `deal-in` `skeleton` `drop-gather` · `tunnel`+`fly` · `helix`+`helix-spin` · `flipboard`+`flip-to` · `fan`+`pick` · `slices`+`slice-to` · `road`+`road-walk` | Nine ways to enter, arrange, switch and walk through sets of images |
+
+Full example: [`examples/world/`](examples/world/index.html) ([▶ MP4](examples/world/world.mp4)).
+
+**Page lint**: open `index.html?lint` in a browser (or call `FX.lint()` in the console). The library seeks each scene to the camera-arrival moment and to a late moment and reports from the real layout: text under 32px, an empty frame on arrival, clipped or overlapping text, text under the subtitle band, and whether real imagery is present. The report is also written to `<script id="fx-lint">` for command-line tools.
+
+### 0.5 Sprite Puppets & Actors That Follow the Content (`fx-puppet.js`, new in v1.6)
+
+With just three images per pose (mouth closed / half open / wide open) and no layers or bones, a still sprite can **blink, breathe, sway its head, lip-sync, nod and lean**, and pop hand-drawn emotion marks above its head (no emoji, so it renders the same everywhere). The blink is computed by squashing the eye region into a line; you only tell it where the two eyes are.
+
+Declare an actor once in a persistent overlay; **whenever an element is being discussed, put `call` on that element** and the actor ducks where it is and pops up next to it, so the character follows the content instead of sitting in a corner. Use `dismiss` when the whole frame should go to the content.
+
+```html
+<script src="lib/fx-puppet.js"></script>
+
+<section class="scene" data-d="7.4" data-fx="pup-talk@0.3(who=bot,dur=6.8)">
+  <div class="shot" data-fx="call@0.2(who=bot)"><img src="a.jpg"></div>              <!-- peeks over this image -->
+  <div class="shot" data-fx="call@2.6(who=bot) pup-emote@3(who=bot,kind=idea)"><img src="b.jpg"></div>
+</section>
+<section class="scene overlay" data-t="0" data-d="19">
+  <div data-make="actor" data-name="bot" data-src="assets/bot" data-eyes="238,236,64,76/362,236,64,76" data-neck="300,400" data-home="80,0,460"></div>
+</section>
+```
+
+`data-src` is the path without suffix (the library reads `_m0.png` / `_m1.png` / `_m2.png`), `data-eyes` lists each eye as "centre x, centre y, width, height", and `data-neck` is the neck position, all in source-image pixels. For multiple poses and voice-driven scheduling use the script API `FX.actor()` / `FX.puppet()` (see the header of `fx-puppet.js`). Full example: [`examples/puppet/`](examples/puppet/index.html) ([▶ MP4](examples/puppet/puppet.mp4)); the little robot in it is original artwork that ships with the repo (`assets/puppet/`).
+
+### 0.6 Stage Play: Presenter + Scenes + Picture-in-Picture (`fx-stage.js`, new in v1.7)
+
+Another common format: **a half-body presenter stays in the foreground, the background is a series of scenes, information arrives as picture-in-picture, and every so often a full-screen illustration cuts in**. Scenes hard-cut, scene changes use a mosaic, and the presenter changes pose on every sentence, so something on screen changes every 2–3 seconds. Use it without `data-world`.
+
+```html
+<script src="lib/fx-puppet.js"></script>
+<script src="lib/fx-stage.js"></script>
+
+<div id="root" class="theme-pixel" data-composition-id="main" data-width="1920" data-height="1080" data-mode="stage">
+  <section class="scene" data-d="6.4" data-fx="call@0(who=bot) pup-talk@0.3(who=bot,dur=5.4) pup-pose@3(who=bot,pose=point)">
+    <div class="abs" style="left:700px;top:230px;width:960px;height:620px" data-make="device" data-kind="laptop"
+         data-fx="screen-to@1.6 screen-to@3.0 dive@5.9">
+      <img src="a.jpg"><img src="b.jpg"><div data-make="backdrop" data-kind="field"></div>
+    </div>
+  </section>
+  <section class="scene" data-d="7.2" data-fx="pup-pose@1.6(who=bot,pose=think)">
+    <div data-make="backdrop" data-kind="field"></div>
+    <div class="abs" style="left:1940px;top:508px;width:200px;height:250px" data-make="mini" data-src="lib/assets/puppet/mini" data-fx="mini-walk@0.3(x=-700)"></div>
+    <img src="lib/assets/puppet/cut_desk.svg" data-fx="cutaway@3.4(dur=1.9)">
+  </section>
+  <section class="scene" data-d="7" data-in="mosaic"> … </section>
+  <section class="scene overlay" data-t="0" data-d="20.6">
+    <div data-make="actor" data-name="bot" data-src="lib/assets/puppet/bot" data-poses="wave/point/think/cheer"
+         data-eyes="238,236,64,76/362,236,64,76" data-neck="300,400" data-home="-10,0,640"></div>
+  </section>
+</div>
+```
+
+| Part | Syntax | What it does |
+|---|---|---|
+| Backdrop | `data-make="backdrop"` | `data-src` uses a picture; otherwise `data-kind="field\|room\|city\|night"` draws a pixel scene procedurally, no assets needed |
+| Scene change | `data-in="mosaic"` | Paper-coloured blocks cover and uncover; the presenter is never covered |
+| Device | `data-make="device"` + `screen-to` / `dive` | Content inside a laptop / phone / window; hard cuts on screen; dive into the screen until it fills the frame |
+| Frame sequence | `frames@0(fps=20)` | Plays a series of stills as video (screen recordings) |
+| Illustration insert | `cutaway@t(dur=1.8)` | A full-screen picture cuts in, pushes in slowly, cuts out |
+| Choice panel | `data-make="menu"` + `choose` | The highlight bar jumps to an item and ticks it |
+| Mini actor | `data-make="mini"` + `mini-walk` / `mini-pose` | A small full-body character walks with a two-frame cycle and switches actions |
+| Presenter pose | `pup-pose@t(who=bot,pose=point)` | Hard cut with an automatic blink at the swap |
+
+Full example: [`examples/stage/`](examples/stage/index.html) ([▶ MP4](examples/stage/stage.mp4)). The little robot in it (four half-body poses, a full-body mini and one illustration) is original artwork that ships with the repo; sources are in `assets/puppet/src/`.
+
 ### 1. Real 3D Anime VRM Presenter (`fx-vrm.js`)
 
 Place a real 3D anime presenter in the corner of your video with **closed-form two-bone 3D IK (`FX.ik3d`), MToon cel-shading, 5-vowel lip-sync, comic emotes, and silky 60Hz `SpringBone` hair/skirt physics**:
@@ -391,7 +489,7 @@ For flat rounded 2D SVG characters, [`fx-rig.js`](fx-rig.js) provides 2D two-bon
 ---
 
 <!-- CATALOG:START -->
-## Effect catalog (153 effects + 20 transitions)
+## Effect catalog (190 effects + 23 transitions)
 
 > This section is generated from `fx.js` by `node gen-readme.mjs`. Do not edit it by hand.
 > All effects accept the common parameters `dur` (duration), `ease` (easing) and `stagger`; the tables below list only each effect's own parameters.
@@ -541,7 +639,7 @@ Applied to a whole container: push in, pan, 3D tilt, shake.
 | `bg-scroll` | Background pattern scroll: keeps the background (grid, texture, stripes) translating at a set speed; use it with the retro-grid component. Params: x, y=px per second |
 | `parallax` | Parallax: layers inside the container translate at different speeds by order (back layers move less, front layers more); use it with the hills layered paper hills. Put it on the container. Params: x, y=total displacement of the front layer, dur |
 
-### Character (16)
+### Character (25)
 
 For stand-up portraits and little characters: switch poses, lip sync, nod, hop, walk.
 
@@ -563,6 +661,15 @@ For stand-up portraits and little characters: switch poses, lip sync, nod, hop, 
 | `vrm-nod` | 3D VRM head nod/shake/tilt: layers an additive 3D head/neck impulse on top of the active pose. Params: kind=nod/shake/tilt, n, amp, dur |
 | `vrm-move` | 3D VRM stage move: translates or pops the 3D avatar root (e.g. pop-in from bottom or side step). Params: x/y/z, fromY, dur, ease |
 | `vrm-anim` | 3D VRM mocap clip: plays standard .vrma (VRM Animation) motion-capture files deterministically on the timeline. Params: src, dur |
+| `call` | Calls an actor over to this element (use it when the element is being discussed): the actor ducks where it is and pops up next to this element. Put it on the element being discussed; on a `<section>` it sends the actor back to its home. Params: who (actor name), at=top/left/right/below (default top: peeks over the element's top edge), size (default 340 for top, 420 otherwise), align (left-right position for at=top, 0–1), dx, dy, flip=1 (mirror so it faces the content), pose (switch pose at the same time) |
+| `closeup` | Face close-up (reaction shot): hard-cuts to this actor's face, large, on a radial-burst background, holds, then hard-cuts back. Works with the existing bust sprites, no new art needed. Put it in the `data-fx` of the `<section>`. Params: who (actor name), dur (hold, default 1.1), pose (pose / expression during the close-up), kind (emotion mark to pop at the same time), color (background, default orange; also red / blue / green / purple), size (zoom size, default 1300) |
+| `dismiss` | Makes an actor duck out of frame (when the whole frame should go to the content). Param: who |
+| `pup-talk` | Sprite talks: swaps the three mouth frames from a mouth track while the head sways with the volume. Put it on `data-make="puppet"`, or target an actor with `who=name`. Params: dur (how long, defaults to the end of the scene); the track comes from `FX.mouthTrack = { fps, frames }` (produced by your voice tool), otherwise it is generated |
+| `pup-pose` | Sprite pose change (hard cut, with an automatic blink and a tiny bounce at the swap). Put it on `data-make="puppet"`, or target an actor with `who=name`. Params: pose, pop=0 (no bounce) |
+| `pup-nod` | Sprite nods once (a listener agreeing, a speaker stressing a point). Put it on `data-make="puppet"`, or use `who=name`. Param: amp (default 1) |
+| `pup-lean` | Sprite leans its whole body to one side (toward the person speaking). Put it on `data-make="puppet"`, or use `who=name`. Params: deg (positive leans right, 0 returns upright), dur |
+| `pup-emote` | A hand-drawn emotion mark pops up above the sprite's head. Put it on `data-make="puppet"`, or use `who=name`. Params: kind=question/exclaim/sweat/anger/sparkle/idea/heart/zap/dots, hold (seconds, default 1.6) |
+| `pup-idle` | Just keeps the sprite alive (blinking, breathing, slow head sway) without talking. Put it on `data-make="puppet"`; not needed if any of pup-talk / pup-nod / pup-lean / pup-emote is used |
 
 ### Papercut (10)
 
@@ -615,6 +722,48 @@ Real 3D scenes (three.js); requires loading the extra `vendor/three-fx.min.js` a
 | `cam3d` | Move the camera: fly from the current position to a new one while turning the view toward a new target. Params: x / y / z=where to fly to, lx / ly / lz=where to look, fov=field of view, dur, ease (dur=0 cuts straight there). Any parameter you omit stays unchanged |
 | `orbit3d` | Orbit camera: the camera circles a target, optionally moving in or rising at the same time. Params: turn=degrees to turn (negative goes the other way), from=start angle (omit to start from the current position), r=distance from the target at the end, h=height at the end, lx / ly / lz=what to circle around, dur, ease |
 
+### Space (21)
+
+World canvas, camera and image-set moves; requires loading the extra `fx-world.js`. Put `data-world` on the root element and every scene becomes a station on one big canvas: changing scenes means the camera travels there. Camera effects need `data-world`; the focus and image-set effects work on any page.
+
+| Name | What it does / parameters |
+|---|---|
+| `cam-look` | Camera pushes in on one element inside the station (use it when the voice-over reaches that element); follow with `cam-home` to pull back. Params: to (selector, defaults to the element itself), fit (how much of the frame it should fill, default 0.6), max (maximum zoom, default 1.4), dur |
+| `cam-home` | Camera returns to the full view of the current station (use after `cam-look`). Param: dur |
+| `cam-wide` | Camera pulls out to show the whole canvas (opening overview, closing recap). Written as `cam-wide@0` the film starts on the overview; push in with `cam-home`. Param: dur |
+| `wake` | Place first, talk later: the element is on screen from the start but dimmed, and lights up when mentioned. Params: dim (brightness before it lights up, default 0.3), solid=1 (darken and desaturate instead of fading, so a card never shows the backdrop through it; on automatically in stage mode) |
+| `zoom-here` | In-place zoom: pick one item out of a group and enlarge it where it sits while the rest fade to 30% and step back. Params: s (scale, default 2.4), hold (seconds before it returns automatically; omit to keep it), dim |
+| `push-back` | Background blur: when new content arrives, push the previous layer back as a whole (scale to 94%, blur 4px, darken to 55%). Params: s, blur, dim, dur |
+| `bring-front` | Bring back a layer that `push-back` pushed away |
+| `depth` | Depth layers: children carry `data-depth="near/mid/far"`; the farther from focus the blurrier (0 / 4 / 8px), with per-layer parallax drift. Params: focus (which layer is sharp, default mid), shift (parallax amount, default 40), blur |
+| `rack-focus` | Rack focus: move the sharp layer to another one (used with `depth`). Params: to=near/mid/far, dur |
+| `bg-tint` | Background colour swap: when the image changes, the whole background changes to its dominant colour so viewers see the switch at a glance. Params: color (`reset` restores the original), dur (default 0.5), to (element to tint, defaults to the whole canvas) |
+| `skeleton` | Skeleton fill: a complex interface first appears as grey skeleton blocks, then real content fills in block by block in reading order. Put it on the container; its children are the blocks. Params: gap (delay between blocks, default 0.15), hold (how long the skeleton stays first, default 0.5) |
+| `deal-in` | Deal-in: a set of images does not appear at once; they fly in one after another along an arc to their places. Use with `each:`. Params: stagger (default 0.1), from=left/right, dur |
+| `drop-gather` | Drop and gather: a pile of images drops from above, gathers into a fan, keeps only the few to be discussed and lets the rest fall away. Put it on the container; add `data-keep` to children to keep (otherwise the first `keep` are kept). Param: keep (default 3) |
+| `fly` | Depth tunnel: the camera flies continuously inward; the item it passes scales up and blurs, the next fades in from the depth. Put it on `data-make="tunnel"`. Params: to (fly to which item, counted from 1), each (seconds per item, default 0.7) |
+| `helix-spin` | Helix: the camera orbits a cylinder of images, fast then slow, then keeps turning slowly. Put it on `data-make="helix"`. Params: turn (degrees of the fast turn, default 300), dur (fast-turn time, default 2.4), slow (degrees per second afterwards, default 10) |
+| `flip-to` | 3D flip board: panels roll upward one after another, each flipping around the horizontal axis; the one facing the camera shows in full colour, the rest dim to 30%. Put it on `data-make="flipboard"`. Params: i (flip to which panel, counted from 1), dur |
+| `pick` | Lift and make way: in a fan of images, the one being discussed lifts and enlarges while its neighbours slide aside; all others stay visible. Put it on `data-make="fan"`. Params: i (which one, counted from 1; 0 = put all back), s (default 1.3), gap (how far the others move, default 90), lift (default 70) |
+| `slice-to` | Slice swap: the new image is cut into strips that grow up from the bottom one by one, with the number label flipping in sync. Put it on `data-make="slices"`. Params: i (which image, counted from 1; omit for the next one), stagger (default 0.07), dur |
+| `road-walk` | Walk into the picture: the camera moves along a road close to the ground; each step lights up as it is reached. Put it on `data-make="road"`. Params: i (walk to which step, counted from 1), dur |
+| `bignum` | Chapter card entrance: the big number drops in, the title slides out after it. Put it on `data-make="bignum"`. Param: dock (seconds before it shrinks into a small top-left label; omit to keep it) |
+| `segment` | Progress line advances to segment i (counted from 1). Put it on `data-make="segments"`, usually in a persistent overlay layer |
+
+### Stage (7)
+
+Stage-play parts for "presenter in front, scene behind, information as picture-in-picture" explainers; requires loading the extra `fx-stage.js`. Scene backdrops (`backdrop`), devices with on-screen content (`device`), full-screen illustration inserts, a choice panel (`menu`) and small full-body actors (`mini`). Use it without `data-world`: scenes hard-cut, and `data-in="mosaic"` changes the backdrop.
+
+| Name | What it does / parameters |
+|---|---|
+| `cutaway` | Illustration insert: a full-screen picture cuts in hard, pushes in very slowly, then cuts back out; it covers the actors while subtitles and the chapter bar stay. Put it on an `<img>` inside the scene. Params: dur (hold, 1.2–2.5 s), zoom (default 1.07), x / y (pan in percent), under=1 (sit below the actors so the presenter keeps talking over it; good for full-screen screen recordings) |
+| `screen-to` | On-screen cut: the content inside a device screen hard-cuts to item i (counted from 1; omit for the next one) with a faint flash. Put it on `data-make="device"` |
+| `dive` | Dive into the screen: the device zooms toward the camera until its screen fills the frame (give the next scene the same picture as its backdrop and it feels like walking into the screen). Put it on `data-make="device"`, usually in the last 0.5 s of the scene. Param: dur (default 0.5) |
+| `frames` | Frame-sequence playback: plays a series of stills as video (gameplay, screen recordings), frame-accurate. Put `data-frames="dir/f_%03d.jpg" data-n="count"` on the element. Params: fps (default 15), dur (defaults to the end of the scene; loops) |
+| `choose` | Pick an option: the highlight bar of a choice panel jumps to item i and ticks it. Put it on `data-make="menu"`. Params: i (counted from 1; `2/4/1/3` makes several quick picks in a row), every (interval between quick picks, default 0.28 s) |
+| `mini-walk` | A mini actor walks over: two alternating walk frames plus horizontal movement, then stands still. Put it on `data-make="mini"`. Params: x (distance, negative goes left) or to=#target, dur, step (seconds per step, default 0.16) |
+| `mini-pose` | A mini actor switches action (raise hand, cheer, sit…) with a small squash-and-bounce. Put it on `data-make="mini"`. Params: name (an action listed in `data-poses`), hold (seconds before returning to idle; omit to keep it) |
+
 ### Components (4)
 
 Used together with components generated by `data-make`.
@@ -626,7 +775,7 @@ Used together with components generated by `data-make`.
 | `check` | Checklist tick: use with the .fx-check component; the check mark is drawn and the text turns solid |
 | `toggle` | Flip switches: pair with data-make="switches" to flip switch i (supports 2/3/5 batch) ON (on=1) or OFF (on=0). Params: i, on=0/1, stagger |
 
-### Transitions (20)
+### Transitions (23)
 
 Written on the **later** scene: `<section class="scene" data-in="blur-cross(dur=0.5)">`.
 
@@ -652,4 +801,7 @@ Written on the **later** scene: `<section class="scene" data-in="blur-cross(dur=
 | `crt-off` | Retro CRT switch: collapses the outgoing scene into a bright horizontal scanline before flashing open the next scene. Params: color, dur |
 | `portal-spin` | Vortex spin: twists the outgoing scene into the center while untwisting the incoming scene into focus. Params: deg, dur |
 | `halftone` | Comic halftone wave: a grid of dots expands diagonally to cover the screen and shrinks away to unveil the next scene. Params: cols, color, dur |
+| `cam-to` | World canvas only (default): the camera travels diagonally to the next station, pulling back slightly first, slow-fast-slow. Params: dur (0.6–0.9), arc (extra degrees swung on the way, default 8), pull (pull-back amount, default 0.07) |
+| `cam-jump` | World canvas only: the camera jumps straight to the next station (hard cut); only for major chapter changes |
+| `mosaic` | Mosaic scene change: paper-coloured blocks cover the frame roughly top to bottom in random order, then uncover the new scene at random; the blocks sit below the actors and persistent overlays, so the presenter is never covered (use for chapter or backdrop changes). Params: cols (blocks per row, default 24), color, dur, seed |
 <!-- CATALOG:END -->

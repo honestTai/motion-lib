@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=1920, height=1080">
+<title>motion-lib · 立绘木偶示例：角色跟着内容走</title>
+<link rel="stylesheet" href="lib/fx.css">
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/fx.js"></script>
+<script src="lib/fx-world.js"></script>
+<script src="lib/fx-puppet.js"></script>
+</head><body>
+<div id="root" class="theme-studio" data-composition-id="main" data-width="1920" data-height="1080" data-world="row" data-wall="PUPPET">
+
+  <!-- 1 角色站在大标题旁边开场 -->
+  <section class="scene" data-d="5.2" data-fx="pup-talk@0.4(who=bot,dur=4.4)">
+    <div class="fx-head"><i>fx-puppet.js</i><h2>一张立绘，也能<em>活起来</em></h2></div>
+    <div class="abs fx-big" style="left:700px;top:380px;font-size:300px" data-fx="call@0.1(who=bot,at=left,size=520)">3<small>张图</small></div>
+    <div class="abs t-body muted" style="left:712px;top:720px" data-fx="wake@2.2 pup-emote@2.4(who=bot,kind=idea)">闭嘴 · 半张 · 张大，其余全是算出来的</div>
+  </section>
+
+  <!-- 2 讲到哪张图，角色就从哪张图上面探出来 -->
+  <section class="scene" data-d="7.4" data-fx="pup-talk@0.3(who=bot,dur=6.8)">
+    <div class="fx-head"><i>call</i><h2>讲到哪，<em>站到哪</em></h2></div>
+    <div class="abs row" style="left:140px;top:590px;gap:50px">
+      <div class="shot" style="width:500px;height:281px" data-fx="call@0.2(who=bot)"><img src="assets/violet.jpg" alt=""></div>
+      <div class="shot" style="width:500px;height:281px" data-fx="wake@2.6 call@2.6(who=bot)"><img src="assets/gold.jpg" alt=""></div>
+      <div class="shot" style="width:500px;height:281px" data-fx="wake@5 call@5(who=bot) pup-emote@5.3(who=bot,kind=sparkle)"><img src="assets/space.jpg" alt=""></div>
+    </div>
+  </section>
+
+  <!-- 3 要把画面全让给内容时，角色蹲下离场；需要时再回来 -->
+  <section class="scene" data-d="6.4" data-fx="dismiss@0.2(who=bot) pup-talk@3.2(who=bot,dur=2.8)">
+    <div class="fx-head"><i>dismiss</i><h2>该让位时，<em>就让位</em></h2></div>
+    <div class="abs shot" style="left:260px;top:320px;width:1000px;height:562px" data-fx="call@3(who=bot,at=right,size=460) pup-emote@4.2(who=bot,kind=heart)"><img src="assets/paper.jpg" alt=""></div>
+  </section>
+
+  <!-- 常驻层：演员在这里声明一次，全片可用 -->
+  <section class="scene overlay" data-t="0" data-d="19">
+    <div data-make="actor" data-name="bot" data-src="assets/bot" data-eyes="238,236,64,76,#7fe7ff/362,236,64,76,#7fe7ff" data-neck="300,400" data-home="80,0,460"></div>
+  </section>
+</div>
+<script>
+  var say = ['只要三张图，立绘就能{眨眼、呼吸、对口型}', '讲到哪张图，就从{哪张图上面}探出来', '要看大图时先蹲下，{讲完再回来}'], t = 0, cues = [];
+  document.querySelectorAll('#root > .scene:not(.overlay)').forEach(function (s, i) { var d = +s.getAttribute('data-d'); cues.push([t + 0.4, t + d - 0.3, say[i]]); t += d; });
+  FX.subtitles(cues, { style: 'studio' });
+  FX.build();
+</script>
+</body></html>

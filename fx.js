@@ -1,5 +1,5 @@
 /*!
- * FX 动效库 v1.0  ——  给「HTML → 视频」用的声明式动效库
+ * FX 动效库 v1.7  ——  给「HTML → 视频」用的声明式动效库
  * 依赖：GSAP 3（vendor/gsap.min.js）。渲染器：HyperFrames，或任何逐帧 seek 时间线的工具。
  *
  * 用法一句话：在元素上写 data-fx="动效名@秒数(参数)"，最后调用 FX.build()。
@@ -1470,7 +1470,8 @@
     var d = num(o.dur, 0.85), cols = num(o.cols, 10), W = STAGE.offsetWidth || 1920, H = STAGE.offsetHeight || 1080;
     var size = Math.ceil(W / cols), rows = Math.ceil(H / size), r = FX.rand(num(o.seed, 19));
     var pal = slashList(o.colors);
-    if (!pal.length) pal = ['#1d1b19', '#d8432b', '#ffcf3f', '#fbf6ea', '#2f7de1'];
+    if (!pal.length) { var cs = getComputedStyle(STAGE), v = function (k, d) { return (cs.getPropertyValue(k) || '').trim() || d; };   // 默认跟着皮肤走，不再是固定的红黄蓝
+      pal = [v('--fx-ink', '#1d1b19'), v('--fx-accent', '#d8432b'), v('--fx-accent-2', '#ffcf3f'), v('--fx-card', '#fbf6ea'), v('--fx-accent', '#2f7de1')]; }
     var wrap = document.createElement('div');
     wrap.className = 'fx-overlay';
     wrap.style.cssText += ';opacity:1;background:none;perspective:900px;overflow:hidden;visibility:hidden';
@@ -1877,7 +1878,10 @@
 
     // 4. 场景显隐 + 转场
     var seq = S.filter(function (s) { return !s.el.classList.contains('overlay'); });
-    seq.forEach(function (s, k) {
+    // 根元素写了 data-world 且加载了 fx-world.js：分镜变成画布上的机位，换分镜交给相机
+    var worldOn = !!(FX.world && FX.world.setup && FX.world.setup({ stage: STAGE, seq: seq, tl: tl, total: total, parseFx: parseFx }));
+    if (!worldOn && STAGE.hasAttribute('data-world')) console.warn('FX：写了 data-world 但没有加载 fx-world.js');
+    if (!worldOn) seq.forEach(function (s, k) {
       var spec = parseFx(s.el.getAttribute('data-in') || '')[0];
       if (spec && FX.trans[spec.name]) {
         var prev = k > 0 ? seq[k - 1] : null;
@@ -1886,6 +1890,7 @@
       } else if (spec) console.warn('FX：没有这个转场 →', spec.name);
     });
     S.forEach(function (s) {
+      if (worldOn && seq.indexOf(s) >= 0) return;
       tl.set(s.el, { visibility: 'visible' }, s.t);
       if (s.end + s.hold < total - 0.001) tl.set(s.el, { visibility: 'hidden' }, s.end + s.hold);
     });
@@ -1928,20 +1933,152 @@
     });
     if (opt.extra) opt.extra(tl, function (sceneId, local) { return (map[sceneId] ? map[sceneId].t : 0) + (local || 0); });
 
+    // 扩展模块的收尾：有些东西要等全片的指令都收集完才能排（比如演员的走位）
+    (FX.afterBuild || []).forEach(function (fn) { fn(tl, total); });
+
     // 把时间线补到总时长，渲染器才知道片子有多长
     tl.set({}, {}, total);
 
     window.__timelines = window.__timelines || {};
     window.__timelines[id] = tl;
     tl.seek(0);
+    if (worldOn) FX.world.render(0);
     FX.timeline = tl;
 
     if (/[?&#]play\b/.test(location.search + location.hash)) player(tl, total);
+    if (/[?&#]lint\b/.test(location.search + location.hash)) { FX.lint(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { FX.lint(); }); }
     return tl;
   };
 
   /** 场景内的秒数 → 全片绝对秒数 */
   FX.at = function (sceneId, local) { var s = FX.sceneMap[sceneId]; return (s ? s.t : 0) + (local || 0); };
+
+  /* ═════════════════════ 自检（网址加 ?lint，或手动调 FX.lint()） ═════════════════════
+   * 逐个分镜跳到「到位帧」（开始后约 0.8 秒）和「后段帧」（82% 处），用真实排版结果检查：
+   *   字太小、空屏、文字出画、文字互相压住、被字幕压住、用了 emoji、有没有真素材。
+   * 结果同时写进 <script id="fx-lint" type="application/json">，给命令行工具读。只做检查，不参与渲染。 */
+  FX.lint = function (opt) {
+    opt = opt || {};
+    var tl = FX.timeline, SW = STAGE.offsetWidth, SH = STAGE.offsetHeight;
+    var minFont = num(opt.minFont, 32), minCover = num(opt.minCover, 0.1), subTop = SH - num(opt.subBand, 170), GX = 64, GY = 36;
+    var SKIP = '.fx-subs, script, style, [data-lint="off"], .t-en, .fx-segments-count, .fx-bignum-txt em, .fx-skel';   // 纯装饰的小字不查
+    var DEEP = '.fx-tunnel, .fx-road, .fx-helix, .fx-flipboard';   // 3D 组件里远处的东西本来就小，只查离镜头最近的
+    var EMOJI = /[\u{1F000}-\u{1FAFF}\u{2705}\u{274C}\u{2728}\u{2753}\u{2757}\u{26A1}\u{2B50}\u{2764}]/u;
+    var seq = FX.scenes.filter(function (s) { return !s.el.classList.contains('overlay'); });
+    var overlays = FX.scenes.filter(function (s) { return s.el.classList.contains('overlay'); });
+    function opacityOf(el) { var o = 1; for (var e = el; e && e !== STAGE.parentNode; e = e.parentElement) { o *= parseFloat(getComputedStyle(e).opacity); if (o < 0.02) return 0; } return o; }
+    function box(r) { var s = STAGE.getBoundingClientRect(), k = s.width / SW || 1; return { x: (r.left - s.left) / k, y: (r.top - s.top) / k, w: r.width / k, h: r.height / k }; }
+    function onStage(b) { return b.w > 1 && b.h > 1 && b.x < SW && b.y < SH && b.x + b.w > 0 && b.y + b.h > 0; }
+    function scan(root, grid, out) {
+      var range = document.createRange(), walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), node;
+      while ((node = walker.nextNode())) {
+        var txt = node.nodeValue.replace(/\s+/g, ' ').trim(), p = node.parentElement;
+        if (!txt || !p || p.closest(SKIP)) continue;
+        var cs = getComputedStyle(p);
+        if (cs.visibility === 'hidden' || opacityOf(p) < 0.3) continue;
+        range.selectNodeContents(node);
+        var b = box(range.getBoundingClientRect());
+        if (/block|flex|grid/.test(cs.display)) {      // 行高压得很紧的大字，字形框会比它所在的块高一截：按块的范围算，免得误报「文字重叠」
+          var pr = box(p.getBoundingClientRect()), y0 = Math.max(b.y, pr.y), y1 = Math.min(b.y + b.h, pr.y + pr.h);
+          if (y1 > y0) { b.y = y0; b.h = y1 - y0; }
+        }
+        if (!onStage(b)) continue;
+        var scale = p.offsetHeight ? p.getBoundingClientRect().height / (STAGE.getBoundingClientRect().width / SW || 1) / p.offsetHeight : 1;
+        if (p.closest(DEEP) && (scale < 0.8 || opacityOf(p) < 0.9)) { if (grid) mark(grid, b); continue; }
+        out.texts.push({ el: p, full: txt, text: txt.slice(0, 24), size: Math.round(parseFloat(cs.fontSize) * (scale > 0.2 && scale < 6 ? scale : 1)), b: b, emoji: EMOJI.test(txt) });
+        if (grid) mark(grid, b);
+      }
+      Array.prototype.forEach.call(root.querySelectorAll('img, video, canvas, svg'), function (el) {
+        if (getComputedStyle(el).visibility === 'hidden' || opacityOf(el) < 0.3) return;
+        var b = box(el.getBoundingClientRect());
+        if (!onStage(b)) return;
+        var cw = Math.min(SW, b.x + b.w) - Math.max(0, b.x), ch = Math.min(SH, b.y + b.h) - Math.max(0, b.y);
+        if (cw * ch > SW * SH * 0.7 && el.tagName !== 'IMG' && el.tagName !== 'VIDEO' && !el.closest('[data-lint="content"]')) return;   // 铺满全屏的画布 / 矢量图默认当背景，不算内容；它就是主视觉时给容器写 data-lint="content"
+        if (grid) mark(grid, b);
+        if (el.tagName === 'IMG' || el.tagName === 'VIDEO') { out.media = (out.media || 0) + cw * ch; if (out.media > SW * SH * 0.06) out.asset = true; }
+      });
+      if (grid) Array.prototype.forEach.call(root.querySelectorAll('*'), function (el) {
+        var cs = getComputedStyle(el);
+        if (cs.visibility === 'hidden' || cs.display === 'none') return;
+        if (el.classList.contains('fx-backdrop')) { var br = /brightness\(([\d.]+)\)/.exec(cs.filter || ''); if (br && +br[1] < 0.75) out.dim = true; return; }
+        // 实心大面板：不透明的色块（不是图片、不在设备屏里）盖住了一大片画面
+        var am = /rgba?\(([^)]+)\)/.exec(cs.backgroundColor || ''), ap = am ? am[1].split(',') : null, alpha = ap ? (ap.length > 3 ? parseFloat(ap[3]) : 1) : 0;
+        if (alpha >= 0.5 && !el.closest('.fx-device, .fx-cutaway, .fx-subs') && opacityOf(el) > 0.5) {
+          var pb = box(el.getBoundingClientRect()), pw = Math.min(SW, pb.x + pb.w) - Math.max(0, pb.x), ph = Math.min(SH, pb.y + pb.h) - Math.max(0, pb.y);
+          if (pw > 0 && ph > 0) out.panel = Math.max(out.panel || 0, pw * ph / (SW * SH));
+        }
+        if (el.classList.contains('fx-road')) { var rb = box(el.getBoundingClientRect()); mark(grid, { x: rb.x + rb.w * 0.3, y: rb.y, w: rb.w * 0.4, h: rb.h }); return; }   // 路面是透视变形的，按中间那一条算
+        var bg = cs.backgroundColor, painted = cs.backgroundImage !== 'none' || (bg && bg !== 'transparent' && !/,\s*0\)$/.test(bg)) || parseFloat(cs.borderTopWidth) > 0;
+        if (!painted || opacityOf(el) < 0.3) return;
+        var b = box(el.getBoundingClientRect());
+        if (!onStage(b)) return;
+        var cw = Math.min(SW, b.x + b.w) - Math.max(0, b.x), ch = Math.min(SH, b.y + b.h) - Math.max(0, b.y);   // 只算落在画面里的那部分
+        if (cw * ch < SW * SH * 0.7) mark(grid, b);
+      });
+    }
+    function mark(grid, b) {
+      var x0 = Math.max(0, Math.floor(b.x / SW * GX)), x1 = Math.min(GX, Math.ceil((b.x + b.w) / SW * GX)), y0 = Math.max(0, Math.floor(b.y / SH * GY)), y1 = Math.min(GY, Math.ceil((b.y + b.h) / SH * GY));
+      for (var y = y0; y < y1; y++) for (var x = x0; x < x1; x++) grid[y * GX + x] = 1;
+    }
+    function cover(grid) { var n = 0; for (var i = 0; i < grid.length; i++) n += grid[i]; return n / grid.length; }
+    function sample(s, t) {
+      tl.time(t, false);
+      var grid = new Uint8Array(GX * GY), own = { texts: [], asset: false }, over = { texts: [], asset: false };
+      scan(s.el, grid, own);
+      overlays.forEach(function (o) { if (t >= o.t && t <= o.end) scan(o.el, null, over); });
+      var cv = cover(grid);
+      if (s.el.querySelector('.fx-backdrop')) { cv = Math.max(cv, 0.3); own.asset = true; }
+      // 这一屏有多少字（字幕和常驻层不算；英文和数字两个算一个字）
+      own.chars = own.texts.reduce(function (n, x) { var t = x.full || x.text; return n + (t.match(/[\u2E80-\u9FFF\uF900-\uFAFF]/g) || []).length + Math.ceil((t.match(/[A-Za-z0-9$%.]/g) || []).length / 2); }, 0);   // 舞台剧：场景背景本身就是画面内容
+      return { cover: cv, own: own, over: over };
+    }
+    var report = { stage: [SW, SH], duration: FX.duration, world: !!(FX.world && FX.world.on && FX.world.on()), scenes: [], overlay: [], errors: 0, warnings: 0 };
+    var overSeen = [];   // 常驻层（章节条、主持人名牌）的问题全片只报一次
+    var addOver = function (level, type, msg) { var m = msg.replace(/\d+px（/, 'px（'); if (overSeen.indexOf(type + m) < 0) { overSeen.push(type + m); report.overlay.push({ level: level, type: type, msg: msg }); report[level === 'error' ? 'errors' : 'warnings']++; } };
+    seq.forEach(function (s, i) {
+      var id = s.el.getAttribute('data-scene') || s.el.id || ('#' + (i + 1)), issues = [], seen = [];
+      var add = function (level, type, msg) { var key = type + msg; if (seen.indexOf(key) < 0) { seen.push(key); issues.push({ level: level, type: type, msg: msg }); report[level === 'error' ? 'errors' : 'warnings']++; } };
+      var tA = s.t + Math.min(0.8, s.d * 0.3), tB = s.t + s.d * 0.82;
+      var near = function (t) { return !(FX.world && FX.world.zoomAt) || !report.world || FX.world.zoomAt(t) > 0.92; };   // 镜头拉远看全景的时刻不查
+      for (var k = 0; k < 8 && !near(tA); k++) tA += s.d * 0.08;
+      for (k = 0; k < 8 && !near(tB); k++) tB -= s.d * 0.08;
+      if (!near(tA) || !near(tB) || tB < tA) { report.scenes.push({ id: id, t: +s.t.toFixed(2), d: +s.d.toFixed(2), skipped: '镜头一直在全景', issues: [] }); return; }
+      var A = sample(s, tA), B = sample(s, tB);
+      if (A.cover < minCover) add('error', 'empty', '到位时画面是空的：开始后 ' + (tA - s.t).toFixed(1) + ' 秒只铺了 ' + Math.round(A.cover * 100) + '% 的画面。主素材从 @0 就要在画面里，口播时间点只用来触发强调（wake / zoom-here / marker）');
+      if (B.cover < minCover * 1.2) add('error', 'sparse', '画面太空：后段也只铺了 ' + Math.round(B.cover * 100) + '% 的画面，把重点放大或加素材');
+      else if (B.cover < minCover * 1.8) add('warn', 'sparse', '画面偏空：后段只铺了 ' + Math.round(B.cover * 100) + '% 的画面，重点可以再大一些');
+      var stage = STAGE.getAttribute('data-mode') === 'stage', maxChars = num(opt.maxChars, stage ? 30 : 56);
+      if (B.own.chars > maxChars * 1.5) add('error', 'wordy', '字太多：这一屏有 ' + B.own.chars + ' 个字（上限 ' + maxChars + '）。观众在听口播，画面上只留关键词和数字；其余的删掉，或拆成两个分镜');
+      else if (B.own.chars > maxChars) add('warn', 'wordy', '字偏多：这一屏有 ' + B.own.chars + ' 个字（建议不超过 ' + maxChars + '），只留关键词和数字');
+      if (stage && B.own.panel > 0.26) add('error', 'big-panel', '一块实心面板盖住了 ' + Math.round(B.own.panel * 100) + '% 的画面，场景被挡住了，看起来就是幻灯片。把信息拆成场景里的小道具（.fx-sign 牌子 / .fx-bubble 气泡 / .fx-score 大数字），或者放进设备屏（device）里');
+      if (stage && B.own.dim && !s.el.querySelector('.fx-device.window')) add('error', 'dim-stage', '场景背景被压暗了。只有弹出信息窗口（device window）的那两三秒可以压暗，其余时间场景要亮着');
+      [A, B].forEach(function (S) {
+        [[S.own.texts, add], [S.over.texts, addOver]].forEach(function (pair) {
+          pair[0].forEach(function (x) {
+            if (S === B && x.size < minFont) pair[1]('error', 'small-text', '字太小 ' + x.size + 'px（下限 ' + minFont + 'px）：「' + x.text + '」');
+            if (S === B && (x.b.x < -12 || x.b.y < -12 || x.b.x + x.b.w > SW + 12 || x.b.y + x.b.h > SH + 12)) pair[1]('error', 'clipped', '文字出画：「' + x.text + '」');
+            if (x.emoji) pair[1]('warn', 'emoji', '用了 emoji：「' + x.text + '」。各台机器渲染不一致，尽量换成图片、图标或文字');
+          });
+        });
+        S.own.texts.forEach(function (x) { if (SUBS && x.b.y + x.b.h > subTop + 14 && x.b.y < SH - 20) add('warn', 'under-subs', '会被字幕压住（主内容不要低于 y=' + subTop + '）：「' + x.text + '」'); });
+        var T = S.own.texts;
+        for (var a = 0; a < T.length; a++) for (var b = a + 1; b < T.length; b++) {
+          var p = T[a], q = T[b];
+          if (p.el === q.el || p.el.contains(q.el) || q.el.contains(p.el) || p.el.parentNode === q.el.parentNode && /fx-ch|fx-word/.test(p.el.className + q.el.className)) continue;
+          var ix = Math.min(p.b.x + p.b.w, q.b.x + q.b.w) - Math.max(p.b.x, q.b.x), iy = Math.min(p.b.y + p.b.h, q.b.y + q.b.h) - Math.max(p.b.y, q.b.y);
+          if (ix > 4 && iy > 4 && ix * iy > 0.35 * Math.min(p.b.w * p.b.h, q.b.w * q.b.h)) add('warn', 'overlap', '两段文字叠在一起：「' + p.text + '」和「' + q.text + '」');
+        }
+      });
+      report.scenes.push({ id: id, t: +s.t.toFixed(2), d: +s.d.toFixed(2), chars: B.own.chars, panel: +(B.own.panel || 0).toFixed(2), coverAtArrival: +A.cover.toFixed(3), coverLate: +B.cover.toFixed(3), asset: A.own.asset || B.own.asset, issues: issues });
+    });
+    report.assetScenes = report.scenes.filter(function (x) { return x.asset; }).length;
+    report.checked = report.scenes.filter(function (x) { return !x.skipped; }).length;
+    tl.time(0, false);
+    if (FX.world && FX.world.render) FX.world.render(0);
+    var tag = document.getElementById('fx-lint') || document.head.appendChild(Object.assign(document.createElement('script'), { id: 'fx-lint', type: 'application/json' }));
+    tag.textContent = JSON.stringify(report).replace(/</g, '\\u003c');
+    return report;
+  };
 
   /* ═════════════════════ 预览播放器（网址加 ?play） ═════════════════════
    * 只给人预览用，不参与渲染。空格 播放/暂停，←/→ 逐帧，↑/↓ 跳场景。 */

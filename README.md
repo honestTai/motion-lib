@@ -46,16 +46,17 @@
 <!-- STATS:START -->
 | | 数量 |
 |---|---|
-| 动效 | **153** 种（入场 26 · 退场 10 · 强调 41 · 文字 9 · 数据 6 · 镜头 11 · 角色 16 · 剪纸 10 · 粒子 8 · 3D 12 · 组件 4） |
-| 转场 | **20** 种 |
-| 组件生成器 | **17** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d`） |
-| 皮肤 | **5** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴 · 深空粒子） |
+| 动效 | **190** 种（入场 26 · 退场 10 · 强调 41 · 文字 9 · 数据 6 · 镜头 11 · 角色 25 · 剪纸 10 · 粒子 8 · 3D 12 · 空间 21 · 舞台 7 · 组件 4） |
+| 转场 | **23** 种 |
+| 组件生成器 | **31** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini`） |
+| 皮肤 | **6** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴 · 深空粒子 · 演播室） |
 <!-- STATS:END -->
 
 <details open>
 <summary><b>✨ 版本更新亮点（v1.4 全新升级：真 3D VRM 口播角色 + 2D 软管骨骼 IK + 12 种新特效/转场）</b></summary>
 <br />
 
+- **v1.5 新增（空间镜头）**：可选模块 [`fx-world.js`](fx-world.js)——根元素写一个 `data-world`，所有分镜就摆到同一块大画布上，**换分镜 = 镜头斜着推过去**，不再一页页翻。附带 21 个新动效（原位放大、背景虚化、景深移焦、发牌入场、骨架填充、纵深穿梭、环筒螺旋、三维翻转、放大让位、切片换图、走进画面……）、7 个新组件、第 6 套皮肤 `theme-studio`，以及页面自检 `FX.lint()`（网址加 `?lint`：字太小、镜头到位时空屏、文字出画都能查出来）。
 - **v1.4 新增（3D 角色 & 2D 软骨骼 & 科技转场）**：
   - **真 3D 二次元角色模块 [`fx-vrm.js`](fx-vrm.js)**：基于 `@pixiv/three-vrm`（MIT），内置解析式双骨 3D IK 求解器 `FX.ik3d`、跨模型身高/臂展自动重定向、6 节脊柱相位波、锁骨自动联动、13 套口播姿态、C¹ 五元音口型同步（`aa/ih/ou/ee/oh`）、MToon 赛璐璐描边、2× 超采样抗锯齿与连续 60Hz `SpringBone` 头发/裙摆物理；仓库自带两套 Pixiv 官方 **CC0 公共领域**模型 `assets/shino.vrm` 与 `assets/vita.vrm`。
   - **2D 柔性骨骼与连续软袖管模块 [`fx-rig.js`](fx-rig.js)**：通用双骨 IK `FX.ik2` + RubberHose 连续贝塞尔无接缝软蒙皮 `FX.hose` + 声明式 `[data-bone]` / `[data-follow]` / `[data-hose]`，适用于任意自定义 SVG 角色，彻底告别木偶关节割裂感。
@@ -147,6 +148,9 @@ motion-lib/
 ├── fx-3d.js         可选模块：WebGL 真 3D 舞台、Bloom 辉光、动漫打光、可编程摄像机
 ├── fx-rig.js        可选模块：2D 双骨 IK（FX.ik2）与连续贝塞尔软袖管蒙皮（FX.hose）
 ├── fx-vrm.js        可选模块：真 3D VRM 角色（FX.ik3d 解析解 IK、五元音口型、60Hz 头发物理）
+├── fx-world.js      可选模块：世界画布 + 相机运镜 + 图片组动效（换分镜 = 镜头走过去）
+├── fx-puppet.js     可选模块：立绘木偶（眨眼、呼吸、对口型）+ 演员走位（角色跟着内容走）
+├── fx-stage.js      可选模块：舞台剧（场景背景、马赛克换场、设备屏画中画、插画特写、小演员）
 ├── assets/          内置 CC0 1.0 公共领域 3D VRM 示例角色（shino.vrm、vita.vrm）
 ├── fonts/           优设标题黑、得意黑、Fusion Pixel 像素体、站酷快乐体（许可见 fonts/README.md）
 ├── vendor/          GSAP 3.15、three.js r187（three-fx.min.js）、@pixiv/three-vrm 3.5（three-vrm.min.js）
@@ -336,6 +340,100 @@ FX.subtitles([
 
 ## 🌟 进阶视觉与角色模块
 
+### 0. 世界画布与相机（`fx-world.js`，v1.5 新增）
+
+「一个分镜一页、轮流显示」的片子看起来像翻 PPT。加载 `fx-world.js` 并在根元素写上 `data-world` 之后，所有分镜变成**同一块大画布上的机位**：换分镜时镜头斜着推过去（先往后拉一点再推进，0.8 秒），停留时也在缓慢往前推。分镜原来的写法完全不用改。
+
+```html
+<script src="lib/fx.js"></script>
+<script src="lib/fx-world.js"></script>
+
+<div id="root" class="theme-studio" data-composition-id="main" data-width="1920" data-height="1080"
+     data-world="snake" data-cols="4" data-wall="MOTION">
+  <section class="scene center" data-d="4.6" data-fx="cam-wide@0 cam-home@1.5">…</section>
+  <section class="scene" data-d="5.2">
+    <div class="abs" style="left:160px;top:260px;width:1600px;height:560px" data-make="fan"
+         data-fx="pick@0.8(i=2) pick@2.1(i=3)">
+      <img src="a.jpg" width="330" height="450"> <img src="b.jpg" width="330" height="450"> <img src="c.jpg" width="330" height="450">
+    </div>
+  </section>
+</div>
+```
+
+| 写在哪 | 写法 | 作用 |
+|---|---|---|
+| 根元素 | `data-world="snake\|row\|depth"` | 机位蛇形排开 / 一字排开 / 沿纵深排开（镜头往里穿） |
+| 根元素 | `data-cols` `data-wall` `data-tilt` `data-travel` `data-drift` | 每行几个机位、背景字墙、机位倾角、换机位用时、停留时的推进速度 |
+| 分镜 | `data-in="cam-jump"` | 这一次硬切（默认是 `cam-to` 运镜，不用写） |
+| 元素 | `cam-look@t` / `cam-home@t` / `cam-wide@t` | 镜头推到某个元素 / 拉回 / 拉远看整块画布 |
+| 元素 | `wake` `zoom-here` `push-back` `depth` `rack-focus` `bg-tint` | 先摆后讲、原位放大、背景虚化、景深分层、移焦、背景换色 |
+| 图片组 | `deal-in` `skeleton` `drop-gather` · `tunnel`+`fly` · `helix`+`helix-spin` · `flipboard`+`flip-to` · `fan`+`pick` · `slices`+`slice-to` · `road`+`road-walk` | 出场 / 排布 / 切换 / 流程的 9 种做法 |
+
+完整示例：[`examples/world/`](examples/world/index.html)（[▶ 成片](examples/world/world.mp4)）。
+
+**页面自检**：浏览器打开 `index.html?lint`（或在控制台调 `FX.lint()`），库会逐个分镜跳到「镜头到位」和「后段」两个时刻，按真实排版报告：字小于 32px、到位时画面是空的、文字出画或互相压住、被字幕压住、有没有真素材。结果同时写进 `<script id="fx-lint">`，方便命令行工具读取。
+
+### 0.5 立绘木偶与演员走位（`fx-puppet.js`，v1.6 新增）
+
+每个姿势只要 3 张图（闭嘴 / 半张 / 张大），不用分层、不用骨骼，立绘就能**眨眼、呼吸、摆头、对口型、点头、倾身**，头顶还能弹出手绘情绪符号（不用 emoji，各台机器渲染一致）。眨眼是把眼睛区域纵向压成一条线算出来的，只需要告诉它两只眼睛在哪。
+
+演员声明一次放在常驻层里；**讲到画面里的哪个元素，就在那个元素上写 `call`**，演员会在原地蹲下、从那个元素旁边重新冒出来——角色跟着内容走，而不是钉在角落。要把整块画面让给内容时写 `dismiss`。
+
+```html
+<script src="lib/fx-puppet.js"></script>
+
+<section class="scene" data-d="7.4" data-fx="pup-talk@0.3(who=bot,dur=6.8)">
+  <div class="shot" data-fx="call@0.2(who=bot)"><img src="a.jpg"></div>              <!-- 从这张图上沿探出来 -->
+  <div class="shot" data-fx="call@2.6(who=bot) pup-emote@3(who=bot,kind=idea)"><img src="b.jpg"></div>
+</section>
+<section class="scene overlay" data-t="0" data-d="19">
+  <div data-make="actor" data-name="bot" data-src="assets/bot" data-eyes="238,236,64,76/362,236,64,76" data-neck="300,400" data-home="80,0,460"></div>
+</section>
+```
+
+`data-src` 是不带后缀的路径（库会读 `_m0.png` / `_m1.png` / `_m2.png`），`data-eyes` 是两只眼睛的「中心 x, 中心 y, 宽, 高」，`data-neck` 是脖子位置，单位都是原图像素。多姿势、按配音时间轴编排用脚本接口 `FX.actor()` / `FX.puppet()`（见 `fx-puppet.js` 文件头）。完整示例：[`examples/puppet/`](examples/puppet/index.html)（[▶ 成片](examples/puppet/puppet.mp4)），示例里的小机器人是仓库原创素材（`assets/puppet/`）。
+
+### 0.6 舞台剧：主持人 + 场景 + 画中画（`fx-stage.js`，v1.7 新增）
+
+另一种常见的片型：**主持人半身立绘常驻前景，背景是一个个场景，信息用画中画给，隔一会儿切一张全屏插画**。分镜之间硬切，换场景用马赛克，主持人每句话换一次姿势，所以画面每 2–3 秒必有变化。不写 `data-world` 时使用。
+
+```html
+<script src="lib/fx-puppet.js"></script>
+<script src="lib/fx-stage.js"></script>
+
+<div id="root" class="theme-pixel" data-composition-id="main" data-width="1920" data-height="1080" data-mode="stage">
+  <section class="scene" data-d="6.4" data-fx="call@0(who=bot) pup-talk@0.3(who=bot,dur=5.4) pup-pose@3(who=bot,pose=point)">
+    <div class="abs" style="left:700px;top:230px;width:960px;height:620px" data-make="device" data-kind="laptop"
+         data-fx="screen-to@1.6 screen-to@3.0 dive@5.9">
+      <img src="a.jpg"><img src="b.jpg"><div data-make="backdrop" data-kind="field"></div>
+    </div>
+  </section>
+  <section class="scene" data-d="7.2" data-fx="pup-pose@1.6(who=bot,pose=think)">
+    <div data-make="backdrop" data-kind="field"></div>
+    <div class="abs" style="left:1940px;top:508px;width:200px;height:250px" data-make="mini" data-src="lib/assets/puppet/mini" data-fx="mini-walk@0.3(x=-700)"></div>
+    <img src="lib/assets/puppet/cut_desk.svg" data-fx="cutaway@3.4(dur=1.9)">
+  </section>
+  <section class="scene" data-d="7" data-in="mosaic"> … </section>
+  <section class="scene overlay" data-t="0" data-d="20.6">
+    <div data-make="actor" data-name="bot" data-src="lib/assets/puppet/bot" data-poses="wave/point/think/cheer"
+         data-eyes="238,236,64,76/362,236,64,76" data-neck="300,400" data-home="-10,0,640"></div>
+  </section>
+</div>
+```
+
+| 零件 | 写法 | 作用 |
+|---|---|---|
+| 场景背景 | `data-make="backdrop"` | `data-src` 用图片；不写就按 `data-kind="field\|room\|city\|night"` 程序画一张像素场景，不需要素材 |
+| 换场 | `data-in="mosaic"` | 纸色方块盖满再揭开，主持人不会被盖住 |
+| 设备屏 | `data-make="device"` + `screen-to` / `dive` | 笔记本 / 手机 / 窗口里放内容；屏内硬切；钻进屏幕铺满全屏 |
+| 序列帧 | `frames@0(fps=20)` | 把一串截图当视频播（实机录屏） |
+| 插画特写 | `cutaway@t(dur=1.8)` | 全屏插画硬切进来、慢推、硬切回去 |
+| 选择面板 | `data-make="menu"` + `choose` | 高亮条跳到某一项并打勾 |
+| 小演员 | `data-make="mini"` + `mini-walk` / `mini-pose` | 全身小人两帧步态走过去、换动作 |
+| 主持人换姿势 | `pup-pose@t(who=bot,pose=point)` | 硬切，换的瞬间自动眨眼 |
+
+完整示例：[`examples/stage/`](examples/stage/index.html)（[▶ 成片](examples/stage/stage.mp4)）。示例里的小机器人（4 个半身姿势、全身小人、一张插画）是仓库原创素材，源文件在 `assets/puppet/src/`。
+
 ### 1. 真 3D 二次元口播角色（`fx-vrm.js`）
 
 想在知识口播或技术解说视频一角放一位**带真实立体透视、双骨解析解 IK 手势、五元音口型同步、发丝裙摆随动作柔顺飘动**的 3D 二次元主持人？加载 `vendor/three-vrm.min.js` + `fx-vrm.js`，把一个透明 `stage3d`（`data-alpha="1" data-light="anime"`）放在 `overlay` 叠加层上即可：
@@ -502,7 +600,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 ---
 
 <!-- CATALOG:START -->
-## 动效目录（153 种动效 + 20 种转场）
+## 动效目录（190 种动效 + 23 种转场）
 
 > 这一节由 `node gen-readme.mjs` 从 `fx.js` 自动生成，不要手改。
 > 所有动效都支持通用参数 `dur`（时长）、`ease`（缓动）、`stagger`（错峰）；下表只列各自特有的参数。
@@ -652,7 +750,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `bg-scroll` | 背景图案滚动：让 background（网格、纹理、条纹）按速度持续平移，配 retro-grid 组件用。参数 x、y=每秒像素 |
 | `parallax` | 视差：容器里的各层按前后顺序以不同速度平移（后面的层动得少、前面的层动得多），配 hills 层叠纸山用。写在容器上。参数 x、y=最前层的总位移、dur |
 
-### 角色（16）
+### 角色（25）
 
 给立绘 / 小人用：换姿势、口型、点头、跳、走。
 
@@ -674,6 +772,15 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `vrm-nod` | 给 3D VRM 角色叠加点头、摇头或歪头动作：kind=nod/shake/tilt、n=次数、amp=幅度、dur |
 | `vrm-move` | 移动 3D VRM 角色位置（如从画面底部轻快弹出登场或横向小步让位）：x/y/z、fromY=起始高度、dur、ease |
 | `vrm-anim` | 播放标准 .vrma (VRM Animation) 3D 动作捕捉片段并自动叠加口型与眨眼：src=文件路径、dur |
+| `call` | 把演员叫到这个元素旁边（讲到它时用）：演员在原地蹲下，从这个元素旁边重新冒出来。写在被讲的元素上；写在 <section> 上是回到演员自己的 home。参数 who（演员名）、at=top/left/right/below（默认 top：从元素上沿探出来）、size（默认 top 340 / 其他 420）、align（at=top 时靠左还是靠右，0–1，默认 0.82）、dx、dy、flip=1（水平翻转，让他面向内容）、pose（同时换姿势） |
+| `closeup` | 脸部特写（反应镜头）：硬切到这个演员的大脸，背景换成放射线底色，停一下再硬切回去。用现有的半身立绘就能做，不需要新素材。写在 <section> 的 data-fx 里。参数 who（演员名）、dur（停多久，默认 1.1）、pose（特写时的姿势 / 表情）、kind（同时弹出的情绪符号）、color（底色，默认橙色；可写 red / blue / green / purple）、size（放大到多大，默认 1300） |
+| `dismiss` | 让演员蹲下离开画面（要把整块画面让给内容时用）。参数 who |
+| `pup-talk` | 立绘说话：按口型序列换嘴，头跟着音量轻轻摆动。写在 data-make="puppet" 上，或用 who=演员名 指定演员。参数 dur（说多久，默认到分镜结束）；口型序列取 FX.mouthTrack = { fps, frames }（由配音工具生成），没有就按音节节奏自动生成 |
+| `pup-pose` | 立绘换姿势（硬切，换的瞬间自动眨眼并轻轻弹一下）。写在 data-make="puppet" 上，或用 who=演员名 指定演员。参数 pose（姿势名）、pop=0（不要弹） |
+| `pup-nod` | 立绘点一下头（听的人应和、说的人强调）。写在 data-make="puppet" 上，或用 who=演员名 指定演员。参数 amp（幅度，默认 1） |
+| `pup-lean` | 立绘整个人朝一侧倾斜（听对方说话时朝对方倾）。写在 data-make="puppet" 上，或用 who=演员名 指定演员。参数 deg（度数，正数向右，0 = 回正）、dur |
+| `pup-emote` | 立绘头顶弹出手绘情绪符号。写在 data-make="puppet" 上，或用 who=演员名 指定演员。参数 kind=question/exclaim/sweat/anger/sparkle/idea/heart/zap/dots、hold（停留秒数，默认 1.6） |
+| `pup-idle` | 只让立绘活着（眨眼、呼吸、头部慢晃），不说话。写在 data-make="puppet" 上；用了 pup-talk / pup-nod / pup-lean / pup-emote 中任何一个就不需要再写它 |
 
 ### 剪纸（10）
 
@@ -726,6 +833,48 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `cam3d` | 移动摄像机：从当前位置飞到新位置，同时把视线转向新目标。参数 x / y / z=飞到哪、lx / ly / lz=看向哪、fov=视角、dur、ease（dur=0 就是直接切过去）。没写的参数保持不变 |
 | `orbit3d` | 环绕镜头：摄像机绕着目标转圈，可以同时拉近 / 升高。参数 turn=转多少度（负数反向）、from=起始角度（不写就从当前位置开始）、r=结束时离目标多远、h=结束时的高度、lx / ly / lz=绕着哪里转、dur、ease |
 
+### 空间（21）
+
+世界画布、相机和图片组动效，需要额外加载 `fx-world.js`。根元素写上 `data-world`，所有分镜就变成同一块大画布上的机位，换分镜 = 镜头走过去。镜头类动效需要 `data-world`；焦点类和图片组类在任何页面都能用。
+
+| 名字 | 作用 / 参数 |
+|---|---|
+| `cam-look` | 镜头推到机位里的某个元素上（念到它时用），讲完用 cam-home 拉回。参数 to（选择器，不写就是自己）、fit（推到它占画面多大，默认 0.6）、max（最多放大几倍，默认 1.4）、dur |
+| `cam-home` | 镜头回到本机位的全景（cam-look 之后用）。参数 dur |
+| `cam-wide` | 镜头拉远看到整块画布（开场总览、结尾回顾）。写成 cam-wide@0 时全片从总览开始，再用 cam-home 推进去。参数 dur |
+| `wake` | 先摆后讲：元素从一开始就在画面里但是暗的，念到它时点亮。参数 dim（没点亮时的亮度，默认 0.3）、solid=1（不用半透明而是压暗去色，卡片不会透出背景；舞台剧模式下自动开启） |
+| `zoom-here` | 原位放大：从一组内容里挑出重点，在原来的位置直接放大，其余淡到 30% 往后退。参数 s（倍数，默认 2.4）、hold（几秒后自动收回，不写就不收）、dim |
+| `push-back` | 背景虚化：新内容出现时，把原来那层整体往后推（缩到 94%、变虚 4px、变暗到 55%）。参数 s、blur、dim、dur |
+| `bring-front` | 把 push-back 推到后面的那层拉回来 |
+| `depth` | 景深分层：子元素写 data-depth="near/mid/far"，离焦点越远越虚（0 / 4 / 8px），并按层做视差漂移。参数 focus（焦点在哪层，默认 mid）、shift（视差幅度，默认 40）、blur |
+| `rack-focus` | 移焦：把清晰的那一层换成另一层（配合 depth 用）。参数 to=near/mid/far、dur |
+| `bg-tint` | 背景换色：换图时把背景整块换成这张图的主色，观众一眼知道换了。参数 color（写 reset 换回原色）、dur（默认 0.5）、to（要换色的元素，默认整块画布） |
+| `skeleton` | 骨架填充：复杂界面先出灰色骨架块，再按阅读顺序一块块填进真实内容。写在容器上，子元素就是一块块内容。参数 gap（每块间隔，默认 0.15）、hold（骨架先停多久，默认 0.5） |
+| `deal-in` | 发牌入场：一组图不同时出现，一张接一张沿弧线飞到各自位置。配 each: 用。参数 stagger（默认 0.1）、from=left/right（从哪边发）、dur |
+| `drop-gather` | 落下收拢：一堆图从上方落下，收拢成扇形，只留要讲的几张，其余掉出画面。写在容器上；要留的子元素加 data-keep（不加就留前 keep 张）。参数 keep（默认 3） |
+| `fly` | 纵深穿梭：镜头连续往里飞，穿过的那件放大变虚，下一件从深处淡入。写在 data-make="tunnel" 上。参数 to（飞到第几件，从 1 数）、each（每件用时，默认 0.7） |
+| `helix-spin` | 环筒螺旋：相机绕着圆筒转，先快后慢转开，再匀速慢转。写在 data-make="helix" 上。参数 turn（快转多少度，默认 300）、dur（快转用时，默认 2.4）、slow（之后每秒慢转几度，默认 10） |
+| `flip-to` | 三维翻转：展板一块接一块往上滚，每块绕横轴大角度翻转，转到正面完整显色，其余压暗到 30%。写在 data-make="flipboard" 上。参数 i（翻到第几块，从 1 数）、dur |
+| `pick` | 放大让位：扇形里讲到谁，谁就抬起放大，左右往两边让开，其他图都还看得见。写在 data-make="fan" 上。参数 i（第几张，从 1 数；0 = 全部放回）、s（默认 1.3）、gap（让开多远，默认 90）、lift（抬多高，默认 70） |
+| `slice-to` | 切片换图：新图切成几条，一条条从下面长上来，编号同步翻牌。写在 data-make="slices" 上。参数 i（换到第几张，从 1 数；不写就是下一张）、stagger（默认 0.07）、dur |
+| `road-walk` | 走进画面：镜头贴着地面沿路往里走，走到哪一步哪一步亮。写在 data-make="road" 上。参数 i（走到第几步，从 1 数）、dur |
+| `bignum` | 章节卡入场：大数字先落下，标题跟着滑出。写在 data-make="bignum" 上。参数 dock（几秒后缩成左上角小标签，不写就不缩） |
+| `segment` | 进度线走到第 i 段（从 1 数）。写在 data-make="segments" 上，一般放在常驻叠加层里 |
+
+### 舞台（7）
+
+「主持人在前、场景在后、信息用画中画给」这种动画科普片的舞台零件，需要额外加载 `fx-stage.js`。场景背景（`backdrop`）、带屏幕的设备（`device`）、全屏插画特写、选择面板（`menu`）、全身小演员（`mini`）。不写 `data-world` 时使用：分镜之间硬切，换场景背景时用 `data-in="mosaic"`。
+
+| 名字 | 作用 / 参数 |
+|---|---|
+| `cutaway` | 插画特写：一张全屏插画硬切进来，很慢地推近，到时间硬切回去；期间盖住演员，字幕和章节条还在。写在 <img> 上（放在所在分镜里即可）。参数 dur（停多久，1.2–2.5 秒）、zoom（推到多大，默认 1.07）、x / y（同时平移百分比）、under=1（放在演员下面：主持人继续站在画面上讲，适合全屏录屏） |
+| `screen-to` | 屏内切换：设备屏幕里的内容硬切到第 i 个（从 1 数；不写就是下一个），带一下很轻的闪白。写在 data-make="device" 上 |
+| `dive` | 钻进屏幕：设备朝镜头放大，直到它的屏幕铺满全屏（下一个分镜用同一张画面当背景，就像走进了屏幕里）。写在 data-make="device" 上，一般放在分镜最后 0.5 秒。参数 dur（默认 0.5） |
+| `frames` | 序列帧播放：把一串截图当视频播（实机录屏、操作演示），逐帧确定。元素上写 data-frames="目录/f_%03d.jpg" data-n="帧数"。参数 fps（默认 15）、dur（播多久，默认到分镜结束；播完从头循环） |
+| `choose` | 选一项：选择面板的高亮条跳到第 i 项并打勾。写在 data-make="menu" 上。参数 i（从 1 数；写成 2/4/1/3 就是连着快速选好几次）、every（连选时每次间隔，默认 0.28 秒） |
+| `mini-walk` | 小演员走过去：两帧步态交替 + 水平移动，走到后站定。写在 data-make="mini" 上。参数 x（走多远，负数向左）或 to=#目标（走到它旁边）、dur、step（每步多久，默认 0.16 秒） |
+| `mini-pose` | 小演员换动作（举手、欢呼、坐下…），带一下挤压回弹。写在 data-make="mini" 上。参数 name（动作名，对应 data-poses 里的名字）、hold（几秒后自动回到站立，不写就一直保持） |
+
 ### 组件（4）
 
 配合 `data-make` 生成的组件使用。
@@ -737,7 +886,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `check` | 清单打勾：配 .fx-check 组件，勾画出来、文字变实 |
 | `toggle` | 拨动开关：配 data-make="switches"，把第 i 个开关（支持 2/3/5 批量）拨到开(on=1)或关(on=0)。参数 i、on=0/1、stagger |
 
-### 转场（20）
+### 转场（23）
 
 写在**后一个**场景上：`<section class="scene" data-in="blur-cross(dur=0.5)">`。
 
@@ -763,4 +912,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `crt-off` | 老电视换台：旧画面压扁成高亮扫描线收缩，随即闪开新画面（复古极客感）。参数 color、dur |
 | `portal-spin` | 旋涡穿越：旧画面旋转吸入中心，新画面从旋转模糊中甩出定格。参数 deg=旋转角度、dur |
 | `halftone` | 漫画网点波纹：圆点阵列沿对角线放大铺满再收缩揭开新画面（二次元/像素风绝配）。参数 cols、color、dur |
+| `cam-to` | 世界画布专用（默认）：镜头斜着推到下一个机位，先往后拉一点再推进，先慢再快再慢。参数 dur（0.6–0.9）、arc（路上多绕几度，默认 8）、pull（回拉幅度，默认 0.07） |
+| `cam-jump` | 世界画布专用：镜头直接跳到下一个机位（硬切），只在换大章节时用 |
+| `mosaic` | 马赛克换场：纸色方块从上往下随机盖满，再随机揭开新场景；方块在演员和常驻层下面，主持人不会被盖住（换章节、换场景背景时用）。参数 cols（一行几块，默认 24）、color、dur、seed |
 <!-- CATALOG:END -->

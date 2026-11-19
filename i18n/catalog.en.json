@@ -47,6 +47,14 @@
     "3D": {
       "title": "3D",
       "intro": "Real 3D scenes (three.js); requires loading the extra `vendor/three-fx.min.js` and `fx-3d.js`. Write them on a stage made with `data-make=\"stage3d\"`: some effects put objects into the stage, others move the camera (`cam3d`, `orbit3d`). Common parameters for objects: `dur` (how long it exists), `fade` / `out` (fade in / out seconds), `px` / `py` / `pz` (placement), `s` (overall scale), `seed`."
+    },
+    "空间": {
+      "title": "Space",
+      "intro": "World canvas, camera and image-set moves; requires loading the extra `fx-world.js`. Put `data-world` on the root element and every scene becomes a station on one big canvas: changing scenes means the camera travels there. Camera effects need `data-world`; the focus and image-set effects work on any page."
+    },
+    "舞台": {
+      "title": "Stage",
+      "intro": "Stage-play parts for \"presenter in front, scene behind, information as picture-in-picture\" explainers; requires loading the extra `fx-stage.js`. Scene backdrops (`backdrop`), devices with on-screen content (`device`), full-screen illustration inserts, a choice panel (`menu`) and small full-body actors (`mini`). Use it without `data-world`: scenes hard-cut, and `data-in=\"mosaic\"` changes the backdrop."
     }
   },
   "stats": {
@@ -58,7 +66,7 @@
     "makers": "Component generators",
     "makersLine": "**{n}** ({list})",
     "skins": "Skins",
-    "skinsLine": "**5** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles)"
+    "skinsLine": "**6** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles · studio)"
   },
   "catalog": {
     "heading": "Effect catalog ({nFx} effects + {nTrans} transitions)",
@@ -240,6 +248,46 @@
     "角色/vrm-talk": "3D VRM 5-vowel lip-sync: drives aa/ih/ou/ee/oh morph targets with seeded syllable pauses and subtle speech head rhythm. Params: dur, rate, amp, seed",
     "角色/vrm-nod": "3D VRM head nod/shake/tilt: layers an additive 3D head/neck impulse on top of the active pose. Params: kind=nod|shake|tilt, n, amp, dur",
     "角色/vrm-move": "3D VRM stage move: translates or pops the 3D avatar root (e.g. pop-in from bottom or side step). Params: x/y/z, fromY, dur, ease",
-    "角色/vrm-anim": "3D VRM mocap clip: plays standard .vrma (VRM Animation) motion-capture files deterministically on the timeline. Params: src, dur"
+    "角色/vrm-anim": "3D VRM mocap clip: plays standard .vrma (VRM Animation) motion-capture files deterministically on the timeline. Params: src, dur",
+    "空间/cam-look": "Camera pushes in on one element inside the station (use it when the voice-over reaches that element); follow with `cam-home` to pull back. Params: to (selector, defaults to the element itself), fit (how much of the frame it should fill, default 0.6), max (maximum zoom, default 1.4), dur",
+    "空间/cam-home": "Camera returns to the full view of the current station (use after `cam-look`). Param: dur",
+    "空间/cam-wide": "Camera pulls out to show the whole canvas (opening overview, closing recap). Written as `cam-wide@0` the film starts on the overview; push in with `cam-home`. Param: dur",
+    "空间/wake": "Place first, talk later: the element is on screen from the start but dimmed, and lights up when mentioned. Params: dim (brightness before it lights up, default 0.3), solid=1 (darken and desaturate instead of fading, so a card never shows the backdrop through it; on automatically in stage mode)",
+    "空间/zoom-here": "In-place zoom: pick one item out of a group and enlarge it where it sits while the rest fade to 30% and step back. Params: s (scale, default 2.4), hold (seconds before it returns automatically; omit to keep it), dim",
+    "空间/push-back": "Background blur: when new content arrives, push the previous layer back as a whole (scale to 94%, blur 4px, darken to 55%). Params: s, blur, dim, dur",
+    "空间/bring-front": "Bring back a layer that `push-back` pushed away",
+    "空间/depth": "Depth layers: children carry `data-depth=\"near|mid|far\"`; the farther from focus the blurrier (0 / 4 / 8px), with per-layer parallax drift. Params: focus (which layer is sharp, default mid), shift (parallax amount, default 40), blur",
+    "空间/rack-focus": "Rack focus: move the sharp layer to another one (used with `depth`). Params: to=near|mid|far, dur",
+    "空间/bg-tint": "Background colour swap: when the image changes, the whole background changes to its dominant colour so viewers see the switch at a glance. Params: color (`reset` restores the original), dur (default 0.5), to (element to tint, defaults to the whole canvas)",
+    "空间/skeleton": "Skeleton fill: a complex interface first appears as grey skeleton blocks, then real content fills in block by block in reading order. Put it on the container; its children are the blocks. Params: gap (delay between blocks, default 0.15), hold (how long the skeleton stays first, default 0.5)",
+    "空间/deal-in": "Deal-in: a set of images does not appear at once; they fly in one after another along an arc to their places. Use with `each:`. Params: stagger (default 0.1), from=left|right, dur",
+    "空间/drop-gather": "Drop and gather: a pile of images drops from above, gathers into a fan, keeps only the few to be discussed and lets the rest fall away. Put it on the container; add `data-keep` to children to keep (otherwise the first `keep` are kept). Param: keep (default 3)",
+    "空间/fly": "Depth tunnel: the camera flies continuously inward; the item it passes scales up and blurs, the next fades in from the depth. Put it on `data-make=\"tunnel\"`. Params: to (fly to which item, counted from 1), each (seconds per item, default 0.7)",
+    "空间/helix-spin": "Helix: the camera orbits a cylinder of images, fast then slow, then keeps turning slowly. Put it on `data-make=\"helix\"`. Params: turn (degrees of the fast turn, default 300), dur (fast-turn time, default 2.4), slow (degrees per second afterwards, default 10)",
+    "空间/flip-to": "3D flip board: panels roll upward one after another, each flipping around the horizontal axis; the one facing the camera shows in full colour, the rest dim to 30%. Put it on `data-make=\"flipboard\"`. Params: i (flip to which panel, counted from 1), dur",
+    "空间/pick": "Lift and make way: in a fan of images, the one being discussed lifts and enlarges while its neighbours slide aside; all others stay visible. Put it on `data-make=\"fan\"`. Params: i (which one, counted from 1; 0 = put all back), s (default 1.3), gap (how far the others move, default 90), lift (default 70)",
+    "空间/slice-to": "Slice swap: the new image is cut into strips that grow up from the bottom one by one, with the number label flipping in sync. Put it on `data-make=\"slices\"`. Params: i (which image, counted from 1; omit for the next one), stagger (default 0.07), dur",
+    "空间/road-walk": "Walk into the picture: the camera moves along a road close to the ground; each step lights up as it is reached. Put it on `data-make=\"road\"`. Params: i (walk to which step, counted from 1), dur",
+    "空间/bignum": "Chapter card entrance: the big number drops in, the title slides out after it. Put it on `data-make=\"bignum\"`. Param: dock (seconds before it shrinks into a small top-left label; omit to keep it)",
+    "空间/segment": "Progress line advances to segment i (counted from 1). Put it on `data-make=\"segments\"`, usually in a persistent overlay layer",
+    "转场/cam-to": "World canvas only (default): the camera travels diagonally to the next station, pulling back slightly first, slow-fast-slow. Params: dur (0.6–0.9), arc (extra degrees swung on the way, default 8), pull (pull-back amount, default 0.07)",
+    "转场/cam-jump": "World canvas only: the camera jumps straight to the next station (hard cut); only for major chapter changes",
+    "角色/pup-talk": "Sprite talks: swaps the three mouth frames from a mouth track while the head sways with the volume. Put it on `data-make=\"puppet\"`, or target an actor with `who=name`. Params: dur (how long, defaults to the end of the scene); the track comes from `FX.mouthTrack = { fps, frames }` (produced by your voice tool), otherwise it is generated",
+    "角色/pup-nod": "Sprite nods once (a listener agreeing, a speaker stressing a point). Put it on `data-make=\"puppet\"`, or use `who=name`. Param: amp (default 1)",
+    "角色/pup-lean": "Sprite leans its whole body to one side (toward the person speaking). Put it on `data-make=\"puppet\"`, or use `who=name`. Params: deg (positive leans right, 0 returns upright), dur",
+    "角色/pup-emote": "A hand-drawn emotion mark pops up above the sprite's head. Put it on `data-make=\"puppet\"`, or use `who=name`. Params: kind=question|exclaim|sweat|anger|sparkle|idea|heart|zap|dots, hold (seconds, default 1.6)",
+    "角色/pup-idle": "Just keeps the sprite alive (blinking, breathing, slow head sway) without talking. Put it on `data-make=\"puppet\"`; not needed if any of pup-talk / pup-nod / pup-lean / pup-emote is used",
+    "角色/call": "Calls an actor over to this element (use it when the element is being discussed): the actor ducks where it is and pops up next to this element. Put it on the element being discussed; on a `<section>` it sends the actor back to its home. Params: who (actor name), at=top|left|right|below (default top: peeks over the element's top edge), size (default 340 for top, 420 otherwise), align (left-right position for at=top, 0–1), dx, dy, flip=1 (mirror so it faces the content), pose (switch pose at the same time)",
+    "角色/dismiss": "Makes an actor duck out of frame (when the whole frame should go to the content). Param: who",
+    "舞台/cutaway": "Illustration insert: a full-screen picture cuts in hard, pushes in very slowly, then cuts back out; it covers the actors while subtitles and the chapter bar stay. Put it on an `<img>` inside the scene. Params: dur (hold, 1.2–2.5 s), zoom (default 1.07), x / y (pan in percent), under=1 (sit below the actors so the presenter keeps talking over it; good for full-screen screen recordings)",
+    "舞台/screen-to": "On-screen cut: the content inside a device screen hard-cuts to item i (counted from 1; omit for the next one) with a faint flash. Put it on `data-make=\"device\"`",
+    "舞台/dive": "Dive into the screen: the device zooms toward the camera until its screen fills the frame (give the next scene the same picture as its backdrop and it feels like walking into the screen). Put it on `data-make=\"device\"`, usually in the last 0.5 s of the scene. Param: dur (default 0.5)",
+    "舞台/frames": "Frame-sequence playback: plays a series of stills as video (gameplay, screen recordings), frame-accurate. Put `data-frames=\"dir/f_%03d.jpg\" data-n=\"count\"` on the element. Params: fps (default 15), dur (defaults to the end of the scene; loops)",
+    "舞台/choose": "Pick an option: the highlight bar of a choice panel jumps to item i and ticks it. Put it on `data-make=\"menu\"`. Params: i (counted from 1; `2/4/1/3` makes several quick picks in a row), every (interval between quick picks, default 0.28 s)",
+    "舞台/mini-walk": "A mini actor walks over: two alternating walk frames plus horizontal movement, then stands still. Put it on `data-make=\"mini\"`. Params: x (distance, negative goes left) or to=#target, dur, step (seconds per step, default 0.16)",
+    "舞台/mini-pose": "A mini actor switches action (raise hand, cheer, sit…) with a small squash-and-bounce. Put it on `data-make=\"mini\"`. Params: name (an action listed in `data-poses`), hold (seconds before returning to idle; omit to keep it)",
+    "角色/pup-pose": "Sprite pose change (hard cut, with an automatic blink and a tiny bounce at the swap). Put it on `data-make=\"puppet\"`, or target an actor with `who=name`. Params: pose, pop=0 (no bounce)",
+    "转场/mosaic": "Mosaic scene change: paper-coloured blocks cover the frame roughly top to bottom in random order, then uncover the new scene at random; the blocks sit below the actors and persistent overlays, so the presenter is never covered (use for chapter or backdrop changes). Params: cols (blocks per row, default 24), color, dur, seed",
+    "角色/closeup": "Face close-up (reaction shot): hard-cuts to this actor's face, large, on a radial-burst background, holds, then hard-cuts back. Works with the existing bust sprites, no new art needed. Put it in the `data-fx` of the `<section>`. Params: who (actor name), dur (hold, default 1.1), pose (pose / expression during the close-up), kind (emotion mark to pop at the same time), color (background, default orange; also red / blue / green / purple), size (zoom size, default 1300)"
   }
 }

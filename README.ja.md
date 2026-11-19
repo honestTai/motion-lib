@@ -46,16 +46,17 @@
 <!-- STATS:START -->
 | | 数 |
 |---|---|
-| エフェクト | **153** 種（入場 26 · 退場 10 · 強調 41 · テキスト 9 · データ 6 · カメラ 11 · キャラクター 16 · 切り紙 10 · パーティクル 8 · 3D 12 · コンポーネント 4） |
-| トランジション | **20** 種 |
-| コンポーネントジェネレーター | **17** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d`） |
-| スキン | **5** 種（白紫テック · 黒金シネマ · レトロピクセル · 切り紙コラージュ · 深宇宙パーティクル） |
+| エフェクト | **190** 種（入場 26 · 退場 10 · 強調 41 · テキスト 9 · データ 6 · カメラ 11 · キャラクター 25 · 切り紙 10 · パーティクル 8 · 3D 12 · 空間 21 · ステージ 7 · コンポーネント 4） |
+| トランジション | **23** 種 |
+| コンポーネントジェネレーター | **31** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini`） |
+| スキン | **6** テーマ（ホワイトバイオレット · ブラックゴールド · レトロピクセル · 切り絵コラージュ · ディープスペース · スタジオ） |
 <!-- STATS:END -->
 
 <details open>
 <summary><b>✨ アップデートハイライト（v1.4：3D VRM アバター + 2D ラバーホース IK + 新エフェクト・トランジション 12 種）</b></summary>
 <br />
 
+- **v1.5 の新機能（空間カメラ）**：オプションモジュール [`fx-world.js`](fx-world.js)。ルート要素に `data-world` を書くだけで、すべてのシーンが 1 枚の大きなキャンバスに並び、**シーンの切り替えはカメラの移動**になります（ページめくりではありません）。新エフェクト 21 種（その場拡大、背景ぼかし、フォーカス送り、カード配り、スケルトン表示、奥行きトンネル、らせん円筒、3D フリップボード、持ち上げて道を空ける、スライス切り替え、道を歩くなど）、新コンポーネント 7 種、6 つ目のテーマ `theme-studio`、ページ自己チェック `FX.lint()`（URL に `?lint` を付けると、小さすぎる文字、カメラ到着時の空画面、はみ出した文字を検出）を追加。
 - **v1.4 の新機能**：
   - **本物の 3D VRM アニメアバターモジュール [`fx-vrm.js`](fx-vrm.js)**：`@pixiv/three-vrm`（MIT）ベース。解析的 2 ボーン 3D IK（`FX.ik3d`）、自動モデルリターゲティング、6 節脊椎ウェーブ、自動鎖骨連動、13 種のプレゼンポーズ、5 母音リップシンク（`aa/ih/ou/ee/oh`）、MToon トゥーン描画、2× スーパーサンプリング、連続 60Hz `SpringBone` 髪・スカート物理を搭載。pixiv 公式 **CC0 1.0 パブリックドメイン**モデル `assets/shino.vrm`・`assets/vita.vrm` を同梱。
   - **2D ソフトボーン＆ラバーホースモジュール [`fx-rig.js`](fx-rig.js)**：2 ボーン IK `FX.ik2` + 継ぎ目のない連続ベジェ袖 `FX.hose` + 任意の SVG キャラ対応 `[data-bone]` / `[data-follow]`。
@@ -154,6 +155,100 @@ claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fp
 
 ## 🌟 高度なビジュアル ＆ キャラクターモジュール
 
+### 0. ワールドキャンバスとカメラ（`fx-world.js`、v1.5 の新機能）
+
+シーンを全画面ページとして順番に表示するだけの映像は、スライドのように見えます。`fx-world.js` を読み込み、ルート要素に `data-world` を書くと、すべてのシーンが **1 枚の大きなキャンバス上のカメラ位置**になります。シーンが切り替わるとカメラが次の位置へ斜めに移動し（少し引いてから寄る、0.8 秒）、止まっている間もゆっくり寄り続けます。既存のシーンの書き方は変わりません。
+
+```html
+<script src="lib/fx.js"></script>
+<script src="lib/fx-world.js"></script>
+
+<div id="root" class="theme-studio" data-composition-id="main" data-width="1920" data-height="1080"
+     data-world="snake" data-cols="4" data-wall="MOTION">
+  <section class="scene center" data-d="4.6" data-fx="cam-wide@0 cam-home@1.5">…</section>
+  <section class="scene" data-d="5.2">
+    <div class="abs" style="left:160px;top:260px;width:1600px;height:560px" data-make="fan"
+         data-fx="pick@0.8(i=2) pick@2.1(i=3)">
+      <img src="a.jpg" width="330" height="450"> <img src="b.jpg" width="330" height="450"> <img src="c.jpg" width="330" height="450">
+    </div>
+  </section>
+</div>
+```
+
+| 書く場所 | 書き方 | 役割 |
+|---|---|---|
+| ルート要素 | `data-world="snake\|row\|depth"` | カメラ位置を蛇行 / 一列 / 奥行き方向に並べる（カメラが奥へ飛ぶ） |
+| ルート要素 | `data-cols` `data-wall` `data-tilt` `data-travel` `data-drift` | 1 行の数、背景の文字ウォール、傾き、移動時間、停止中の寄りの速さ |
+| シーン | `data-in="cam-jump"` | この切り替えだけハードカット（既定の `cam-to` は書かなくてよい） |
+| 要素 | `cam-look@t` / `cam-home@t` / `cam-wide@t` | 要素に寄る / 戻る / キャンバス全体まで引く |
+| 要素 | `wake` `zoom-here` `push-back` `depth` `rack-focus` `bg-tint` | 先に置いて後から点灯、その場拡大、背景ぼかし、深度レイヤー、フォーカス送り、背景色の切り替え |
+| 画像セット | `deal-in` `skeleton` `drop-gather` · `tunnel`+`fly` · `helix`+`helix-spin` · `flipboard`+`flip-to` · `fan`+`pick` · `slices`+`slice-to` · `road`+`road-walk` | 登場・配置・切り替え・手順の 9 つの見せ方 |
+
+完全なサンプル：[`examples/world/`](examples/world/index.html)（[▶ MP4](examples/world/world.mp4)）。
+
+**ページ自己チェック**：ブラウザで `index.html?lint` を開く（またはコンソールで `FX.lint()` を呼ぶ）と、各シーンを「カメラ到着時」と「後半」の 2 つの時点にシークし、実際のレイアウトから報告します：32px 未満の文字、到着時に空の画面、はみ出した文字や重なった文字、字幕帯に隠れる文字、実素材の有無。結果は `<script id="fx-lint">` にも書き込まれ、コマンドラインツールから読めます。
+
+### 0.5 立ち絵パペットと、内容についていくアクター（`fx-puppet.js`、v1.6 の新機能）
+
+1 ポーズにつき画像 3 枚（口を閉じる / 半開き / 大きく開く）だけで、レイヤー分けもボーンも不要です。立ち絵が**まばたき・呼吸・頭の揺れ・口パク・うなずき・体の傾き**をし、頭上に手描き風の感情マークを出せます（絵文字は使わないので、どの環境でも同じ見た目）。まばたきは目の領域を縦に 1 本の線までつぶして計算するので、両目の位置を教えるだけです。
+
+アクターは常駐オーバーレイで一度だけ宣言します。**説明している要素に `call` を書く**と、アクターはその場でしゃがみ、その要素の横から顔を出します。キャラクターが隅に固定されず、内容についていきます。画面全体を内容に譲るときは `dismiss` を使います。
+
+```html
+<script src="lib/fx-puppet.js"></script>
+
+<section class="scene" data-d="7.4" data-fx="pup-talk@0.3(who=bot,dur=6.8)">
+  <div class="shot" data-fx="call@0.2(who=bot)"><img src="a.jpg"></div>              <!-- この画像の上端から顔を出す -->
+  <div class="shot" data-fx="call@2.6(who=bot) pup-emote@3(who=bot,kind=idea)"><img src="b.jpg"></div>
+</section>
+<section class="scene overlay" data-t="0" data-d="19">
+  <div data-make="actor" data-name="bot" data-src="assets/bot" data-eyes="238,236,64,76/362,236,64,76" data-neck="300,400" data-home="80,0,460"></div>
+</section>
+```
+
+`data-src` は拡張子なしのパス（ライブラリが `_m0.png` / `_m1.png` / `_m2.png` を読みます）、`data-eyes` は両目の「中心 x, 中心 y, 幅, 高さ」、`data-neck` は首の位置で、単位はすべて元画像のピクセルです。複数ポーズや音声タイムラインに合わせた編成にはスクリプト API `FX.actor()` / `FX.puppet()` を使います（`fx-puppet.js` の冒頭を参照）。完全なサンプル：[`examples/puppet/`](examples/puppet/index.html)（[▶ MP4](examples/puppet/puppet.mp4)）。サンプルの小さなロボットはリポジトリ同梱のオリジナル素材です（`assets/puppet/`）。
+
+### 0.6 ステージ劇：プレゼンター + 場面 + ピクチャー・イン・ピクチャー（`fx-stage.js`、v1.7 の新機能）
+
+もう 1 つのよくある形式です：**半身のプレゼンターが手前に常駐し、背景は場面が次々と変わり、情報はピクチャー・イン・ピクチャーで出し、ときどき全画面のイラストを差し込む**。シーンはハードカット、場面転換はモザイク、プレゼンターは 1 文ごとにポーズを変えるので、2–3 秒ごとに必ず画面が変化します。`data-world` なしで使います。
+
+```html
+<script src="lib/fx-puppet.js"></script>
+<script src="lib/fx-stage.js"></script>
+
+<div id="root" class="theme-pixel" data-composition-id="main" data-width="1920" data-height="1080" data-mode="stage">
+  <section class="scene" data-d="6.4" data-fx="call@0(who=bot) pup-talk@0.3(who=bot,dur=5.4) pup-pose@3(who=bot,pose=point)">
+    <div class="abs" style="left:700px;top:230px;width:960px;height:620px" data-make="device" data-kind="laptop"
+         data-fx="screen-to@1.6 screen-to@3.0 dive@5.9">
+      <img src="a.jpg"><img src="b.jpg"><div data-make="backdrop" data-kind="field"></div>
+    </div>
+  </section>
+  <section class="scene" data-d="7.2" data-fx="pup-pose@1.6(who=bot,pose=think)">
+    <div data-make="backdrop" data-kind="field"></div>
+    <div class="abs" style="left:1940px;top:508px;width:200px;height:250px" data-make="mini" data-src="lib/assets/puppet/mini" data-fx="mini-walk@0.3(x=-700)"></div>
+    <img src="lib/assets/puppet/cut_desk.svg" data-fx="cutaway@3.4(dur=1.9)">
+  </section>
+  <section class="scene" data-d="7" data-in="mosaic"> … </section>
+  <section class="scene overlay" data-t="0" data-d="20.6">
+    <div data-make="actor" data-name="bot" data-src="lib/assets/puppet/bot" data-poses="wave/point/think/cheer"
+         data-eyes="238,236,64,76/362,236,64,76" data-neck="300,400" data-home="-10,0,640"></div>
+  </section>
+</div>
+```
+
+| パーツ | 書き方 | 役割 |
+|---|---|---|
+| 背景 | `data-make="backdrop"` | `data-src` で画像を使う。なければ `data-kind="field\|room\|city\|night"` でピクセル調の場面をプログラムで描く（素材不要） |
+| 場面転換 | `data-in="mosaic"` | 紙色のブロックが覆って外れる。プレゼンターは隠れない |
+| デバイス画面 | `data-make="device"` + `screen-to` / `dive` | ノート PC / スマホ / ウィンドウの中にコンテンツ。画面内ハードカット。画面に飛び込んで全画面にする |
+| 連番フレーム | `frames@0(fps=20)` | 一連の静止画を動画として再生（画面録画） |
+| イラスト差し込み | `cutaway@t(dur=1.8)` | 全画面の絵がハードカットで入り、ゆっくり寄り、ハードカットで戻る |
+| 選択パネル | `data-make="menu"` + `choose` | ハイライトが項目へ移動してチェックが付く |
+| ミニキャラ | `data-make="mini"` + `mini-walk` / `mini-pose` | 全身のミニキャラが 2 フレームで歩き、動作を切り替える |
+| ポーズ変更 | `pup-pose@t(who=bot,pose=point)` | ハードカット。切り替えの瞬間に自動でまばたき |
+
+完全なサンプル：[`examples/stage/`](examples/stage/index.html)（[▶ MP4](examples/stage/stage.mp4)）。サンプルの小さなロボット（半身 4 ポーズ、全身ミニ、イラスト 1 枚）はリポジトリ同梱のオリジナル素材で、ソースは `assets/puppet/src/` にあります。
+
 ### 1. 本物の 3D アニメ VRM プレゼンター（`fx-vrm.js`）
 
 <div align="center">
@@ -197,7 +292,7 @@ claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fp
 ---
 
 <!-- CATALOG:START -->
-## エフェクトカタログ（エフェクト 153 種 + トランジション 20 種）
+## エフェクトカタログ（エフェクト 190 種 + トランジション 23 種）
 
 > このセクションは `node gen-readme.mjs` が `fx.js` から自動生成します。手で編集しないでください。
 > すべてのエフェクトで共通パラメーター `dur`（長さ）、`ease`（イージング）、`stagger`（時間差）が使えます。下の表には各エフェクト固有のパラメーターのみを載せています。
@@ -347,7 +442,7 @@ claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fp
 | `bg-scroll` | 背景パターンのスクロール：background（グリッド、テクスチャ、ストライプ）を一定の速さで平行移動させ続けます。retro-grid コンポーネントと組み合わせます。パラメーター：x、y=1秒あたりのピクセル数 |
 | `parallax` | 視差：コンテナ内の各レイヤーが前後の順に違う速さで平行移動します（奥ほど動きが小さく、手前ほど大きい）。hills の重なった紙の山と組み合わせます。コンテナに書きます。パラメーター：x、y=最前面レイヤーの総移動量、dur |
 
-### キャラクター (16)
+### キャラクター (25)
 
 立ち絵・キャラクター用です。ポーズ切り替え、口パク、うなずき、ジャンプ、歩行。
 
@@ -369,6 +464,15 @@ claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fp
 | `vrm-nod` | 3D VRM うなずき・首振り・首傾げ：現在のポーズの上に 3D の頭部アクションを重ねます。パラメーター：kind=nod/shake/tilt、n、amp、dur |
 | `vrm-move` | 3D VRM 移動・ポップ登場：3D キャラクターの位置を移動（下からのポップ登場や横移動など）します。パラメーター：x/y/z、fromY、dur、ease |
 | `vrm-anim` | 3D VRM モーション再生：標準 .vrma (VRM Animation) ファイルをタイムライン上で決定論的に再生します。パラメーター：src、dur |
+| `call` | アクターをこの要素のそばへ呼ぶ（その要素を説明するときに使う）：アクターはその場でしゃがみ、この要素の横から顔を出す。説明される要素に書く。`<section>` に書くとアクターは自分のホームに戻る。パラメータ：who（アクター名）、at=top/left/right/below（既定 top：要素の上端から顔を出す）、size（top は既定 340、それ以外は 420）、align（at=top のときの左右位置。0–1）、dx、dy、flip=1（左右反転して内容のほうを向かせる）、pose（同時にポーズを変える） |
+| `closeup` | 顔のクローズアップ（リアクションショット）：このアクターの大きな顔へハードカットし、放射線の背景で少し止めてからハードカットで戻る。既存の半身スプライトだけで作れ、新しい素材は不要。`<section>` の `data-fx` に書く。パラメータ：who（アクター名）、dur（止める時間。既定 1.1）、pose（クローズアップ中のポーズ / 表情）、kind（同時に出す感情マーク）、color（背景色。既定は orange。red / blue / green / purple も可）、size（拡大サイズ。既定 1300） |
+| `dismiss` | アクターをしゃがませて画面から退場させる（画面全体を内容に譲るとき）。パラメータ：who |
+| `pup-talk` | 立ち絵が話す：口パクのトラックに合わせて 3 枚の口を切り替え、音量に合わせて頭を軽く揺らす。`data-make="puppet"` に書くか、`who=名前` でアクターを指定。パラメータ：dur（話す長さ。既定はシーンの終わりまで）。トラックは `FX.mouthTrack = { fps, frames }`（音声ツールが生成）から取り、なければ自動生成 |
+| `pup-pose` | 立ち絵のポーズ変更（ハードカット。切り替えの瞬間に自動でまばたきし、少し弾む）。`data-make="puppet"` に書くか、`who=名前` でアクターを指定。パラメータ：pose、pop=0（弾ませない） |
+| `pup-nod` | 立ち絵が 1 回うなずく（聞き手の相づち、話し手の強調）。`data-make="puppet"` に書くか、`who=名前` で指定。パラメータ：amp（既定 1） |
+| `pup-lean` | 立ち絵が体ごと片側へ傾く（話している相手のほうへ）。`data-make="puppet"` に書くか、`who=名前` で指定。パラメータ：deg（正の値で右へ、0 でまっすぐに戻る）、dur |
+| `pup-emote` | 立ち絵の頭上に手描き風の感情マークを出す。`data-make="puppet"` に書くか、`who=名前` で指定。パラメータ：kind=question/exclaim/sweat/anger/sparkle/idea/heart/zap/dots、hold（表示秒数。既定 1.6） |
+| `pup-idle` | 立ち絵を生かしておくだけ（まばたき、呼吸、ゆっくりした頭の揺れ）。話さない。`data-make="puppet"` に書く。pup-talk / pup-nod / pup-lean / pup-emote のどれかを使っていれば不要 |
 
 ### 切り紙 (10)
 
@@ -421,6 +525,48 @@ claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fp
 | `cam3d` | カメラ移動：今の位置から新しい位置へ飛びながら、視線も新しい目標へ向けます。パラメーター：x / y / z=飛んでいく先、lx / ly / lz=見る先、fov=画角、dur、ease（dur=0 ならその場で切り替え）。書かなかったパラメーターは変わりません |
 | `orbit3d` | 周回カメラ：カメラが目標のまわりを回ります。同時に近づいたり上昇したりもできます。パラメーター：turn=回る角度（負の値で逆回り）、from=開始角度（省略すると今の位置から）、r=終了時の目標からの距離、h=終了時の高さ、lx / ly / lz=回る中心、dur、ease |
 
+### 空間 (21)
+
+ワールドキャンバス・カメラ・画像セットの動き。追加で `fx-world.js` を読み込みます。ルート要素に `data-world` を書くと、すべてのシーンが 1 枚の大きなキャンバス上のカメラ位置になり、シーンの切り替えはカメラの移動になります。カメラ系エフェクトは `data-world` が必要ですが、フォーカス系と画像セット系はどのページでも使えます。
+
+| 名前 | 動作 / パラメーター |
+|---|---|
+| `cam-look` | カメラ位置の中の 1 つの要素にカメラを寄せる（ナレーションがそこに触れたときに使う）。終わったら `cam-home` で戻す。パラメータ：to（セレクタ。省略時は自分自身）、fit（画面に占める割合。既定 0.6）、max（最大拡大率。既定 1.4）、dur |
+| `cam-home` | カメラを現在のカメラ位置の全景に戻す（`cam-look` の後に使う）。パラメータ：dur |
+| `cam-wide` | カメラを引いてキャンバス全体を見せる（冒頭の俯瞰、最後の振り返り）。`cam-wide@0` と書くと全体俯瞰から始まり、`cam-home` で寄っていく。パラメータ：dur |
+| `wake` | 先に置いて後から語る：要素は最初から画面にあるが暗く、言及されたときに点灯する。パラメータ：dim（点灯前の明るさ。既定 0.3）、solid=1（半透明にせず暗く・無彩色にする。カードが背景を透かさない。ステージモードでは自動で有効） |
+| `zoom-here` | その場で拡大：グループの中から 1 つを選び、元の位置でそのまま拡大し、残りは 30% まで薄くして後ろへ下げる。パラメータ：s（倍率。既定 2.4）、hold（何秒後に自動で戻すか。省略時は戻さない）、dim |
+| `push-back` | 背景ぼかし：新しい内容が現れるとき、元のレイヤー全体を後ろへ押す（94% に縮小、4px ぼかし、55% まで暗く）。パラメータ：s、blur、dim、dur |
+| `bring-front` | `push-back` で後ろに下げたレイヤーを手前に戻す |
+| `depth` | 被写界深度レイヤー：子要素に `data-depth="near/mid/far"` を書くと、フォーカスから遠いほどぼける（0 / 4 / 8px）。レイヤーごとに視差でゆっくり動く。パラメータ：focus（ピントを合わせる層。既定 mid）、shift（視差の量。既定 40）、blur |
+| `rack-focus` | フォーカス送り：ピントの合う層を別の層に移す（`depth` と併用）。パラメータ：to=near/mid/far、dur |
+| `bg-tint` | 背景色の切り替え：画像が変わるとき、背景全体をその画像の主色に変え、切り替わったことを一目で伝える。パラメータ：color（`reset` で元の色に戻す）、dur（既定 0.5）、to（色を変える要素。既定はキャンバス全体） |
+| `skeleton` | スケルトン表示：複雑な画面をまず灰色のスケルトンで出し、読む順に 1 ブロックずつ実際の内容で埋める。コンテナに書き、子要素が各ブロックになる。パラメータ：gap（ブロック間隔。既定 0.15）、hold（スケルトンを見せておく時間。既定 0.5） |
+| `deal-in` | カード配り：画像を同時に出さず、1 枚ずつ弧を描いて所定の位置へ飛ばす。`each:` と併用。パラメータ：stagger（既定 0.1）、from=left/right、dur |
+| `drop-gather` | 落として集める：画像の山が上から落ち、扇形に集まり、話す数枚だけ残して残りは画面外へ落ちる。コンテナに書く。残す子要素に `data-keep` を付ける（付けなければ先頭の keep 枚）。パラメータ：keep（既定 3） |
+| `fly` | 奥行きトンネル：カメラが奥へ飛び続け、通過した 1 枚は拡大してぼけ、次の 1 枚が奥からフェードインする。`data-make="tunnel"` に書く。パラメータ：to（何枚目まで飛ぶか。1 から数える）、each（1 枚あたりの秒数。既定 0.7） |
+| `helix-spin` | らせん円筒：カメラが画像の円筒の周りを回る。最初は速く、次第に遅く、その後は一定速度でゆっくり回る。`data-make="helix"` に書く。パラメータ：turn（速く回る角度。既定 300）、dur（速く回る時間。既定 2.4）、slow（その後の毎秒の角度。既定 10） |
+| `flip-to` | 3D フリップボード：パネルが 1 枚ずつ上へ送られ、横軸を中心に大きく回転する。正面を向いた 1 枚はフルカラー、残りは 30% まで暗くなる。`data-make="flipboard"` に書く。パラメータ：i（何枚目へ。1 から数える）、dur |
+| `pick` | 持ち上げて道を空ける：扇形に並んだ画像のうち、話題の 1 枚が持ち上がって拡大し、左右が脇へよける。ほかの画像も見えたまま。`data-make="fan"` に書く。パラメータ：i（何枚目。1 から数える。0 = すべて戻す）、s（既定 1.3）、gap（よける距離。既定 90）、lift（既定 70） |
+| `slice-to` | スライス切り替え：新しい画像を数本の帯に切り、下から 1 本ずつ伸ばす。番号ラベルも同時にめくれる。`data-make="slices"` に書く。パラメータ：i（何枚目へ。1 から数える。省略時は次の 1 枚）、stagger（既定 0.07）、dur |
+| `road-walk` | 画面の中へ歩く：カメラが地面すれすれに道を奥へ進み、到達したステップが点灯する。`data-make="road"` に書く。パラメータ：i（何ステップ目まで。1 から数える）、dur |
+| `bignum` | チャプターカードの登場：大きな数字が先に降り、タイトルが続いてスライドする。`data-make="bignum"` に書く。パラメータ：dock（何秒後に左上の小さなラベルへ縮むか。省略時は縮まない） |
+| `segment` | 進行ラインを i 番目の区間まで進める（1 から数える）。`data-make="segments"` に書き、通常は常駐オーバーレイ層に置く |
+
+### ステージ (7)
+
+「手前にプレゼンター、後ろに場面、情報はピクチャー・イン・ピクチャー」という解説アニメ向けの舞台パーツ。追加で `fx-stage.js` を読み込みます。場面の背景（`backdrop`）、画面つきデバイス（`device`）、全画面イラストの差し込み、選択パネル（`menu`）、全身のミニキャラ（`mini`）。`data-world` なしで使います：シーンはハードカット、背景を変えるときは `data-in="mosaic"`。
+
+| 名前 | 動作 / パラメーター |
+|---|---|
+| `cutaway` | イラスト差し込み：全画面の絵がハードカットで入り、ごくゆっくり寄り、時間が来たらハードカットで戻る。その間アクターを覆い、字幕とチャプターバーは残る。シーン内の `<img>` に書く。パラメータ：dur（表示時間。1.2–2.5 秒）、zoom（既定 1.07）、x / y（同時に動かす割合）、under=1（アクターの下に置く：プレゼンターが絵の上で話し続ける。全画面の録画向き） |
+| `screen-to` | 画面内カット：デバイス画面の中身を i 番目へハードカットする（1 から数える。省略時は次）。ごく軽いフラッシュ付き。`data-make="device"` に書く |
+| `dive` | 画面に飛び込む：デバイスがカメラに向かって拡大し、その画面がフレーム全体を埋める（次のシーンの背景に同じ絵を使うと、画面の中へ入ったように見える）。`data-make="device"` に書き、通常はシーンの最後 0.5 秒に置く。パラメータ：dur（既定 0.5） |
+| `frames` | 連番フレーム再生：一連の静止画を動画として再生する（ゲーム画面、操作の録画）。フレーム単位で確定的。要素に `data-frames="dir/f_%03d.jpg" data-n="枚数"` を書く。パラメータ：fps（既定 15）、dur（既定はシーンの終わりまで。ループ） |
+| `choose` | 選択する：選択パネルのハイライトが i 番目へ移動し、チェックが付く。`data-make="menu"` に書く。パラメータ：i（1 から数える。`2/4/1/3` と書くと連続で素早く選ぶ）、every（連続選択の間隔。既定 0.28 秒） |
+| `mini-walk` | ミニキャラが歩く：2 枚の歩行フレームを交互に出しながら横移動し、着いたら立ち止まる。`data-make="mini"` に書く。パラメータ：x（距離。負の値で左へ）または to=#ターゲット、dur、step（1 歩の秒数。既定 0.16） |
+| `mini-pose` | ミニキャラの動作を切り替える（手を挙げる、喜ぶ、座るなど）。軽い伸縮付き。`data-make="mini"` に書く。パラメータ：name（`data-poses` に書いた動作名）、hold（何秒後に立ちポーズへ戻るか。省略時は保持） |
+
 ### コンポーネント (4)
 
 `data-make` で生成したコンポーネントと組み合わせて使います。
@@ -432,7 +578,7 @@ claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fp
 | `check` | チェックリストのチェック：.fx-check コンポーネントと併用します。チェックマークが描かれ、文字がくっきりします |
 | `toggle` | スイッチ切り替え：data-make="switches" と組み合わせ、i 番目（2/3/5 の一括指定可）を ON(on=1) / OFF(on=0) に切り替えます。パラメーター：i、on=0/1、stagger |
 
-### トランジション (20)
+### トランジション (23)
 
 **後ろ側の**シーンに書きます：`<section class="scene" data-in="blur-cross(dur=0.5)">`。
 
@@ -458,4 +604,7 @@ claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fp
 | `crt-off` | レトロ CRT 切替：前の画面を明るい走査線に収束させてから次の画面を閃光とともに開きます。パラメーター：color、dur |
 | `portal-spin` | 渦巻きスピン：前の画面が回転しながら中心へ吸い込まれ、新しい画面が回転ブラーから定まります。パラメーター：deg、dur |
 | `halftone` | コミック網点ウェーブ：ドット配列が対角線状に拡大して画面を覆い、収縮して次のシーンを現します。パラメーター：cols、color、dur |
+| `cam-to` | ワールドキャンバス専用（既定）：カメラが次のカメラ位置へ斜めに移動する。少し引いてから寄り、ゆっくり→速く→ゆっくり。パラメータ：dur（0.6–0.9）、arc（途中で余分に振る角度。既定 8）、pull（引きの量。既定 0.07） |
+| `cam-jump` | ワールドキャンバス専用：カメラが次のカメラ位置へ直接飛ぶ（ハードカット）。大きな章の切り替えにだけ使う |
+| `mosaic` | モザイク場面転換：紙色のブロックがおおよそ上から順にランダムに画面を覆い、ランダムに外れて新しい場面を見せる。ブロックはアクターと常駐レイヤーの下にあるので、プレゼンターは隠れない（章や背景の切り替えに使う）。パラメータ：cols（1 行のブロック数。既定 24）、color、dur、seed |
 <!-- CATALOG:END -->

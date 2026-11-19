@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=1920, height=1080">
+<title>motion-lib · 空间镜头示例</title>
+<link rel="stylesheet" href="lib/fx.css">
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/fx.js"></script>
+<script src="lib/fx-world.js"></script>
+<style>
+  /* 机位左上角的小标签：这一幕演示的是哪一招 */
+  .stag { position: absolute; left: 96px; top: 96px; display: flex; align-items: center; gap: 16px; font-size: 40px; font-weight: 900; }
+  .stag b { padding: 2px 14px; border-radius: 10px; background: var(--fx-accent); color: #111; font-family: var(--fx-font-num); font-size: 44px; }
+  .stag code { font-family: var(--fx-font-mono); font-size: 34px; font-weight: 500; color: var(--fx-sub); letter-spacing: .04em; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .grid3 .shot { aspect-ratio: 16 / 9; }
+  .ui { display: grid; grid-template-columns: 360px 1fr 1fr; grid-template-rows: 110px 1fr 1fr; gap: 22px; }
+  .ui > div { border-radius: 18px; background: var(--fx-card); box-shadow: inset 0 0 0 1px var(--fx-line); display: flex; align-items: center; padding: 0 34px; font-size: 40px; font-weight: 800; }
+  .ui .top { grid-column: 1 / 4; justify-content: space-between; }
+  .ui .side { grid-row: 2 / 4; flex-direction: column; align-items: flex-start; justify-content: center; gap: 22px; color: var(--fx-sub); }
+  .ui .side b { color: var(--fx-accent); }
+  .ui .big { grid-row: 2 / 4; padding: 0; overflow: hidden; }
+  .ui .big img { width: 100%; height: 100%; object-fit: cover; }
+  .ui .kpi { flex-direction: column; align-items: flex-start; justify-content: center; gap: 4px; }
+  .ui .kpi i { font-style: normal; font-size: 36px; color: var(--fx-sub); font-weight: 600; }
+  .ui .kpi b { font-family: var(--fx-font-num); font-size: 96px; line-height: 1; color: var(--fx-accent); }
+  .fb { display: flex; align-items: center; gap: 44px; padding: 34px; border-radius: 26px; background: var(--fx-card); box-shadow: var(--fx-card-shadow); }
+  .fb img { width: 620px; height: 349px; object-fit: cover; border-radius: 16px; }
+  .fb b { font-family: var(--fx-font-num); font-size: 110px; line-height: 1; color: var(--fx-accent); }
+  .fb strong { display: block; font-size: 76px; font-weight: 900; }
+  .fb span { font-family: var(--fx-font-mono); font-size: 36px; color: var(--fx-sub); }
+  .fan-card { width: 330px; height: 450px; border-radius: 20px; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 0 0 3px rgba(255,255,255,.9); }
+  .fan-card img { width: 100%; height: 100%; object-fit: cover; }
+</style>
+</head><body>
+<div id="root" class="theme-studio" data-composition-id="main" data-width="1920" data-height="1080"
+     data-world="snake" data-cols="4" data-wall="MOTION">
+
+  <!-- 1 开场：全片从总览开始，再推进第一个机位 -->
+  <section class="scene center" data-d="4.6" data-fx="cam-wide@0 cam-home@1.5(dur=1.2)">
+    <div data-make="bignum" data-no="1.5" data-tag="motion-lib 新模块" data-title="空间镜头" data-en="WORLD · CAMERA · IMAGE SETS"></div>
+    <div class="t-body muted" style="margin-top:40px" data-fx="wake@2.8">所有分镜摆在同一块画布上，换内容 = 镜头走过去</div>
+  </section>
+
+  <!-- 2 发牌入场 + 原位放大 -->
+  <section class="scene" data-d="5.2">
+    <div class="stag"><b>01</b>发牌入场 · 原位放大<code>deal-in / zoom-here</code></div>
+    <div class="abs grid3" style="left:260px;top:200px;width:1400px" data-fx="each:deal-in@0(stagger=0.1)">
+      <div class="shot"><img src="assets/violet.jpg" alt=""></div>
+      <div class="shot"><img src="assets/gold.jpg" alt=""></div>
+      <div class="shot"><img src="assets/pixel.jpg" alt=""></div>
+      <div class="shot"><img src="assets/paper.jpg" alt=""></div>
+      <div class="shot" data-fx="zoom-here@2.6(s=2.1,hold=1.3)"><img src="assets/space.jpg" alt=""></div>
+      <div class="shot"><img src="assets/three.jpg" alt=""></div>
+    </div>
+  </section>
+
+  <!-- 3 骨架填充 + 背景虚化 -->
+  <section class="scene" data-d="5.4">
+    <div class="stag"><b>02</b>骨架填充 · 背景虚化<code>skeleton / push-back</code></div>
+    <div class="abs ui" style="left:240px;top:200px;width:1440px;height:640px" data-fx="skeleton@0.2(gap=0.16,hold=0.7) push-back@3.3">
+      <div class="top"><span>数据看板</span><span class="pill accent">本周</span></div>
+      <div class="side"><span>总览</span><b>成片</b><span>素材</span><span>发布</span></div>
+      <div class="big"><img src="assets/promo.jpg" alt=""></div>
+      <div class="kpi"><i>成片数</i><b>42</b></div>
+      <div class="kpi"><i>完播率</i><b>38%</b></div>
+    </div>
+    <div class="abs card center" style="left:560px;top:380px;width:800px;height:260px" data-fx="scale-in@3.3">
+      <div class="t-h2">新内容来了</div>
+      <div class="t-body muted">原来那层往后退 6%、变虚、变暗</div>
+    </div>
+  </section>
+
+  <!-- 4 景深分层 -->
+  <section class="scene" data-d="5.4">
+    <div class="stag"><b>03</b>景深分层<code>depth / rack-focus</code></div>
+    <div class="layer" data-fx="depth@0(focus=mid,shift=70) rack-focus@2.2(to=far) rack-focus@3.8(to=near)">
+      <div data-depth="far" class="abs shot" style="left:330px;top:210px;width:1260px;height:640px"><img src="assets/paper.jpg" alt=""></div>
+      <div data-depth="mid" class="abs card" style="left:180px;top:520px;width:640px"><div class="t-h2">中层 · 卡片</div><div class="t-body muted">焦点在谁身上，谁最清楚</div></div>
+      <div data-depth="near" class="abs pill accent" style="left:1280px;top:300px;font-size:52px;padding:18px 40px">近层 · 标注</div>
+    </div>
+  </section>
+
+  <!-- 5 纵深穿梭 -->
+  <section class="scene" data-d="6.2">
+    <div class="stag"><b>04</b>纵深穿梭<code>tunnel + fly</code></div>
+    <div class="abs" style="left:110px;top:170px;width:1700px;height:720px" data-make="tunnel" data-fx="fly@0.6(to=6,each=0.82)">
+      <figure><img src="assets/violet.jpg" width="640" height="360" alt=""><figcaption>白紫科技<small>theme-violet</small></figcaption></figure>
+      <figure><img src="assets/gold.jpg" width="640" height="360" alt=""><figcaption>黑金电影<small>theme-gold</small></figcaption></figure>
+      <figure><img src="assets/pixel.jpg" width="640" height="360" alt=""><figcaption>像素复古<small>theme-pixel</small></figcaption></figure>
+      <figure><img src="assets/paper.jpg" width="640" height="360" alt=""><figcaption>剪纸拼贴<small>theme-paper</small></figcaption></figure>
+      <figure><img src="assets/space.jpg" width="640" height="360" alt=""><figcaption>深空粒子<small>theme-space</small></figcaption></figure>
+      <figure><img src="assets/three.jpg" width="640" height="360" alt=""><figcaption>真 3D 场景<small>fx-3d.js</small></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 6 环筒螺旋 -->
+  <section class="scene" data-d="5.6">
+    <div class="stag"><b>05</b>环筒螺旋<code>helix + helix-spin</code></div>
+    <div class="abs" style="left:110px;top:170px;width:1700px;height:720px" data-make="helix" data-per="7" data-r="640" data-rise="290" data-fx="helix-spin@0.2(turn=290,dur=2.6,slow=14)">
+      <img src="assets/violet.jpg" width="400" height="225" alt=""><img src="assets/gold.jpg" width="400" height="225" alt=""><img src="assets/pixel.jpg" width="400" height="225" alt=""><img src="assets/paper.jpg" width="400" height="225" alt=""><img src="assets/space.jpg" width="400" height="225" alt=""><img src="assets/three.jpg" width="400" height="225" alt=""><img src="assets/promo.jpg" width="400" height="225" alt="">
+      <img src="assets/gold.jpg" width="400" height="225" alt=""><img src="assets/paper.jpg" width="400" height="225" alt=""><img src="assets/violet.jpg" width="400" height="225" alt=""><img src="assets/three.jpg" width="400" height="225" alt=""><img src="assets/promo.jpg" width="400" height="225" alt=""><img src="assets/pixel.jpg" width="400" height="225" alt=""><img src="assets/space.jpg" width="400" height="225" alt="">
+    </div>
+  </section>
+
+  <!-- 7 三维翻转 -->
+  <section class="scene" data-d="5.6">
+    <div class="stag"><b>06</b>三维翻转<code>flipboard + flip-to</code></div>
+    <div class="abs" style="left:300px;top:310px;width:1320px;height:420px" data-make="flipboard" data-fx="flip-to@1.3(i=2) flip-to@2.6(i=3) flip-to@3.9(i=4)">
+      <div class="fb"><img src="assets/violet.jpg" alt=""><div><b>01</b><strong>白紫科技</strong><span>theme-violet</span></div></div>
+      <div class="fb"><img src="assets/gold.jpg" alt=""><div><b>02</b><strong>黑金电影</strong><span>theme-gold</span></div></div>
+      <div class="fb"><img src="assets/paper.jpg" alt=""><div><b>03</b><strong>剪纸拼贴</strong><span>theme-paper</span></div></div>
+      <div class="fb"><img src="assets/space.jpg" alt=""><div><b>04</b><strong>深空粒子</strong><span>theme-space</span></div></div>
+    </div>
+  </section>
+
+  <!-- 8 放大让位 + 背景换色 -->
+  <section class="scene" data-d="5.8">
+    <div class="stag" data-fx="bg-tint@0.8(color=#33245e) bg-tint@2.1(color=#4f3a12) bg-tint@3.4(color=#173f33) bg-tint@4.7(color=reset)"><b>07</b>放大让位 · 背景换色<code>fan + pick / bg-tint</code></div>
+    <div class="abs" style="left:160px;top:260px;width:1600px;height:560px" data-make="fan" data-step="270" data-fx="pick@0.8(i=2) pick@2.1(i=3) pick@3.4(i=4) pick@4.7(i=0)">
+      <div class="fan-card"><img src="assets/pixel.jpg" alt=""></div>
+      <div class="fan-card"><img src="assets/violet.jpg" alt=""></div>
+      <div class="fan-card"><img src="assets/gold.jpg" alt=""></div>
+      <div class="fan-card"><img src="assets/three.jpg" alt=""></div>
+      <div class="fan-card"><img src="assets/paper.jpg" alt=""></div>
+    </div>
+  </section>
+
+  <!-- 9 切片换图 -->
+  <section class="scene" data-d="5.4">
+    <div class="stag"><b>08</b>切片换图<code>slices + slice-to</code></div>
+    <div class="abs" style="left:380px;top:190px;width:1160px;height:652px" data-make="slices" data-n="5" data-fx="slice-to@1 slice-to@2 slice-to@3 slice-to@4">
+      <img src="assets/violet.jpg" alt="白紫科技"><img src="assets/gold.jpg" alt="黑金电影"><img src="assets/pixel.jpg" alt="像素复古"><img src="assets/paper.jpg" alt="剪纸拼贴"><img src="assets/space.jpg" alt="深空粒子">
+    </div>
+  </section>
+
+  <!-- 10 走进画面 -->
+  <section class="scene" data-d="5.8">
+    <div class="stag"><b>09</b>走进画面<code>road + walk</code></div>
+    <div class="abs" style="left:110px;top:170px;width:1700px;height:720px" data-make="road" data-fx="road-walk@0.4(i=1) road-walk@1.7(i=2) road-walk@3(i=3) road-walk@4.3(i=4)">
+      <div>① 写稿</div><div>② 配音</div><div>③ 画面</div><div>④ 发布</div>
+    </div>
+  </section>
+
+  <!-- 11 结尾：镜头拉远，回看整块画布 -->
+  <section class="scene center" data-d="5.4" data-fx="cam-wide@2.4(dur=1.5)">
+    <div class="t-hero">换内容 = <span class="accent">镜头走过去</span></div>
+    <div class="t-h3 muted" style="margin-top:34px;font-family:var(--fx-font-mono)">fx-world.js · 21 个新动效 · 7 个新组件</div>
+  </section>
+
+  <!-- 常驻层：进度线 -->
+  <section class="scene overlay" data-t="0" data-d="60.4">
+    <div class="abs" style="left:96px;right:96px;top:44px" data-make="segments" data-n="9"
+         data-fx="segment@4.6(i=1) segment@9.8(i=2) segment@15.2(i=3) segment@20.6(i=4) segment@26.8(i=5) segment@32.4(i=6) segment@38(i=7) segment@43.8(i=8) segment@49.2(i=9)"></div>
+  </section>
+</div>
+<script>
+  // 字幕：每个分镜一句，时间按分镜时长累加
+  var lines = ['所有分镜，摆在{同一块画布}上', '一组图，{一张接一张}发进来', '先出骨架，再{一块块填进去}', '焦点在哪层，{哪层最清楚}', '镜头{一路往里飞}', '围成一圈，{相机绕着转}',
+               '展板{一块接一块}翻上来', '讲到谁，{谁就抬起来}', '新图{一条条长上来}', '流程铺成{一条路}', '换内容，就是{镜头走过去}'];
+  var t = 0, cues = [];
+  document.querySelectorAll('#root > .scene:not(.overlay)').forEach(function (s, i) {
+    var d = +s.getAttribute('data-d');
+    cues.push([t + 0.5, t + d - 0.25, lines[i]]);
+    t += d;
+  });
+  FX.subtitles(cues, { style: 'studio' });
+  FX.build();
+</script>
+</body></html>
