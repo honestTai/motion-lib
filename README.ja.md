@@ -46,9 +46,9 @@
 <!-- STATS:START -->
 | | 数 |
 |---|---|
-| エフェクト | **190** 種（入場 26 · 退場 10 · 強調 41 · テキスト 9 · データ 6 · カメラ 11 · キャラクター 25 · 切り紙 10 · パーティクル 8 · 3D 12 · 空間 21 · ステージ 7 · コンポーネント 4） |
+| エフェクト | **194** 種（入場 26 · 退場 10 · 強調 41 · テキスト 9 · データ 6 · カメラ 14 · キャラクター 25 · 切り紙 10 · パーティクル 8 · 3D 12 · 空間 21 · ステージ 7 · サウンド 1 · コンポーネント 4） |
 | トランジション | **23** 種 |
-| コンポーネントジェネレーター | **31** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini`） |
+| コンポーネントジェネレーター | **33** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox`） |
 | スキン | **6** テーマ（ホワイトバイオレット · ブラックゴールド · レトロピクセル · 切り絵コラージュ · ディープスペース · スタジオ） |
 <!-- STATS:END -->
 
@@ -239,6 +239,7 @@ claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fp
 | パーツ | 書き方 | 役割 |
 |---|---|---|
 | 背景 | `data-make="backdrop"` | `data-src` で画像を使う。なければ `data-kind="field\|room\|city\|night"` でピクセル調の場面をプログラムで描く（素材不要） |
+| シーンの空気感 | `data-grade` `data-focus` `data-lights` `data-weather`（backdrop に書く） | カラーグレーディング + ビネット、ティルトシフトのぼかし、呼吸する光源、天候パーティクル。背景が一枚の止め絵ではなくなる |
 | 場面転換 | `data-in="mosaic"` | 紙色のブロックが覆って外れる。プレゼンターは隠れない |
 | デバイス画面 | `data-make="device"` + `screen-to` / `dive` | ノート PC / スマホ / ウィンドウの中にコンテンツ。画面内ハードカット。画面に飛び込んで全画面にする |
 | 連番フレーム | `frames@0(fps=20)` | 一連の静止画を動画として再生（画面録画） |
@@ -248,6 +249,32 @@ claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fp
 | ポーズ変更 | `pup-pose@t(who=bot,pose=point)` | ハードカット。切り替えの瞬間に自動でまばたき |
 
 完全なサンプル：[`examples/stage/`](examples/stage/index.html)（[▶ MP4](examples/stage/stage.mp4)）。サンプルの小さなロボット（半身 4 ポーズ、全身ミニ、イラスト 1 枚）はリポジトリ同梱のオリジナル素材で、ソースは `assets/puppet/src/` にあります。
+
+### 0.7 サウンドレイヤー：すべてのエフェクトに音が付く（`fx-sound.js`、v1.8 で追加）
+
+絵が良くても、音がなければ無声映画のままです。`fx-sound.js` を読み込むと、**各エフェクトが発火する瞬間に効果音が自動で付きます**。タイミングを書く必要も、素材を探す必要もありません。音はすべてコードで合成します。
+
+```html
+<script src="lib/fx-sound.js"></script>
+
+<div data-fx="pop-in@1.2">…</div>                 <!-- 既定で「ポン」 -->
+<div data-fx="drop-bounce@2(sfx=ding)">…</div>    <!-- 別の音に変える -->
+<div data-fx="rise-in@3(sfx=none)">…</div>        <!-- 今回は鳴らさない -->
+<div data-fx="sfx@4.5(kind=chime)"></div>         <!-- 画面に動きがない場所に音だけ置く -->
+```
+
+```bash
+node lib/sfx.mjs my-video                  # → my-video/audio/sfx.wav（映像と同じ長さの効果音トラック）
+node sfx.mjs --audition out/               # パレットごとに試聴ファイルを書き出す
+```
+
+| 項目 | 説明 |
+|---|---|
+| 27 種類の音 | `pop` `tick` `click` `swish` `whoosh` `thump` `snap` `hit` `ding` `chime` `blip` `rise` `fall` `buzz` `sparkle` `zap` `glitch` `paper` `flap` `card` `rumble` `swellup` `shimmer` `type` `roll` `step` `dots` |
+| 4 つのパレット | `soft` クリーンな UI 音（既定）· `pixel` 矩形波とノイズチャンネルの 8-bit ゲーム機の音（`theme-pixel` で自動）· `cinema` 低めで空間感あり（`theme-gold` / `theme-space`）· `paper` 紙と木（`theme-paper`）。ルート要素に `data-sound="pixel"` で指定、`data-sound="off"` で全体を無音に |
+| 自動処理 | 時間差で入る要素は音高が一段ずつ上がる。同じ音の繰り返しは音高を入れ替える。詰まりすぎた音は間引く。要素の左右位置に合わせてパンを振る |
+| プレビュー | URL に `?play` を付けて再生 |
+| ミックス | トラックのピークは約 −13 dB。そのままナレーションの下に敷けます：`ffmpeg -i voice.wav -i audio/sfx.wav -filter_complex "amix=inputs=2:normalize=0" mix.wav` |
 
 ### 1. 本物の 3D アニメ VRM プレゼンター（`fx-vrm.js`）
 
@@ -292,7 +319,7 @@ claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fp
 ---
 
 <!-- CATALOG:START -->
-## エフェクトカタログ（エフェクト 190 種 + トランジション 23 種）
+## エフェクトカタログ（エフェクト 194 種 + トランジション 23 種）
 
 > このセクションは `node gen-readme.mjs` が `fx.js` から自動生成します。手で編集しないでください。
 > すべてのエフェクトで共通パラメーター `dur`（長さ）、`ease`（イージング）、`stagger`（時間差）が使えます。下の表には各エフェクト固有のパラメーターのみを載せています。
@@ -424,7 +451,7 @@ claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fp
 | `ring` | リング進捗：data-make="ring" と併用します。パラメーター：from、to（0〜1） |
 | `wave-live` | 波形の跳ね：data-make="wave" と併用します。各バーがシード値に従ってランダムに上下します。パラメーター：dur、seed |
 
-### カメラ (11)
+### カメラ (14)
 
 コンテナ全体に作用します。ズームイン、パン、3D 傾き、シェイク。
 
@@ -441,6 +468,9 @@ claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fp
 | `marquee` | マーキー：1行分の内容が横へ無限ループでスクロールします（Marquee / LogoLoop）。1行のコンテナに書くと、子要素が自動で複製されて幅を埋めます。パラメーター：speed=1秒あたりのピクセル数、reverse=1 で逆方向 |
 | `bg-scroll` | 背景パターンのスクロール：background（グリッド、テクスチャ、ストライプ）を一定の速さで平行移動させ続けます。retro-grid コンポーネントと組み合わせます。パラメーター：x、y=1秒あたりのピクセル数 |
 | `parallax` | 視差：コンテナ内の各レイヤーが前後の順に違う速さで平行移動します（奥ほど動きが小さく、手前ほど大きい）。hills の重なった紙の山と組み合わせます。コンテナに書きます。パラメーター：x、y=最前面レイヤーの総移動量、dur |
+| `cam` | ワンカット映像で、部屋の中のカメラの動き：パン、プッシュイン、背景ぼかし。シーンに書く。パラメータ：x / y（画面ピクセル。正の値で右 / 下を見る）、z（寄りの倍率。1 が基準）、blur（背景ぼかしのピクセル数）、to=#要素（その要素に向ける。pull=0.5 で半分まで）、reset=1 で基準に戻す、dur |
+| `shot` | ワンカット映像で、シーンの途中でカメラ位置を変える：部屋に寄る、または建物の外の引きの画に戻る。シーンに書く。パラメータ：room=番号/all、dur |
+| `push-into` | 写真の中へ寄る：要素がまず額縁サイズで現れ、カメラが寄って全画面になり、止まってから引き戻す。シーン内の絶対配置の画像（left/top/width/height）に書く。パラメータ：dur（寄り始めから引き終わりまでの秒数）、in / out（寄りと引きの秒数）、cast=keep（キャラクターを残す）、stay=1（引いた後も額縁を残す） |
 
 ### キャラクター (25)
 
@@ -566,6 +596,14 @@ claude "motion-lib/README.ja.md と fx-vrm.js を参考に script.md から 60fp
 | `choose` | 選択する：選択パネルのハイライトが i 番目へ移動し、チェックが付く。`data-make="menu"` に書く。パラメータ：i（1 から数える。`2/4/1/3` と書くと連続で素早く選ぶ）、every（連続選択の間隔。既定 0.28 秒） |
 | `mini-walk` | ミニキャラが歩く：2 枚の歩行フレームを交互に出しながら横移動し、着いたら立ち止まる。`data-make="mini"` に書く。パラメータ：x（距離。負の値で左へ）または to=#ターゲット、dur、step（1 歩の秒数。既定 0.16） |
 | `mini-pose` | ミニキャラの動作を切り替える（手を挙げる、喜ぶ、座るなど）。軽い伸縮付き。`data-make="mini"` に書く。パラメータ：name（`data-poses` に書いた動作名）、hold（何秒後に立ちポーズへ戻るか。省略時は保持） |
+
+### サウンド (1)
+
+効果音レイヤー。`fx-sound.js` を追加で読み込みます。読み込むと**すべてのエフェクトに音が付きます**（ポップインは「ポン」、着地は「ドン」、スライドは「シュッ」、トランジションは「フワッ」、タイピングは「カタカタ」…）。音はすべてコードで合成し、音声ファイルは使いません。どのエフェクトも `sfx=音の名前` で別の音に、`sfx=none` で無音にできます。下のエフェクトは、画面に動きがない場所に音だけを置くためのものです。プレビューでは URL に `?play` を付けると聞こえます。書き出しは `node lib/sfx.mjs <プロジェクト>` で効果音トラックを生成します。
+
+| 名前 | 動作 / パラメーター |
+|---|---|
+| `sfx` | 効果音を単独で鳴らす（画面に動きがなくても鳴る）。パラメータ：kind=pop/tick/click/swish/whoosh/thump/snap/hit/ding/chime/blip/rise/fall/buzz/sparkle/zap/glitch/paper/flap/card/rumble/swellup/shimmer/type/roll/step/dots、vol（音量の倍率）、pitch（音高の倍率）、dur（持続する音の秒数） |
 
 ### コンポーネント (4)
 

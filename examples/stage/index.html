@@ -7,6 +7,7 @@
 <script src="lib/fx-world.js"></script>   <!-- 只用它的焦点动效（push-back、wake）；不写 data-world 就不会启用世界画布 -->
 <script src="lib/fx-puppet.js"></script>
 <script src="lib/fx-stage.js"></script>
+<script src="lib/fx-sound.js"></script>   <!-- 音效层：每个动效自带声音；node lib/sfx.mjs . 生成音效轨 -->
 <style>
   .doc { padding: 34px 44px; color: #1d1b19; }
   .doc h4 { font-size: 60px; font-weight: 900; line-height: 1.2; }
@@ -22,13 +23,13 @@
     <div class="abs" style="left:700px;top:250px;width:960px;height:620px" data-make="device" data-kind="laptop"
          data-fx="screen-to@1.6 screen-to@3.0 screen-to@4.4 dive@5.9(dur=0.5)">
       <img src="assets/violet.jpg" alt=""><img src="assets/gold.jpg" alt=""><img src="assets/space.jpg" alt="">
-      <div data-make="backdrop" data-kind="field" data-seed="3"></div>
+      <div data-make="backdrop" data-kind="field" data-seed="3" data-focus="tilt" data-grade="warm" data-weather="dust"></div>
     </div>
   </section>
 
   <!-- 2 走进屏幕里的场景：小演员走进来，头顶弹选择面板；中途切一张全屏插画 -->
   <section class="scene" data-d="7.2" data-fx="pup-talk@0.2(who=bot,dur=6.6) pup-pose@1.6(who=bot,pose=think) pup-pose@5.4(who=bot,pose=cheer)">
-    <div data-make="backdrop" data-kind="field" data-seed="3"></div>
+    <div data-make="backdrop" data-kind="field" data-seed="3" data-focus="tilt" data-grade="warm" data-weather="dust"></div>
     <div class="fx-sign" style="left:760px;top:96px" data-fx="drop-bounce@0.3">小演员 · 插画</div>
     <div class="abs" style="left:1940px;top:508px;width:200px;height:250px" data-make="mini" data-src="lib/assets/puppet/mini" data-poses="walk1/walk2/cheer" data-tag="小演员"
          data-fx="mini-walk@0.3(x=-700) mini-pose@5.4(name=cheer) hop@5.4"></div>
@@ -39,7 +40,7 @@
   <!-- 3 换场景：马赛克（主持人不被盖住）。先给一个脸部特写；信息窗口只停两三秒，弹出时背景压暗，收掉后亮回来 -->
   <section class="scene" data-d="7.0" data-in="mosaic"
            data-fx="closeup@0.5(who=bot,dur=1.0,pose=think,kind=question,color=blue) pup-talk@1.5(who=bot,dur=5) pup-pose@1.5(who=bot,pose=point) pup-pose@4.8(who=bot,pose=wave)">
-    <div data-make="backdrop" data-kind="room" data-fx="push-back@1.7(s=1,blur=3,dim=0.5) bring-front@4.8"></div>
+    <div data-make="backdrop" data-kind="room" data-focus="tilt" data-grade="warm" data-weather="rays dust" data-fx="push-back@1.7(s=1,blur=3,dim=0.5) bring-front@4.8"></div>
     <div class="abs" style="left:700px;top:230px;width:1060px;height:440px" data-make="device" data-kind="window" data-title="官方说明" data-fx="scale-in@1.7(dur=0.25) fade-out@4.7(dur=0.2)">
       <div class="doc">
         <h4>窗口里只放一两行</h4>
@@ -51,7 +52,7 @@
 
   <!-- 4 同一章里换场景：硬切。信息是立在场景里的道具：牌子 + 两个大数字 -->
   <section class="scene" data-d="6.0" data-fx="pup-pose@0(who=bot,pose=think) pup-talk@0.2(who=bot,dur=5.2) pup-pose@2.2(who=bot,pose=cheer) pup-emote@2.4(who=bot,kind=sparkle)">
-    <div data-make="backdrop" data-kind="city"></div>
+    <div data-make="backdrop" data-kind="city" data-focus="tilt" data-grade="dusk" data-weather="fireflies"></div>
     <div class="fx-sign" style="left:860px;top:110px" data-fx="drop-bounce@0.3">道具，不是面板</div>
     <div class="fx-score" style="left:800px;top:290px">
       <div class="lose" data-fx="pop-in@1.2"><b>5行</b><span>面板里的字</span></div>

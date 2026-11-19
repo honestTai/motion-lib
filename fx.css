@@ -435,6 +435,24 @@ html, body { width: var(--fx-w); height: var(--fx-h); overflow: hidden; backgrou
 /* 舞台剧模块（fx-stage.js）：场景背景、马赛克、插画特写、设备屏、选择面板、小演员 */
 .fx-backdrop { position: absolute; inset: -3%; background-size: cover; background-position: center; }
 .fx-backdrop canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+/* 场景氛围（backdrop 的可选项：data-grade / data-focus / data-lights / data-weather） */
+.fx-bd-blur, .fx-bd-grade, .fx-backdrop canvas.fx-bd-weather { position: absolute; inset: 0; pointer-events: none; }
+.fx-bd-blur { background-size: cover; background-position: center; filter: blur(var(--blur, 5px)); }
+.fx-bd-blur.top { -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.55) 15%, transparent 36%); mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.55) 15%, transparent 36%); }
+.fx-bd-blur.bottom { -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.5) 9%, transparent 22%); mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.5) 9%, transparent 22%); }
+.fx-backdrop canvas.fx-bd-weather { image-rendering: auto; }
+.fx-backdrop canvas.fx-bd-weather.px { image-rendering: pixelated; }
+.fx-bd-light { position: absolute; border-radius: 50%; mix-blend-mode: screen; pointer-events: none; }
+.fx-bd-ray { position: absolute; top: -12%; height: 135%; transform: skewX(-17deg); transform-origin: 50% 0; mix-blend-mode: screen; filter: blur(10px); pointer-events: none;
+  background: linear-gradient(to bottom, rgba(255,243,208,.28), rgba(255,243,208,.08) 55%, rgba(255,243,208,0) 92%); }
+.fx-bd-grade::before, .fx-bd-grade::after { content: ""; position: absolute; inset: 0; }
+.fx-bd-grade::before { mix-blend-mode: soft-light; background: var(--tint, none); }
+.fx-bd-grade::after { background: radial-gradient(ellipse 78% 74% at 50% 46%, transparent 52%, var(--edge, rgba(16,12,28,.46)) 100%); }
+.fx-bd-grade[data-grade="warm"] { --tint: linear-gradient(180deg, rgba(255,198,120,.5), rgba(150,60,90,.32)); --edge: rgba(46,18,28,.46); }
+.fx-bd-grade[data-grade="cool"] { --tint: linear-gradient(180deg, rgba(130,200,255,.46), rgba(30,40,110,.36)); --edge: rgba(8,16,40,.5); }
+.fx-bd-grade[data-grade="night"] { --tint: linear-gradient(180deg, rgba(60,80,190,.6), rgba(10,14,60,.55)); --edge: rgba(4,6,26,.62); }
+.fx-bd-grade[data-grade="dusk"] { --tint: linear-gradient(180deg, rgba(255,150,90,.5), rgba(90,50,150,.42)); --edge: rgba(30,12,40,.5); }
+.fx-bd-grade[data-grade="neon"] { --tint: linear-gradient(120deg, rgba(255,60,200,.42), rgba(40,220,255,.4)); --edge: rgba(10,6,30,.55); }
 .fx-mosaic { position: absolute; inset: 0; pointer-events: none; }
 .fx-mosaic i { position: absolute; visibility: hidden; }
 .fx-cutaways { position: absolute; inset: 0; z-index: 750; overflow: hidden; pointer-events: none; }
@@ -557,3 +575,24 @@ html, body { width: var(--fx-w); height: var(--fx-h); overflow: hidden; backgrou
 #fx-player input { flex: 1; accent-color: #7c5cff; }
 #fx-player .t { font-variant-numeric: tabular-nums; min-width: 130px; }
 #fx-player .s { color: #8a8a94; min-width: 160px; }
+
+/* ───────── 一镜到底（fx-oner.js）：一栋楼的剖面 + 一台不剪的摄影机 ───────── */
+.fx-oner-view { overflow: hidden; background: #070a1c !important; }
+.fx-house { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.fx-house > * { position: absolute; }
+.fx-house-sky { left: 0; top: 0; width: 100%; image-rendering: pixelated; }
+.fx-house-ground { background: linear-gradient(#16261e, #0b1410 30%, #060a09); box-shadow: inset 0 26px 0 #2a4a33, inset 0 54px 0 #1c3526; }
+.fx-house-roof { clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%);
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.3) 0 8px, transparent 8px 68px), repeating-linear-gradient(90deg, rgba(0,0,0,.22) 0 6px, transparent 6px 96px), #54364e; }
+.fx-house-body { box-shadow: 0 0 0 28px #130e19, 0 80px 160px rgba(0,0,0,.6);
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.34) 0 6px, transparent 6px 72px), repeating-linear-gradient(90deg, rgba(0,0,0,.2) 0 6px, transparent 6px 150px), #2c2335; }
+.fx-room { position: absolute; overflow: hidden; background: #0c0a10; box-shadow: 0 0 0 22px #51405a, 0 0 0 36px #130e19, 0 0 220px 40px rgba(255,214,150,.16); }
+.fx-room-rim { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 0 10px rgba(12,9,16,.92), inset 0 80px 90px -44px rgba(0,0,0,.55), inset 0 -60px 70px -44px rgba(0,0,0,.42); }
+.fx-oner-props, .fx-oner-layer { position: absolute; inset: 0; pointer-events: none; }
+.fx-oner-cast { position: absolute; inset: 0; z-index: 700; pointer-events: none; }
+.fx-oner-pillar { position: absolute; display: none; z-index: 3; filter: blur(16px); pointer-events: none; }
+.fx-letterbox { position: absolute; inset: 0; z-index: 720; pointer-events: none; }
+.fx-letterbox i { position: absolute; left: 0; right: 0; height: var(--bar, 96px); background: #000; }
+.fx-letterbox i.top { top: 0; } .fx-letterbox i.bottom { bottom: 0; }
+.fx-photo { position: absolute; z-index: 5; object-fit: cover; box-sizing: border-box; background: #14161f;
+  border: calc(7px * var(--z, 1)) solid #fbf6ea; outline: calc(4px * var(--z, 1)) solid #1d1b19; box-shadow: calc(10px * var(--z, 1)) calc(10px * var(--z, 1)) 0 rgba(0,0,0,.42); }

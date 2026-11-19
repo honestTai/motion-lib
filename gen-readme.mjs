@@ -18,10 +18,12 @@ new Function("window", fs.readFileSync(path.join(here, "fx.js"), "utf8"))(win);
   new Function("window", "document", fs.readFileSync(path.join(here, "fx-world.js"), "utf8"))(win, { createElement: fake });
   new Function("window", "document", fs.readFileSync(path.join(here, "fx-puppet.js"), "utf8"))(win, { createElement: fake });
   new Function("window", "document", fs.readFileSync(path.join(here, "fx-stage.js"), "utf8"))(win, { createElement: fake });
+  new Function("window", "document", fs.readFileSync(path.join(here, "fx-oner.js"), "utf8"))(win, { createElement: fake });
+  new Function("window", "document", fs.readFileSync(path.join(here, "fx-sound.js"), "utf8"))(win, undefined);
 }
 const { catalog, make } = win.FX;
 
-const ORDER = ["入场", "退场", "强调", "文字", "数据", "镜头", "角色", "剪纸", "粒子", "3D", "空间", "舞台", "组件", "转场"];
+const ORDER = ["入场", "退场", "强调", "文字", "数据", "镜头", "角色", "剪纸", "粒子", "3D", "空间", "舞台", "声音", "组件", "转场"];
 const WHAT = {
   入场: "元素出现的方式。默认从「入场前」状态回到元素本来的样子，所以元素自己写的 CSS 位置、旋转都会保留。",
   退场: "元素离开的方式。一般写成 `@-0.4`（场景结束前 0.4 秒）。",
@@ -35,6 +37,7 @@ const WHAT = {
   "3D": "真 3D 场景（three.js），需要额外加载 `vendor/three-fx.min.js` 和 `fx-3d.js`。写在 `data-make=\"stage3d\"` 的舞台上：一类动效往舞台里放东西，一类移动摄像机（`cam3d`、`orbit3d`）。物体的通用参数：`dur`（存在多久）、`fade` / `out`（淡入淡出秒数）、`px` / `py` / `pz`（摆放位置）、`s`（整体缩放）、`seed`。",
   空间: "世界画布、相机和图片组动效，需要额外加载 `fx-world.js`。根元素写上 `data-world`，所有分镜就变成同一块大画布上的机位，换分镜 = 镜头走过去。镜头类动效需要 `data-world`；焦点类和图片组类在任何页面都能用。",
   舞台: "「主持人在前、场景在后、信息用画中画给」这种动画科普片的舞台零件，需要额外加载 `fx-stage.js`。场景背景（`backdrop`）、带屏幕的设备（`device`）、全屏插画特写、选择面板（`menu`）、全身小演员（`mini`）。不写 `data-world` 时使用：分镜之间硬切，换场景背景时用 `data-in=\"mosaic\"`。",
+  声音: "音效层，需要额外加载 `fx-sound.js`。加载后**每个动效自带声音**（弹出「啵」、落地「咚」、划入「唰」、转场「哗」、打字「哒哒」…），全部用代码合成，不带音频文件；任何动效都可以加参数 `sfx=声音名` 换一个声音、`sfx=none` 不出声。下面这个动效用来在画面没有动作的地方单独放一个声音。预览时网址加 `?play` 就能听到；出片用 `node lib/sfx.mjs <工程目录>` 生成音效轨。",
   组件: "配合 `data-make` 生成的组件使用。",
   转场: "写在**后一个**场景上：`<section class=\"scene\" data-in=\"blur-cross(dur=0.5)\">`。",
 };

@@ -10,3 +10,5 @@ renders/
 **/renders/
 *.log
 node_modules/
+# 示例里生成的音效轨（node lib/sfx.mjs 的输出）
+examples/*/audio/

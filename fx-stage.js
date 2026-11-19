@@ -1,5 +1,5 @@
 /*!
- * FX 舞台剧模块 v1.7  ——  motion-lib 的可选扩展：场景舞台 + 画中画 + 小演员
+ * FX 舞台剧模块 v1.8  ——  motion-lib 的可选扩展：场景舞台 + 画中画 + 小演员
  *
  * 「主持人常驻前景，背景是一个个场景，信息用画中画给，隔一会儿切一张全屏插画」这种动画科普片的全套零件：
  *
@@ -73,14 +73,107 @@
   FX.make.backdrop = function (el) {
     el.classList.add('fx-backdrop');
     var src = attr(el, 'src', '');
-    if (src) { el.style.backgroundImage = 'url("' + src + '")'; return; }
+    if (src) { el.style.backgroundImage = 'url("' + src + '")'; atmos(el, src); return; }
     var W = 320, H = 180, cv = document.createElement('canvas');
     cv.width = W; cv.height = H;
     var ctx = cv.getContext('2d'), r = FX.rand(num(attr(el, 'seed'), 3));
     var R = function (x, y, w, h, c) { ctx.fillStyle = c; ctx.fillRect(Math.round(x), Math.round(y), Math.max(1, Math.round(w)), Math.max(1, Math.round(h))); };
     (KINDS[attr(el, 'kind', 'field')] || KINDS.field)(R, r, W, H);
     el.appendChild(cv);
+    atmos(el, attr(el, 'focus', '') ? cv.toDataURL() : '');
   };
+
+  /* ═════════════════════════ 场景氛围：让一张静止的背景「活」起来 ═════════════════════════
+   * 写在 data-make="backdrop" 上，四样可以单独用，也可以叠着用：
+   *   data-grade="warm|cool|night|dusk|neon|plain"   调色 + 暗角（plain 只有暗角）
+   *   data-focus="tilt"                              移轴景深：上下两条虚、中间实（像素图 + 景深 = HD-2D 的味道）；写数字是模糊的像素数
+   *   data-lights="x,y,颜色,半径; x,y,颜色,半径,slow"  光源：一团会呼吸的光，坐标按画面像素；末尾加 slow 是屏幕 / 窗户那种慢慢起伏的光
+   *   data-weather="dust|rain|snow|fireflies|embers|stars|rays"   空气里的东西，可以写多个（空格隔开）
+   * 全部按时间线的秒数计算，倒放、跳帧、分片渲染结果都一样；连续几个分镜用同一张背景时，光和粒子是连着的。
+   * 光源「呼吸」和「后期加景深」的做法参考了 Lemo-Opuscar（MIT）的 HD-2D 风格说明。 */
+  var ATMOS = [];
+  function atmos(el, img) {
+    var grade = attr(el, 'grade', ''), focus = attr(el, 'focus', ''), lights = attr(el, 'lights', ''), weather = attr(el, 'weather', '');
+    if (!grade && !focus && !lights && !weather) return;
+    var st = stageEl(), W = num(st && st.getAttribute('data-width'), 1920), H = num(st && st.getAttribute('data-height'), 1080);
+    var pixel = !!(st && /theme-pixel/.test(st.className + ' ' + document.body.className));
+    var it = { el: el, lights: [], rays: [], layers: [], seed: num(attr(el, 'seed'), 3) }, r = FX.rand(it.seed * 131 + 7);
+    var pos = function (x, y) { return 'left:' + ((x / W + 0.03) / 1.06 * 100).toFixed(3) + '%;top:' + ((y / H + 0.03) / 1.06 * 100).toFixed(3) + '%;'; };
+    if (focus && img) ['top', 'bottom'].forEach(function (side) {
+      var b = mk('div', 'fx-bd-blur ' + side); b.style.backgroundImage = 'url("' + img + '")';
+      if (!isNaN(+focus)) b.style.setProperty('--blur', +focus + 'px');
+      el.appendChild(b);
+    });
+    var kinds = weather.split(/[\s,;]+/).filter(Boolean);
+    if (kinds.indexOf('rays') >= 0) for (var k = 0; k < 4; k++) {
+      var ray = mk('div', 'fx-bd-ray'); ray.style.cssText = 'left:' + (12 + k * 21 + r() * 8).toFixed(1) + '%;width:' + Math.round(110 + r() * 150) + 'px';
+      el.appendChild(ray); it.rays.push({ el: ray, a: 0.5 + r() * 0.5, f: 0.11 + r() * 0.12, ph: r() * 6.28 });
+    }
+    kinds.filter(function (k) { return WEATHER[k]; }).forEach(function (kind) {
+      var cv = mk('canvas', 'fx-bd-weather' + (pixel ? ' px' : ''));
+      cv.width = pixel ? 384 : 960; cv.height = pixel ? 216 : 540;
+      el.appendChild(cv);
+      it.layers.push({ cv: cv, ctx: cv.getContext('2d'), draw: WEATHER[kind], parts: seedParts(FX.rand(it.seed * 977 + kind.length * 13), 160), u: pixel ? 1 : 2.5 });
+    });
+    lights.split(';').map(function (x) { return x.trim(); }).filter(Boolean).forEach(function (spec) {
+      var a = spec.split(',').map(function (x) { return x.trim(); }), R = num(a[3], 220), L = mk('div', 'fx-bd-light');
+      L.style.cssText = pos(num(a[0], W / 2), num(a[1], H / 2)) + 'width:' + R * 2 + 'px;height:' + R * 2 + 'px;margin:' + -R + 'px 0 0 ' + -R + 'px;background:radial-gradient(circle closest-side,' + (a[2] || '#ffd9a0') + ' 0%,transparent 100%)';
+      el.appendChild(L); it.lights.push({ el: L, slow: a[4] === 'slow', p1: r() * 6.28, p2: r() * 6.28, p3: r() * 6.28 });
+    });
+    if (grade) { var g = mk('div', 'fx-bd-grade'); g.setAttribute('data-grade', grade); el.appendChild(g); }
+    ATMOS.push(it);
+  }
+  function seedParts(r, n) { var a = []; for (var i = 0; i < n; i++) a.push({ x: r(), y: r(), v: r(), s: r(), ph: r() * 6.28, ph2: r() * 6.28 }); return a; }
+  var wrap = function (v, m) { return ((v % m) + m) % m; };
+  /* 每种天气：(ctx, 宽, 高, 秒, 粒子表, 单位像素)。位置只由秒数决定，不记上一帧的状态。 */
+  var WEATHER = {
+    dust: function (c, W, H, t, P, u) {
+      for (var i = 0; i < 46; i++) { var p = P[i], x = wrap(p.x * W + (4 + p.v * 7) * u * t + 9 * u * Math.sin(t * 0.4 + p.ph), W), y = wrap(p.y * H - (2 + p.v * 5) * u * t, H), a = 0.16 + 0.36 * (0.5 + 0.5 * Math.sin(t * (0.7 + p.s) + p.ph2)), z = (p.s > 0.7 ? 2 : 1) * u;
+        c.fillStyle = 'rgba(255,244,214,' + a.toFixed(3) + ')'; c.fillRect(Math.round(x), Math.round(y), z, z); }
+    },
+    rain: function (c, W, H, t, P, u) {
+      c.fillStyle = 'rgba(205,224,255,0.42)';
+      for (var i = 0; i < 150; i++) { var p = P[i], sp = (300 + p.v * 150) * u, y = wrap(p.y * H + sp * t, H + 20 * u) - 10 * u, x = wrap(p.x * W * 1.3 - (y + p.y * H) * 0.26, W * 1.3) - W * 0.15, len = Math.round((5 + p.s * 6) * u);
+        for (var k = 0; k < len; k += u) c.fillRect(Math.round(x - k * 0.26), Math.round(y + k), u, u); }
+    },
+    snow: function (c, W, H, t, P, u) {
+      for (var i = 0; i < 90; i++) { var p = P[i], y = wrap(p.y * H + (12 + p.v * 22) * u * t, H), x = wrap(p.x * W + 7 * u * Math.sin(t * (0.5 + p.s * 0.6) + p.ph), W), z = (p.s > 0.75 ? 2 : 1) * u;
+        c.fillStyle = 'rgba(255,255,255,' + (0.55 + p.s * 0.4).toFixed(2) + ')'; c.fillRect(Math.round(x), Math.round(y), z, z); }
+    },
+    fireflies: function (c, W, H, t, P, u) {
+      for (var i = 0; i < 16; i++) { var p = P[i], x = p.x * W + 24 * u * Math.sin(t * 0.31 + p.ph) + 8 * u * Math.sin(t * 0.83 + p.ph2), y = (0.35 + p.y * 0.6) * H + 14 * u * Math.sin(t * 0.27 + p.ph2) + 5 * u * Math.sin(t * 0.9 + p.ph), a = Math.pow(Math.max(0, Math.sin(t * (0.9 + p.s) + p.ph)), 2);
+        if (a < 0.03) continue; x = Math.round(x); y = Math.round(y);
+        c.fillStyle = 'rgba(190,255,120,' + (a * 0.28).toFixed(3) + ')'; c.fillRect(x - u, y - u, 3 * u, 3 * u);
+        c.fillStyle = 'rgba(236,255,170,' + a.toFixed(3) + ')'; c.fillRect(x, y, u, u); }
+    },
+    embers: function (c, W, H, t, P, u) {
+      for (var i = 0; i < 36; i++) { var p = P[i], h = wrap(p.y * H + (16 + p.v * 30) * u * t, H), y = H - h, x = wrap(p.x * W + 10 * u * Math.sin(t * (0.8 + p.s) + p.ph) + 3 * u * t, W), a = Math.max(0, 1 - h / (H * 0.85)) * (0.6 + 0.4 * Math.sin(t * 5 + p.ph2));
+        c.fillStyle = 'rgba(255,' + Math.round(150 + p.s * 70) + ',70,' + Math.max(0, a).toFixed(3) + ')'; c.fillRect(Math.round(x), Math.round(y), u, u); }
+    },
+    stars: function (c, W, H, t, P, u) {
+      for (var i = 0; i < 70; i++) { var p = P[i], a = 0.25 + 0.7 * Math.pow(0.5 + 0.5 * Math.sin(t * (0.6 + p.s * 1.6) + p.ph), 2), z = (p.v > 0.86 ? 2 : 1) * u;
+        c.fillStyle = 'rgba(255,255,255,' + a.toFixed(3) + ')'; c.fillRect(Math.round(p.x * W), Math.round(p.y * H * 0.55), z, z); }
+    }
+  };
+  // 每一帧按时间线的秒数重画（只画当前看得见的那个分镜的背景）
+  (FX.afterBuild = FX.afterBuild || []).push(function (tl, total) {
+    if (!ATMOS.length) return;
+    ATMOS.forEach(function (it) { var sc = it.el.closest('.scene'); it.scene = (FX.scenes || []).filter(function (s) { return s.el === sc; })[0]; });
+    var paint = function () {
+      var t = tl.time();
+      ATMOS.forEach(function (it) {
+        var s = it.scene; if (s && (t < s.t - 0.7 || t > s.end + (s.hold || 0) + 0.7)) return;
+        it.lights.forEach(function (L) {
+          var lv = L.slow ? 0.86 + 0.14 * Math.sin(t * 1.5 + L.p1) : 0.8 + 0.11 * Math.sin(t * 8.2 + L.p1) + 0.06 * Math.sin(t * 23.3 + L.p2) + 0.03 * Math.sin(t * 44.7 + L.p3);
+          L.el.style.opacity = (0.62 * lv).toFixed(3); L.el.style.transform = 'scale(' + (0.9 + 0.12 * lv).toFixed(3) + ')';
+        });
+        it.rays.forEach(function (R) { R.el.style.opacity = (R.a * (0.55 + 0.45 * Math.sin(t * R.f * 6.28 + R.ph))).toFixed(3); });
+        it.layers.forEach(function (Y) { Y.ctx.clearRect(0, 0, Y.cv.width, Y.cv.height); Y.draw(Y.ctx, Y.cv.width, Y.cv.height, t, Y.parts, Y.u); });
+      });
+    };
+    tl.to({ v: 0 }, { v: 1, duration: total, ease: 'none', onUpdate: paint }, 0);
+    paint();
+  });
 
   // 背景自己会动：换到一个新场景时先「落位」（从略大收回来，切镜有了落点），之后一直极慢地往前推；
   // 连续几个分镜用同一张背景时当成同一个场景，不重新落位——观众感觉是同一个地方在继续。
@@ -98,6 +191,18 @@
         tl.fromTo(bg, { scale: 1.1, x: 0 }, { scale: sc(s.t + 0.5), x: dx(s.t + 0.5), duration: 0.5, ease: 'expo.out', immediateRender: false }, s.t);
         tl.to(bg, { scale: sc(s.end), x: dx(s.end), duration: Math.max(0.1, s.d - 0.5), ease: 'none' }, s.t + 0.5);
       } else tl.fromTo(bg, { scale: sc(s.t), x: dx(s.t) }, { scale: sc(s.end), x: dx(s.end), duration: s.d, ease: 'none', immediateRender: false }, s.t);
+    });
+  });
+
+  // 记分牌（.fx-score）的底板跟着里面第一个数字一起出现：数字还没来的那几秒不留一块空板子
+  (FX.afterBuild = FX.afterBuild || []).push(function (tl) {
+    Array.prototype.forEach.call(document.querySelectorAll('.fx-score'), function (el) {
+      if (el.hasAttribute('data-fx')) return;
+      var first = Infinity, sc = el.closest('.scene'), s = (FX.scenes || []).filter(function (x) { return x.el === sc; })[0];
+      (FX.calls || []).forEach(function (c) { if (c.el && c.el !== el && el.contains(c.el)) first = Math.min(first, c.t); });
+      if (!s || !isFinite(first) || first - s.t < 0.15) return;
+      tl.set(el, { opacity: 0 }, 0);
+      tl.to(el, { opacity: 1, duration: 0.1, ease: 'none' }, first - 0.02);
     });
   });
 

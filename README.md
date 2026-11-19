@@ -46,9 +46,9 @@
 <!-- STATS:START -->
 | | 数量 |
 |---|---|
-| 动效 | **190** 种（入场 26 · 退场 10 · 强调 41 · 文字 9 · 数据 6 · 镜头 11 · 角色 25 · 剪纸 10 · 粒子 8 · 3D 12 · 空间 21 · 舞台 7 · 组件 4） |
+| 动效 | **194** 种（入场 26 · 退场 10 · 强调 41 · 文字 9 · 数据 6 · 镜头 14 · 角色 25 · 剪纸 10 · 粒子 8 · 3D 12 · 空间 21 · 舞台 7 · 声音 1 · 组件 4） |
 | 转场 | **23** 种 |
-| 组件生成器 | **31** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini`） |
+| 组件生成器 | **33** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox`） |
 | 皮肤 | **6** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴 · 深空粒子 · 演播室） |
 <!-- STATS:END -->
 
@@ -56,6 +56,8 @@
 <summary><b>✨ 版本更新亮点（v1.4 全新升级：真 3D VRM 口播角色 + 2D 软管骨骼 IK + 12 种新特效/转场）</b></summary>
 <br />
 
+- **v1.9 新增（一镜到底）**：可选模块 [`fx-oner.js`](fx-oner.js)——所有场景是同一栋楼里的房间，**整条片子是一个不剪的长镜头**：从楼外推进第一个房间，横移穿墙、升降穿楼板走到下一间，中途推进墙上的照片再拉出来，最后拉回楼外。带方向性运动模糊、道具与房间之间的视差、电影黑边。新增 `cam` / `shot` / `push-into` 三个镜头动效和 `house` / `letterbox` 两个组件；核心新增 `FX.onFrame`（每帧所有补间更新之后的收尾回调）。
+- **v1.8 新增（声音与氛围）**：可选模块 [`fx-sound.js`](fx-sound.js)——**每个动效自带声音**（弹出「啵」、落地「咚」、划入「唰」、转场「哗」、打字「哒哒」），27 种音效、4 套音色全部用代码合成，不带任何音频文件；`node sfx.mjs <工程>` 按动效的触发时间生成一条音效轨。场景背景（`backdrop`）新增**氛围层**：调色暗角、移轴景深、会呼吸的光源、天气粒子（灰尘 / 雨 / 雪 / 萤火虫 / 火星 / 星星 / 光柱），一张静止的背景图就活了。自检新增「阅读时间」规则。这一版的思路参考了 [Lemo-Opuscar](https://github.com/lemomo-ai/lemo-opuscar)（MIT）。
 - **v1.5 新增（空间镜头）**：可选模块 [`fx-world.js`](fx-world.js)——根元素写一个 `data-world`，所有分镜就摆到同一块大画布上，**换分镜 = 镜头斜着推过去**，不再一页页翻。附带 21 个新动效（原位放大、背景虚化、景深移焦、发牌入场、骨架填充、纵深穿梭、环筒螺旋、三维翻转、放大让位、切片换图、走进画面……）、7 个新组件、第 6 套皮肤 `theme-studio`，以及页面自检 `FX.lint()`（网址加 `?lint`：字太小、镜头到位时空屏、文字出画都能查出来）。
 - **v1.4 新增（3D 角色 & 2D 软骨骼 & 科技转场）**：
   - **真 3D 二次元角色模块 [`fx-vrm.js`](fx-vrm.js)**：基于 `@pixiv/three-vrm`（MIT），内置解析式双骨 3D IK 求解器 `FX.ik3d`、跨模型身高/臂展自动重定向、6 节脊柱相位波、锁骨自动联动、13 套口播姿态、C¹ 五元音口型同步（`aa/ih/ou/ee/oh`）、MToon 赛璐璐描边、2× 超采样抗锯齿与连续 60Hz `SpringBone` 头发/裙摆物理；仓库自带两套 Pixiv 官方 **CC0 公共领域**模型 `assets/shino.vrm` 与 `assets/vita.vrm`。
@@ -151,6 +153,9 @@ motion-lib/
 ├── fx-world.js      可选模块：世界画布 + 相机运镜 + 图片组动效（换分镜 = 镜头走过去）
 ├── fx-puppet.js     可选模块：立绘木偶（眨眼、呼吸、对口型）+ 演员走位（角色跟着内容走）
 ├── fx-stage.js      可选模块：舞台剧（场景背景、马赛克换场、设备屏画中画、插画特写、小演员）
+├── fx-oner.js       可选模块：一镜到底（一栋楼的剖面 + 推进 / 横移穿墙 / 升降穿楼板 / 推进画里，全程不剪）
+├── fx-sound.js      可选模块：音效层（每个动效自带声音，27 种音效 × 4 套音色，纯代码合成）
+├── sfx.mjs          生成音效轨：node sfx.mjs <工程目录> → audio/sfx.wav
 ├── assets/          内置 CC0 1.0 公共领域 3D VRM 示例角色（shino.vrm、vita.vrm）
 ├── fonts/           优设标题黑、得意黑、Fusion Pixel 像素体、站酷快乐体（许可见 fonts/README.md）
 ├── vendor/          GSAP 3.15、three.js r187（three-fx.min.js）、@pixiv/three-vrm 3.5（three-vrm.min.js）
@@ -424,6 +429,7 @@ FX.subtitles([
 | 零件 | 写法 | 作用 |
 |---|---|---|
 | 场景背景 | `data-make="backdrop"` | `data-src` 用图片；不写就按 `data-kind="field\|room\|city\|night"` 程序画一张像素场景，不需要素材 |
+| 场景氛围 | `data-grade` `data-focus` `data-lights` `data-weather`（写在 backdrop 上） | 调色 + 暗角、移轴景深、会呼吸的光源、天气粒子，背景不再是一张死图 |
 | 换场 | `data-in="mosaic"` | 纸色方块盖满再揭开，主持人不会被盖住 |
 | 设备屏 | `data-make="device"` + `screen-to` / `dive` | 笔记本 / 手机 / 窗口里放内容；屏内硬切；钻进屏幕铺满全屏 |
 | 序列帧 | `frames@0(fps=20)` | 把一串截图当视频播（实机录屏） |
@@ -432,7 +438,83 @@ FX.subtitles([
 | 小演员 | `data-make="mini"` + `mini-walk` / `mini-pose` | 全身小人两帧步态走过去、换动作 |
 | 主持人换姿势 | `pup-pose@t(who=bot,pose=point)` | 硬切，换的瞬间自动眨眼 |
 
+**场景氛围**：一张静止的背景放几秒就「死」了。在 `backdrop` 上加四个属性，背景就有了光、空气和远近（全部按时间线秒数计算，可以跳帧渲染）：
+
+```html
+<div data-make="backdrop" data-src="office.jpg" data-focus="tilt" data-grade="warm" data-weather="dust rays"
+     data-lights="684,480,#ffc860,270; 1224,516,#9fd8ff,210,slow"></div>
+```
+
+| 属性 | 取值 |
+|---|---|
+| `data-focus` | `tilt` 移轴景深（上下两条虚、中间实）；写数字是模糊像素数 |
+| `data-grade` | `warm` `cool` `dusk` `night` `neon` 调色 + 暗角；`plain` 只要暗角 |
+| `data-weather` | `dust` 灰尘 · `rays` 光柱 · `rain` 雨 · `snow` 雪 · `fireflies` 萤火虫 · `embers` 火星 · `stars` 星星，可以写多个 |
+| `data-lights` | `x,y,颜色,半径` 一团会呼吸的光，分号隔开；末尾加 `,slow` 是屏幕 / 窗户那种慢慢起伏的光 |
+
 完整示例：[`examples/stage/`](examples/stage/index.html)（[▶ 成片](examples/stage/stage.mp4)）。示例里的小机器人（4 个半身姿势、全身小人、一张插画）是仓库原创素材，源文件在 `assets/puppet/src/`。
+
+### 0.7 音效层：每个动效自带声音（`fx-sound.js`，v1.8 新增）
+
+画面再好，没有声音也像默片。加载 `fx-sound.js` 之后，**每个动效按触发时间自动配一个音效**，不用手写时间、不用找素材——声音全部是代码合成的。
+
+```html
+<script src="lib/fx-sound.js"></script>
+
+<div data-fx="pop-in@1.2">…</div>                 <!-- 自带「啵」 -->
+<div data-fx="drop-bounce@2(sfx=ding)">…</div>    <!-- 换一个声音 -->
+<div data-fx="rise-in@3(sfx=none)">…</div>        <!-- 这一次不出声 -->
+<div data-fx="sfx@4.5(kind=chime)"></div>         <!-- 画面没动作，单独放一个声音 -->
+```
+
+```bash
+node lib/sfx.mjs my-video                  # → my-video/audio/sfx.wav（和画面等长的音效轨）
+node sfx.mjs --audition out/               # 每套音色导出一条试听文件，所有声音挨个响一遍
+```
+
+| 项目 | 说明 |
+|---|---|
+| 27 种声音 | `pop` `tick` `click` `swish` `whoosh` `thump` `snap` `hit` `ding` `chime` `blip` `rise` `fall` `buzz` `sparkle` `zap` `glitch` `paper` `flap` `card` `rumble` `swellup` `shimmer` `type` `roll` `step` `dots` |
+| 4 套音色 | `soft` 干净的界面音（默认）· `pixel` 方波 + 噪声通道的 8-bit 游戏机音色（`theme-pixel` 自动使用）· `cinema` 低沉带空间感（`theme-gold` / `theme-space`）· `paper` 纸和木头（`theme-paper`）。根元素写 `data-sound="pixel"` 可以指定，`data-sound="off"` 整片不要音效 |
+| 自动处理 | 一组元素错峰入场时音高逐级上行；同一种声音反复出现时音高轮换；太密的自动删；声音按元素在画面上的左右位置分声道 |
+| 预览 | 网址加 `?play`，点播放就能听到 |
+| 混音 | 音效轨峰值约 −13 dB，直接垫在配音下面：`ffmpeg -i voice.wav -i audio/sfx.wav -filter_complex "amix=inputs=2:normalize=0" mix.wav` |
+
+### 0.8 一镜到底：一栋楼 + 一台不剪的摄影机（`fx-oner.js`，v1.9 新增）
+
+舞台剧片型的电影感版本：**所有场景是同一栋楼里的房间，整条片子是一个不剪的长镜头**。镜头从楼外推进第一个房间，之后横移穿墙、下降穿楼板走到下一间，中途推进墙上的照片再拉出来，最后拉回楼外和开场呼应。
+
+```html
+<script src="lib/fx-oner.js"></script>     <!-- 放在 fx-stage.js 之后、fx-sound.js 之前 -->
+
+<div id="root" class="theme-pixel" data-composition-id="main" data-width="1920" data-height="1080" data-mode="stage">
+  <!-- 世界：最前面的一个常驻层，每个 backdrop 是一个房间；data-cell="列,层" 决定房间怎么摆，也就决定了镜头怎么走 -->
+  <section class="scene overlay" data-t="0" data-d="60">
+    <div data-make="house">
+      <div data-make="backdrop" data-cell="0,0" data-src="a.jpg" data-focus="tilt" data-weather="dust"></div>
+      <div data-make="backdrop" data-cell="1,0" data-src="b.jpg" data-grade="warm" data-weather="rays"></div>
+      <div data-make="backdrop" data-cell="1,1" data-src="c.jpg" data-lights="684,480,#ffc860,270"></div>
+    </div>
+  </section>
+  <!-- 分镜：透明（scene clear），只放道具；data-room 说这一镜在哪个房间 -->
+  <section class="scene clear" data-d="7" data-room="all"> … </section>                 <!-- 楼外全景，结束时自动推进 1 号房 -->
+  <section class="scene clear" data-d="6" data-room="1" data-fx="cam@2.3(y=-40,z=1.1)"> … </section>
+  <section class="scene clear" data-d="6" data-room="2">                                  <!-- 换房间：镜头自己横移穿墙 -->
+    <img src="photo.jpg" style="left:690px;top:330px;width:540px;height:304px" data-fx="push-into@1.2(dur=2)">
+  </section>
+  <section class="scene clear" data-d="7" data-room="3" data-fx="shot@5(room=all)"> … </section>   <!-- 下降穿楼板；最后拉回全景 -->
+  <section class="scene overlay" data-t="0" data-d="60"><div data-make="letterbox"></div></section>
+</div>
+```
+
+| 镜头 | 写法 | 作用 |
+|---|---|---|
+| 换房间 | 分镜上的 `data-room` 变了就自动走 | 全景 → 房间是推进；同一层是横移穿墙；上下层是升降穿楼板。最快的几帧带方向性运动模糊，一截近处的墙贴着镜头扫过 |
+| 房间里的小运动 | `cam@t(x=,y=,z=,blur=)` | 平移、推近、虚化背景。道具比房间离镜头近，镜头一动它们动得更多（视差） |
+| 推进画里 | `push-into@t(dur=2)` | 一张照片先以相框大小出现，镜头推进去直到铺满全屏，再拉出来——代替「全屏插画硬切」 |
+| 中途换机位 | `shot@t(room=all)` | 比如片尾拉回楼外全景 |
+| 电影画幅 | `data-make="letterbox"` | 上下黑边；自检会查「文字进了黑边」 |
+| 一直在动 | 不用写 | 镜头始终有很慢的推近和手持微晃；每个房间的背景在窗框里有浅浅的错位，像看一个立体盒子 |
 
 ### 1. 真 3D 二次元口播角色（`fx-vrm.js`）
 
@@ -600,7 +682,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 ---
 
 <!-- CATALOG:START -->
-## 动效目录（190 种动效 + 23 种转场）
+## 动效目录（194 种动效 + 23 种转场）
 
 > 这一节由 `node gen-readme.mjs` 从 `fx.js` 自动生成，不要手改。
 > 所有动效都支持通用参数 `dur`（时长）、`ease`（缓动）、`stagger`（错峰）；下表只列各自特有的参数。
@@ -732,7 +814,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `ring` | 圆环进度：配 data-make="ring"。参数 from、to（0~1） |
 | `wave-live` | 波形跳动：配 data-make="wave"，每根条按种子随机起伏。参数 dur、seed |
 
-### 镜头（11）
+### 镜头（14）
 
 作用在一整个容器上：推近、平移、3D 倾斜、震动。
 
@@ -749,6 +831,9 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `marquee` | 跑马灯：一排内容无限循环地横向滚动（Marquee / LogoLoop）。写在一行的容器上，子元素会自动复制补满。参数 speed=每秒像素、reverse=1 反向 |
 | `bg-scroll` | 背景图案滚动：让 background（网格、纹理、条纹）按速度持续平移，配 retro-grid 组件用。参数 x、y=每秒像素 |
 | `parallax` | 视差：容器里的各层按前后顺序以不同速度平移（后面的层动得少、前面的层动得多），配 hills 层叠纸山用。写在容器上。参数 x、y=最前层的总位移、dur |
+| `cam` | 一镜到底里，房间内的镜头运动：平移、推近、虚化背景。写在分镜上。参数 x / y（画面像素，正数往右 / 往下看）、z（推近倍数，1 是原位）、blur（背景虚化像素）、to=#元素（对准它，pull=0.5 走一半）、reset=1 回正、dur |
+| `shot` | 一镜到底里，分镜中途换机位：镜头推进某个房间，或拉回楼外全景。写在分镜上。参数 room=房间号/all、dur |
+| `push-into` | 推进画里：元素先以相框大小出现，镜头推进去直到它铺满全屏，停住，再拉出来。写在分镜里一张绝对定位的图上（left/top/width/height）。参数 dur（从开始推到拉完的总秒数）、in / out（推、拉各用多久）、cast=keep（角色不让开）、stay=1（拉出来后相框留着） |
 
 ### 角色（25）
 
@@ -874,6 +959,14 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `choose` | 选一项：选择面板的高亮条跳到第 i 项并打勾。写在 data-make="menu" 上。参数 i（从 1 数；写成 2/4/1/3 就是连着快速选好几次）、every（连选时每次间隔，默认 0.28 秒） |
 | `mini-walk` | 小演员走过去：两帧步态交替 + 水平移动，走到后站定。写在 data-make="mini" 上。参数 x（走多远，负数向左）或 to=#目标（走到它旁边）、dur、step（每步多久，默认 0.16 秒） |
 | `mini-pose` | 小演员换动作（举手、欢呼、坐下…），带一下挤压回弹。写在 data-make="mini" 上。参数 name（动作名，对应 data-poses 里的名字）、hold（几秒后自动回到站立，不写就一直保持） |
+
+### 声音（1）
+
+音效层，需要额外加载 `fx-sound.js`。加载后**每个动效自带声音**（弹出「啵」、落地「咚」、划入「唰」、转场「哗」、打字「哒哒」…），全部用代码合成，不带音频文件；任何动效都可以加参数 `sfx=声音名` 换一个声音、`sfx=none` 不出声。下面这个动效用来在画面没有动作的地方单独放一个声音。预览时网址加 `?play` 就能听到；出片用 `node lib/sfx.mjs <工程目录>` 生成音效轨。
+
+| 名字 | 作用 / 参数 |
+|---|---|
+| `sfx` | 单独放一个音效（画面上没有动作也能响）。参数 kind=pop/tick/click/swish/whoosh/thump/snap/hit/ding/chime/blip/rise/fall/buzz/sparkle/zap/glitch/paper/flap/card/rumble/swellup/shimmer/type/roll/step/dots、vol（音量倍数）、pitch（音高倍数）、dur（持续类声音的秒数） |
 
 ### 组件（4）
 

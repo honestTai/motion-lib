@@ -46,9 +46,9 @@
 <!-- STATS:START -->
 | | 數量 |
 |---|---|
-| 動效 | **190** 種（入場 26 · 退場 10 · 強調 41 · 文字 9 · 資料 6 · 鏡頭 11 · 角色 25 · 剪紙 10 · 粒子 8 · 3D 12 · 空間 21 · 舞台 7 · 元件 4） |
+| 動效 | **194** 種（入場 26 · 退場 10 · 強調 41 · 文字 9 · 資料 6 · 鏡頭 14 · 角色 25 · 剪紙 10 · 粒子 8 · 3D 12 · 空間 21 · 舞台 7 · 聲音 1 · 元件 4） |
 | 轉場 | **23** 種 |
-| 元件產生器 | **31** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini`） |
+| 元件產生器 | **33** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox`） |
 | 外觀主題 | **6** 套（白紫科技 · 黑金電影 · 像素復古 · 剪紙拼貼 · 深空粒子 · 演播室） |
 <!-- STATS:END -->
 
@@ -255,6 +255,7 @@ claude "參考 motion-lib/README.zh-TW.md 與 fx-vrm.js，把 script.md 改寫�
 | 零件 | 寫法 | 作用 |
 |---|---|---|
 | 場景背景 | `data-make="backdrop"` | `data-src` 用圖片；不寫就按 `data-kind="field\|room\|city\|night"` 程式畫一張像素場景，不需要素材 |
+| 場景氛圍 | `data-grade` `data-focus` `data-lights` `data-weather`（寫在 backdrop 上） | 調色 + 暗角、移軸景深、會呼吸的光源、天氣粒子，背景不再是一張死圖 |
 | 換場 | `data-in="mosaic"` | 紙色方塊蓋滿再揭開，主持人不會被蓋住 |
 | 設備螢幕 | `data-make="device"` + `screen-to` / `dive` | 筆電 / 手機 / 視窗裡放內容；螢幕內硬切；鑽進螢幕鋪滿全螢幕 |
 | 序列幀 | `frames@0(fps=20)` | 把一串截圖當影片播（實機錄屏） |
@@ -264,6 +265,32 @@ claude "參考 motion-lib/README.zh-TW.md 與 fx-vrm.js，把 script.md 改寫�
 | 主持人換姿勢 | `pup-pose@t(who=bot,pose=point)` | 硬切，換的瞬間自動眨眼 |
 
 完整範例：[`examples/stage/`](examples/stage/index.html)（[▶ 成片](examples/stage/stage.mp4)）。範例裡的小機器人（4 個半身姿勢、全身小人、一張插畫）是倉庫原創素材，原始檔在 `assets/puppet/src/`。
+
+### 0.7 音效層：每個動效自帶聲音（`fx-sound.js`，v1.8 新增）
+
+畫面再好，沒有聲音也像默片。載入 `fx-sound.js` 之後，**每個動效按觸發時間自動配一個音效**，不用手寫時間、不用找素材——聲音全部是程式碼合成的。
+
+```html
+<script src="lib/fx-sound.js"></script>
+
+<div data-fx="pop-in@1.2">…</div>                 <!-- 自帶「啵」 -->
+<div data-fx="drop-bounce@2(sfx=ding)">…</div>    <!-- 換一個聲音 -->
+<div data-fx="rise-in@3(sfx=none)">…</div>        <!-- 這一次不出聲 -->
+<div data-fx="sfx@4.5(kind=chime)"></div>         <!-- 畫面沒動作，單獨放一個聲音 -->
+```
+
+```bash
+node lib/sfx.mjs my-video                  # → my-video/audio/sfx.wav（和畫面等長的音效軌）
+node sfx.mjs --audition out/               # 每套音色匯出一條試聽檔
+```
+
+| 項目 | 說明 |
+|---|---|
+| 27 種聲音 | `pop` `tick` `click` `swish` `whoosh` `thump` `snap` `hit` `ding` `chime` `blip` `rise` `fall` `buzz` `sparkle` `zap` `glitch` `paper` `flap` `card` `rumble` `swellup` `shimmer` `type` `roll` `step` `dots` |
+| 4 套音色 | `soft` 乾淨的介面音（預設）· `pixel` 方波 + 雜訊通道的 8-bit 遊戲機音色（`theme-pixel` 自動使用）· `cinema` 低沉帶空間感（`theme-gold` / `theme-space`）· `paper` 紙和木頭（`theme-paper`）。根元素寫 `data-sound="pixel"` 可以指定，`data-sound="off"` 整片不要音效 |
+| 自動處理 | 一組元素錯峰入場時音高逐級上行；同一種聲音反覆出現時音高輪換；太密的自動刪；聲音按元素在畫面上的左右位置分聲道 |
+| 預覽 | 網址加 `?play`，點播放就能聽到 |
+| 混音 | 音效軌峰值約 −13 dB，直接墊在配音下面：`ffmpeg -i voice.wav -i audio/sfx.wav -filter_complex "amix=inputs=2:normalize=0" mix.wav` |
 
 ### 1. 真 3D 二次元口播角色（`fx-vrm.js`）
 
@@ -308,7 +335,7 @@ claude "參考 motion-lib/README.zh-TW.md 與 fx-vrm.js，把 script.md 改寫�
 ---
 
 <!-- CATALOG:START -->
-## 動效目錄（190 種動效 + 23 種轉場）
+## 動效目錄（194 種動效 + 23 種轉場）
 
 > 本節由 `node gen-readme.mjs` 從 `fx.js` 自動產生，請勿手動修改。
 > 所有動效都支援通用參數 `dur`（時長）、`ease`（緩動）、`stagger`（錯峰）；下表只列出各自特有的參數。
@@ -440,7 +467,7 @@ claude "參考 motion-lib/README.zh-TW.md 與 fx-vrm.js，把 script.md 改寫�
 | `ring` | 圓環進度：搭配 data-make="ring"。參數 from、to（0~1） |
 | `wave-live` | 波形跳動：搭配 data-make="wave"，每根長條依種子隨機起伏。參數 dur、seed |
 
-### 鏡頭 (11)
+### 鏡頭 (14)
 
 作用在整個容器上：推近、平移、3D 傾斜、震動。
 
@@ -457,6 +484,9 @@ claude "參考 motion-lib/README.zh-TW.md 與 fx-vrm.js，把 script.md 改寫�
 | `marquee` | 跑馬燈：一排內容無限循環地橫向捲動（Marquee / LogoLoop）。寫在單行的容器上，子元素會自動複製補滿。參數 speed=每秒像素、reverse=1 反向 |
 | `bg-scroll` | 背景圖案捲動：讓 background（網格、紋理、條紋）依速度持續平移，搭配 retro-grid 元件使用。參數 x、y=每秒像素 |
 | `parallax` | 視差：容器裡的各層依前後順序以不同速度平移（後面的層動得少、前面的層動得多），搭配 hills 層疊紙山使用。寫在容器上。參數 x、y=最前層的總位移、dur |
+| `cam` | 一鏡到底裡，房間內的鏡頭運動：平移、推近、虛化背景。寫在分鏡上。參數 x / y（畫面像素，正數往右 / 往下看）、z（推近倍數，1 是原位）、blur（背景虛化像素）、to=#元素（對準它，pull=0.5 走一半）、reset=1 回正、dur |
+| `shot` | 一鏡到底裡，分鏡中途換機位：鏡頭推進某個房間，或拉回樓外全景。寫在分鏡上。參數 room=房間號/all、dur |
+| `push-into` | 推進畫裡：元素先以相框大小出現，鏡頭推進去直到它鋪滿全螢幕，停住，再拉出來。寫在分鏡裡一張絕對定位的圖上（left/top/width/height）。參數 dur（從開始推到拉完的總秒數）、in / out（推、拉各用多久）、cast=keep（角色不讓開）、stay=1（拉出來後相框留著） |
 
 ### 角色 (25)
 
@@ -582,6 +612,14 @@ claude "參考 motion-lib/README.zh-TW.md 與 fx-vrm.js，把 script.md 改寫�
 | `choose` | 選一項：選擇面板的高亮條跳到第 i 項並打勾。寫在 `data-make="menu"` 上。參數 i（從 1 數；寫成 `2/4/1/3` 就是連著快速選好幾次）、every（連選時每次間隔，預設 0.28 秒） |
 | `mini-walk` | 小演員走過去：兩幀步態交替 + 水平移動，走到後站定。寫在 `data-make="mini"` 上。參數 x（走多遠，負數向左）或 to=#目標（走到它旁邊）、dur、step（每步多久，預設 0.16 秒） |
 | `mini-pose` | 小演員換動作（舉手、歡呼、坐下…），帶一下擠壓回彈。寫在 `data-make="mini"` 上。參數 name（動作名，對應 `data-poses` 裡的名字）、hold（幾秒後自動回到站立，不寫就一直保持） |
+
+### 聲音 (1)
+
+音效層，需要額外載入 `fx-sound.js`。載入後**每個動效自帶聲音**（彈出「啵」、落地「咚」、劃入「唰」、轉場「嘩」、打字「噠噠」…），全部用程式碼合成，不帶音訊檔；任何動效都可以加參數 `sfx=聲音名` 換一個聲音、`sfx=none` 不出聲。下面這個動效用來在畫面沒有動作的地方單獨放一個聲音。預覽時網址加 `?play` 就能聽到；出片用 `node lib/sfx.mjs <專案目錄>` 產生音效軌。
+
+| 名稱 | 作用 / 參數 |
+|---|---|
+| `sfx` | 單獨放一個音效（畫面上沒有動作也能響）。參數 kind=pop/tick/click/swish/whoosh/thump/snap/hit/ding/chime/blip/rise/fall/buzz/sparkle/zap/glitch/paper/flap/card/rumble/swellup/shimmer/type/roll/step/dots、vol（音量倍數）、pitch（音高倍數）、dur（持續類聲音的秒數） |
 
 ### 元件 (4)
 

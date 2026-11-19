@@ -46,9 +46,9 @@
 <!-- STATS:START -->
 | | Count |
 |---|---|
-| Effects | **190** (Enter 26 · Exit 10 · Emphasis 41 · Text 9 · Data 6 · Camera 11 · Character 25 · Papercut 10 · Particles 8 · 3D 12 · Space 21 · Stage 7 · Components 4) |
+| Effects | **194** (Enter 26 · Exit 10 · Emphasis 41 · Text 9 · Data 6 · Camera 14 · Character 25 · Papercut 10 · Particles 8 · 3D 12 · Space 21 · Stage 7 · Sound 1 · Components 4) |
 | Transitions | **23** |
-| Component generators | **31** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini`) |
+| Component generators | **33** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox`) |
 | Skins | **6** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles · studio) |
 <!-- STATS:END -->
 
@@ -56,6 +56,8 @@
 <summary><b>✨ Release Highlights (v1.4: Real 3D VRM Presenters + 2D RubberHose IK + 12 New FX & Transitions)</b></summary>
 <br />
 
+- **New in v1.9 (one take)**: optional module [`fx-oner.js`](fx-oner.js): every scene is a room in the same building and **the whole film is one unbroken shot**. The camera pushes in from outside, tracks through walls and cranes through floors to reach the next room, pushes into a photo and back out on the way, and finally pulls back outside. Directional motion blur, parallax between props and room, and a letterbox frame are included. Three new camera effects (`cam`, `shot`, `push-into`) and two generators (`house`, `letterbox`); the core gains `FX.onFrame`, a callback that runs after every tween has updated for the frame.
+- **New in v1.8 (sound and atmosphere)**: optional module [`fx-sound.js`](fx-sound.js): **every effect carries its own sound** (a pop for pop-ins, a thump for landings, a swish for slides, a whoosh for transitions, ticks for typing). 27 sounds in 4 palettes, all synthesised in code with no audio files; `node sfx.mjs <project>` writes an effects track timed to the effects. Scene backdrops gain an **atmosphere layer**: colour grade and vignette, tilt-shift focus, breathing light sources and weather particles (dust, rain, snow, fireflies, embers, stars, light rays), so a still background comes alive. The self-check gains a reading-time rule. The ideas in this release were learned from [Lemo-Opuscar](https://github.com/lemomo-ai/lemo-opuscar) (MIT).
 - **New in v1.5 (World & Camera)**: optional module [`fx-world.js`](fx-world.js). Put `data-world` on the root element and every scene sits on one big canvas, so **changing scenes means the camera travels there** instead of flipping pages. Ships 21 new effects (in-place zoom, push-back blur, rack focus, deal-in, skeleton fill, depth tunnel, helix, 3D flip board, lift and make way, slice swap, walk-in road and more), 7 new generators, a 6th theme `theme-studio`, and a page lint `FX.lint()` (add `?lint` to the URL: it reports text that is too small, empty frames on camera arrival and clipped text).
 - **New in v1.4 (3D VRM Avatars & 2D Soft Rig & Cyber Transitions)**:
   - **Real 3D Anime VRM Module [`fx-vrm.js`](fx-vrm.js)**: Built on `@pixiv/three-vrm` (MIT) with a closed-form two-bone 3D analytical IK solver (`FX.ik3d`), universal cross-model retargeting, 6-segment spine wave, auto-clavicle coupling, 13 full-body presenter poses, C¹ 5-vowel lip-sync (`aa/ih/ou/ee/oh`), MToon cel-shading, 2× Retina supersampling, and continuous 60Hz `SpringBone` hair/skirt physics. Ships with two Pixiv **CC0 1.0 Public Domain** sample avatars (`assets/shino.vrm` & `assets/vita.vrm`).
@@ -151,6 +153,9 @@ motion-lib/
 ├── fx-world.js      optional module: world canvas, camera moves and image-set effects (scene change = camera travel)
 ├── fx-puppet.js     optional module: sprite puppets (blink, breathe, lip-sync) and actors that follow the content
 ├── fx-stage.js      optional module: stage play (backdrops, mosaic scene change, device picture-in-picture, illustration inserts, mini actors)
+├── fx-oner.js       optional module: one-take camera (a building in cross-section; push-ins, tracks through walls, cranes through floors, pushes into pictures, never a cut)
+├── fx-sound.js      optional module: sound layer (every effect carries a sound; 27 sounds × 4 palettes, synthesised in code)
+├── sfx.mjs          writes the effects track: node sfx.mjs <project> → audio/sfx.wav
 ├── assets/          built-in CC0 1.0 Public Domain 3D VRM sample avatars (shino.vrm, vita.vrm)
 ├── fonts/           YouSheBiaoTiHei, Smiley Sans, Fusion Pixel, ZCOOL KuaiLe (licenses in fonts/README.md)
 ├── vendor/          GSAP 3.15, three.js r187 (three-fx.min.js), @pixiv/three-vrm 3.5 (three-vrm.min.js)
@@ -401,6 +406,7 @@ Another common format: **a half-body presenter stays in the foreground, the back
 | Part | Syntax | What it does |
 |---|---|---|
 | Backdrop | `data-make="backdrop"` | `data-src` uses a picture; otherwise `data-kind="field\|room\|city\|night"` draws a pixel scene procedurally, no assets needed |
+| Scene atmosphere | `data-grade` `data-focus` `data-lights` `data-weather` (on the backdrop) | Colour grade + vignette, tilt-shift focus, breathing light sources, weather particles: the background is no longer a dead picture |
 | Scene change | `data-in="mosaic"` | Paper-coloured blocks cover and uncover; the presenter is never covered |
 | Device | `data-make="device"` + `screen-to` / `dive` | Content inside a laptop / phone / window; hard cuts on screen; dive into the screen until it fills the frame |
 | Frame sequence | `frames@0(fps=20)` | Plays a series of stills as video (screen recordings) |
@@ -409,7 +415,83 @@ Another common format: **a half-body presenter stays in the foreground, the back
 | Mini actor | `data-make="mini"` + `mini-walk` / `mini-pose` | A small full-body character walks with a two-frame cycle and switches actions |
 | Presenter pose | `pup-pose@t(who=bot,pose=point)` | Hard cut with an automatic blink at the swap |
 
+**Scene atmosphere**: a still background goes dead after a few seconds. Four attributes on the `backdrop` give it light, air and depth (all computed from timeline seconds, so frames can be rendered in any order):
+
+```html
+<div data-make="backdrop" data-src="office.jpg" data-focus="tilt" data-grade="warm" data-weather="dust rays"
+     data-lights="684,480,#ffc860,270; 1224,516,#9fd8ff,210,slow"></div>
+```
+
+| Attribute | Values |
+|---|---|
+| `data-focus` | `tilt` for tilt-shift focus (top and bottom bands soft, middle sharp); a number sets the blur in pixels |
+| `data-grade` | `warm` `cool` `dusk` `night` `neon` for a colour grade plus vignette; `plain` for the vignette alone |
+| `data-weather` | `dust` · `rays` · `rain` · `snow` · `fireflies` · `embers` · `stars`; several can be combined |
+| `data-lights` | `x,y,colour,radius` for a breathing glow, separated by semicolons; add `,slow` for the slow swell of a screen or window |
+
 Full example: [`examples/stage/`](examples/stage/index.html) ([▶ MP4](examples/stage/stage.mp4)). The little robot in it (four half-body poses, a full-body mini and one illustration) is original artwork that ships with the repo; sources are in `assets/puppet/src/`.
+
+### 0.7 Sound Layer: Every Effect Carries Its Own Sound (`fx-sound.js`, new in v1.8)
+
+A good picture with no sound still plays like a silent film. Load `fx-sound.js` and **every effect gets a sound at the moment it fires**: no timing to write, no samples to find. Every sound is synthesised in code.
+
+```html
+<script src="lib/fx-sound.js"></script>
+
+<div data-fx="pop-in@1.2">…</div>                 <!-- pops by default -->
+<div data-fx="drop-bounce@2(sfx=ding)">…</div>    <!-- use another sound -->
+<div data-fx="rise-in@3(sfx=none)">…</div>        <!-- silent this time -->
+<div data-fx="sfx@4.5(kind=chime)"></div>         <!-- a sound with no motion on screen -->
+```
+
+```bash
+node lib/sfx.mjs my-video                  # → my-video/audio/sfx.wav (an effects track as long as the film)
+node sfx.mjs --audition out/               # one audition file per palette, every sound in turn
+```
+
+| Item | Notes |
+|---|---|
+| 27 sounds | `pop` `tick` `click` `swish` `whoosh` `thump` `snap` `hit` `ding` `chime` `blip` `rise` `fall` `buzz` `sparkle` `zap` `glitch` `paper` `flap` `card` `rumble` `swellup` `shimmer` `type` `roll` `step` `dots` |
+| 4 palettes | `soft` clean interface sounds (default) · `pixel` square waves and a noise channel, like an 8-bit console (used automatically with `theme-pixel`) · `cinema` lower, with a little room (`theme-gold` / `theme-space`) · `paper` paper and wood (`theme-paper`). Set `data-sound="pixel"` on the root to choose one, `data-sound="off"` for no sound at all |
+| Handled for you | A staggered group rises in pitch step by step; a repeated sound rotates its pitch; sounds that crowd each other are dropped; each sound is panned by where its element sits on screen |
+| Preview | Add `?play` to the URL and press play |
+| Mixing | The track peaks around −13 dB and sits under the voice as it is: `ffmpeg -i voice.wav -i audio/sfx.wav -filter_complex "amix=inputs=2:normalize=0" mix.wav` |
+
+### 0.8 One Take: One Building, One Camera That Never Cuts (`fx-oner.js`, new in v1.9)
+
+The cinematic version of the stage play: **every scene is a room in the same building, and the whole film is one unbroken shot**. The camera pushes in from outside into the first room, tracks sideways through walls and cranes down through floors to reach the next, pushes into a photo on the way and pulls back out, and finally pulls back outside to echo the opening.
+
+```html
+<script src="lib/fx-oner.js"></script>     <!-- after fx-stage.js, before fx-sound.js -->
+
+<div id="root" class="theme-pixel" data-composition-id="main" data-width="1920" data-height="1080" data-mode="stage">
+  <!-- The world: one persistent layer placed first. Each backdrop is a room; data-cell="column,floor" lays the rooms out, which decides how the camera travels -->
+  <section class="scene overlay" data-t="0" data-d="60">
+    <div data-make="house">
+      <div data-make="backdrop" data-cell="0,0" data-src="a.jpg" data-focus="tilt" data-weather="dust"></div>
+      <div data-make="backdrop" data-cell="1,0" data-src="b.jpg" data-grade="warm" data-weather="rays"></div>
+      <div data-make="backdrop" data-cell="1,1" data-src="c.jpg" data-lights="684,480,#ffc860,270"></div>
+    </div>
+  </section>
+  <!-- Scenes: transparent (scene clear), props only; data-room says which room the scene is in -->
+  <section class="scene clear" data-d="7" data-room="all"> … </section>                 <!-- wide shot outside; pushes into room 1 at the end -->
+  <section class="scene clear" data-d="6" data-room="1" data-fx="cam@2.3(y=-40,z=1.1)"> … </section>
+  <section class="scene clear" data-d="6" data-room="2">                                  <!-- new room: the camera tracks through the wall by itself -->
+    <img src="photo.jpg" style="left:690px;top:330px;width:540px;height:304px" data-fx="push-into@1.2(dur=2)">
+  </section>
+  <section class="scene clear" data-d="7" data-room="3" data-fx="shot@5(room=all)"> … </section>   <!-- cranes down through the floor; pulls back to the wide shot at the end -->
+  <section class="scene overlay" data-t="0" data-d="60"><div data-make="letterbox"></div></section>
+</div>
+```
+
+| Camera | How to write it | What it does |
+|---|---|---|
+| Changing rooms | Happens when `data-room` changes on a scene | Wide to room is a push-in; rooms on one floor are joined by a lateral track through the wall; floors by a crane through the slab. The fastest frames get directional motion blur and a near slice of wall sweeps past the lens |
+| Moves inside a room | `cam@t(x=,y=,z=,blur=)` | Pan, push in, soften the background. Props sit nearer the lens than the room, so they move more when the camera moves (parallax) |
+| Push into a picture | `push-into@t(dur=2)` | A photo appears as a framed print, the camera pushes in until it fills the screen, then pulls back out: the replacement for a hard-cut full-screen insert |
+| Mid-scene shot change | `shot@t(room=all)` | For example pulling back to the wide shot at the end |
+| Cinema frame | `data-make="letterbox"` | Black bars top and bottom; the self-check reports text that slips under them |
+| Always alive | Nothing to write | The camera keeps a very slow push and a hand-held sway; each room's back wall shifts slightly inside its frame, like looking into a shadow box |
 
 ### 1. Real 3D Anime VRM Presenter (`fx-vrm.js`)
 
@@ -489,7 +571,7 @@ For flat rounded 2D SVG characters, [`fx-rig.js`](fx-rig.js) provides 2D two-bon
 ---
 
 <!-- CATALOG:START -->
-## Effect catalog (190 effects + 23 transitions)
+## Effect catalog (194 effects + 23 transitions)
 
 > This section is generated from `fx.js` by `node gen-readme.mjs`. Do not edit it by hand.
 > All effects accept the common parameters `dur` (duration), `ease` (easing) and `stagger`; the tables below list only each effect's own parameters.
@@ -621,7 +703,7 @@ Numbers, progress and charts. Number effects automatically keep decimal places a
 | `ring` | Ring progress: use with data-make="ring". Params: from, to (0-1) |
 | `wave-live` | Waveform jumping: use with data-make="wave"; each bar fluctuates randomly from a seed. Params: dur, seed |
 
-### Camera (11)
+### Camera (14)
 
 Applied to a whole container: push in, pan, 3D tilt, shake.
 
@@ -638,6 +720,9 @@ Applied to a whole container: push in, pan, 3D tilt, shake.
 | `marquee` | Marquee: a row of content scrolls horizontally in an endless loop (Marquee / LogoLoop). Put it on a single-row container; children are duplicated automatically to fill the width. Params: speed=px per second, reverse=1 to reverse |
 | `bg-scroll` | Background pattern scroll: keeps the background (grid, texture, stripes) translating at a set speed; use it with the retro-grid component. Params: x, y=px per second |
 | `parallax` | Parallax: layers inside the container translate at different speeds by order (back layers move less, front layers more); use it with the hills layered paper hills. Put it on the container. Params: x, y=total displacement of the front layer, dur |
+| `cam` | In a one-take film, a camera move inside a room: pan, push in, soften the background. Put it on the scene. Params: x / y (screen pixels; positive looks right / down), z (push-in factor, 1 is neutral), blur (background blur in pixels), to=#element (aim at it; pull=0.5 goes halfway), reset=1 to return to neutral, dur |
+| `shot` | In a one-take film, change the camera position mid-scene: push into a room, or pull back to the wide shot outside the building. Put it on the scene. Params: room=number/all, dur |
+| `push-into` | Push into a picture: the element first appears as a framed photo, the camera pushes in until it fills the screen, holds, then pulls back out. Put it on an absolutely positioned image inside the scene (left/top/width/height). Params: dur (total seconds from the push to the end of the pull), in / out (seconds for the push and the pull), cast=keep (characters stay), stay=1 (the frame remains after pulling out) |
 
 ### Character (25)
 
@@ -763,6 +848,14 @@ Stage-play parts for "presenter in front, scene behind, information as picture-i
 | `choose` | Pick an option: the highlight bar of a choice panel jumps to item i and ticks it. Put it on `data-make="menu"`. Params: i (counted from 1; `2/4/1/3` makes several quick picks in a row), every (interval between quick picks, default 0.28 s) |
 | `mini-walk` | A mini actor walks over: two alternating walk frames plus horizontal movement, then stands still. Put it on `data-make="mini"`. Params: x (distance, negative goes left) or to=#target, dur, step (seconds per step, default 0.16) |
 | `mini-pose` | A mini actor switches action (raise hand, cheer, sit…) with a small squash-and-bounce. Put it on `data-make="mini"`. Params: name (an action listed in `data-poses`), hold (seconds before returning to idle; omit to keep it) |
+
+### Sound (1)
+
+The sound layer, loaded from `fx-sound.js`. Once loaded, **every effect carries its own sound** (a pop for pop-ins, a thump for landings, a swish for slides, a whoosh for transitions, ticks for typing…), all synthesised in code with no audio files. Any effect takes `sfx=name` to use another sound or `sfx=none` to stay silent. The effect below places a sound where nothing moves on screen. Add `?play` to the URL to hear it in the preview; `node lib/sfx.mjs <project>` writes the effects track for the final film.
+
+| Name | What it does / parameters |
+|---|---|
+| `sfx` | Play one sound effect on its own (it sounds even when nothing moves on screen). Params: kind=pop/tick/click/swish/whoosh/thump/snap/hit/ding/chime/blip/rise/fall/buzz/sparkle/zap/glitch/paper/flap/card/rumble/swellup/shimmer/type/roll/step/dots, vol (volume multiplier), pitch (pitch multiplier), dur (seconds, for sustained sounds) |
 
 ### Components (4)
 

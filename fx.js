@@ -1,5 +1,5 @@
 /*!
- * FX 动效库 v1.7  ——  给「HTML → 视频」用的声明式动效库
+ * FX 动效库 v1.9  ——  给「HTML → 视频」用的声明式动效库
  * 依赖：GSAP 3（vendor/gsap.min.js）。渲染器：HyperFrames，或任何逐帧 seek 时间线的工具。
  *
  * 用法一句话：在元素上写 data-fx="动效名@秒数(参数)"，最后调用 FX.build()。
@@ -1827,6 +1827,7 @@
   /** 手写补充动效：FX.scene('#s3', function (tl, t0, scene) { tl.to(…, t0 + 1.2) }) */
   FX.scene = function (sel, fn) { HOOKS.push([sel, fn]); };
 
+  var FRAME = [];
   FX.build = function (opt) {
     opt = opt || {};
     STAGE = $(opt.stage || '[data-composition-id]');
@@ -1876,17 +1877,21 @@
     $$('[data-fx], [id], .fx-chap, .fx-step', STAGE).forEach(function (el) { RECT.set(el, measure(el)); });
     $$('[data-fx*="each:"]', STAGE).forEach(function (el) { Array.prototype.forEach.call(el.children, function (k) { RECT.set(k, measure(k)); }); });
 
+    // 每一次动效 / 转场调用都记一笔（名字、时间、元素、参数），音效层（fx-sound.js）靠它排声音
+    FX.calls = [];
     // 4. 场景显隐 + 转场
     var seq = S.filter(function (s) { return !s.el.classList.contains('overlay'); });
     // 根元素写了 data-world 且加载了 fx-world.js：分镜变成画布上的机位，换分镜交给相机
     var worldOn = !!(FX.world && FX.world.setup && FX.world.setup({ stage: STAGE, seq: seq, tl: tl, total: total, parseFx: parseFx }));
     if (!worldOn && STAGE.hasAttribute('data-world')) console.warn('FX：写了 data-world 但没有加载 fx-world.js');
+    if (worldOn) seq.forEach(function (s, k) { if (!k) return; var sp = parseFx(s.el.getAttribute('data-in') || '')[0]; FX.calls.push({ name: sp ? sp.name : 'cam-to', t: s.t, trans: true, o: sp ? sp.opts : {} }); });
     if (!worldOn) seq.forEach(function (s, k) {
       var spec = parseFx(s.el.getAttribute('data-in') || '')[0];
       if (spec && FX.trans[spec.name]) {
         var prev = k > 0 ? seq[k - 1] : null;
         var hold = FX.trans[spec.name](tl, s.t, prev ? prev.el : null, s.el, spec.opts) || 0;
         if (prev) prev.hold = Math.max(prev.hold, hold);
+        FX.calls.push({ name: spec.name, t: s.t, trans: true, o: spec.opts });
       } else if (spec) console.warn('FX：没有这个转场 →', spec.name);
     });
     S.forEach(function (s) {
@@ -1910,6 +1915,7 @@
         var els = f.mod === 'each' ? Array.prototype.slice.call(el.children).filter(function (k) { return !/^fx-(box|ping|sheen|overlay|scan)/.test(k.className && k.className.baseVal !== undefined ? k.className.baseVal : k.className); })
                 : f.mod === 'chars' ? splitChars(el) : f.mod === 'words' ? splitWords(el) : f.mod === 'lines' ? splitLines(el) : [el];
         if (f.mod === 'chars' && f.opts.stagger === undefined) f.opts.stagger = 0.03;
+        FX.calls.push({ name: f.name, t: t, el: el, n: els.length, mod: f.mod, o: f.opts });
         fn({ tl: tl, el: el, els: els, t: t, o: f.opts, scene: s, sceneDur: s ? Math.max(0.1, base + dur - t) : total - t, total: total });
       });
     }
@@ -1934,7 +1940,11 @@
     if (opt.extra) opt.extra(tl, function (sceneId, local) { return (map[sceneId] ? map[sceneId].t : 0) + (local || 0); });
 
     // 扩展模块的收尾：有些东西要等全片的指令都收集完才能排（比如演员的走位）
+    // 每渲染完一帧（所有补间都更新之后）要跑的收尾函数：扩展模块里「按秒数重画」的东西挂在这里，跳帧渲染时拿到的才是这一帧的值
+    FRAME.length = 0;
+    FX.onFrame = function (fn) { FRAME.push(fn); };
     (FX.afterBuild || []).forEach(function (fn) { fn(tl, total); });
+    tl.eventCallback('onUpdate', function () { for (var i = 0; i < FRAME.length; i++) FRAME[i](tl); });
 
     // 把时间线补到总时长，渲染器才知道片子有多长
     tl.set({}, {}, total);
@@ -2003,7 +2013,7 @@
         if (el.classList.contains('fx-backdrop')) { var br = /brightness\(([\d.]+)\)/.exec(cs.filter || ''); if (br && +br[1] < 0.75) out.dim = true; return; }
         // 实心大面板：不透明的色块（不是图片、不在设备屏里）盖住了一大片画面
         var am = /rgba?\(([^)]+)\)/.exec(cs.backgroundColor || ''), ap = am ? am[1].split(',') : null, alpha = ap ? (ap.length > 3 ? parseFloat(ap[3]) : 1) : 0;
-        if (alpha >= 0.5 && !el.closest('.fx-device, .fx-cutaway, .fx-subs') && opacityOf(el) > 0.5) {
+        if (alpha >= 0.5 && !el.closest('.fx-device, .fx-cutaway, .fx-photo, .fx-subs') && opacityOf(el) > 0.5) {
           var pb = box(el.getBoundingClientRect()), pw = Math.min(SW, pb.x + pb.w) - Math.max(0, pb.x), ph = Math.min(SH, pb.y + pb.h) - Math.max(0, pb.y);
           if (pw > 0 && ph > 0) out.panel = Math.max(out.panel || 0, pw * ph / (SW * SH));
         }
@@ -2027,11 +2037,12 @@
       scan(s.el, grid, own);
       overlays.forEach(function (o) { if (t >= o.t && t <= o.end) scan(o.el, null, over); });
       var cv = cover(grid);
-      if (s.el.querySelector('.fx-backdrop')) { cv = Math.max(cv, 0.3); own.asset = true; }
+      if (s.el.querySelector('.fx-backdrop') || (FX.oner && FX.oner.on())) { cv = Math.max(cv, 0.3); own.asset = true; }   // 一镜到底：房间在常驻的世界层里，每一镜背后都有
       // 这一屏有多少字（字幕和常驻层不算；英文和数字两个算一个字）
       own.chars = own.texts.reduce(function (n, x) { var t = x.full || x.text; return n + (t.match(/[\u2E80-\u9FFF\uF900-\uFAFF]/g) || []).length + Math.ceil((t.match(/[A-Za-z0-9$%.]/g) || []).length / 2); }, 0);   // 舞台剧：场景背景本身就是画面内容
       return { cover: cv, own: own, over: over };
     }
+    var LBel = STAGE.querySelector('.fx-letterbox'), LB = LBel ? num(getComputedStyle(LBel).getPropertyValue('--bar'), 0) : 0;
     var report = { stage: [SW, SH], duration: FX.duration, world: !!(FX.world && FX.world.on && FX.world.on()), scenes: [], overlay: [], errors: 0, warnings: 0 };
     var overSeen = [];   // 常驻层（章节条、主持人名牌）的问题全片只报一次
     var addOver = function (level, type, msg) { var m = msg.replace(/\d+px（/, 'px（'); if (overSeen.indexOf(type + m) < 0) { overSeen.push(type + m); report.overlay.push({ level: level, type: type, msg: msg }); report[level === 'error' ? 'errors' : 'warnings']++; } };
@@ -2039,7 +2050,7 @@
       var id = s.el.getAttribute('data-scene') || s.el.id || ('#' + (i + 1)), issues = [], seen = [];
       var add = function (level, type, msg) { var key = type + msg; if (seen.indexOf(key) < 0) { seen.push(key); issues.push({ level: level, type: type, msg: msg }); report[level === 'error' ? 'errors' : 'warnings']++; } };
       var tA = s.t + Math.min(0.8, s.d * 0.3), tB = s.t + s.d * 0.82;
-      var near = function (t) { return !(FX.world && FX.world.zoomAt) || !report.world || FX.world.zoomAt(t) > 0.92; };   // 镜头拉远看全景的时刻不查
+      var near = function (t) { return (!(FX.world && FX.world.zoomAt) || !report.world || FX.world.zoomAt(t) > 0.92) && !(FX.oner && FX.oner.busy && FX.oner.on() && FX.oner.busy(t)); };   // 镜头拉远看全景的时刻不查
       for (var k = 0; k < 8 && !near(tA); k++) tA += s.d * 0.08;
       for (k = 0; k < 8 && !near(tB); k++) tB -= s.d * 0.08;
       if (!near(tA) || !near(tB) || tB < tA) { report.scenes.push({ id: id, t: +s.t.toFixed(2), d: +s.d.toFixed(2), skipped: '镜头一直在全景', issues: [] }); return; }
@@ -2052,11 +2063,22 @@
       else if (B.own.chars > maxChars) add('warn', 'wordy', '字偏多：这一屏有 ' + B.own.chars + ' 个字（建议不超过 ' + maxChars + '），只留关键词和数字');
       if (stage && B.own.panel > 0.26) add('error', 'big-panel', '一块实心面板盖住了 ' + Math.round(B.own.panel * 100) + '% 的画面，场景被挡住了，看起来就是幻灯片。把信息拆成场景里的小道具（.fx-sign 牌子 / .fx-bubble 气泡 / .fx-score 大数字），或者放进设备屏（device）里');
       if (stage && B.own.dim && !s.el.querySelector('.fx-device.window')) add('error', 'dim-stage', '场景背景被压暗了。只有弹出信息窗口（device window）的那两三秒可以压暗，其余时间场景要亮着');
+      // 阅读时间：文字入场后离分镜结束太近，观众来不及读。标准比纯字幕片宽（这里的字有口播在念）：0.8 秒 + 每 7 个字 1 秒
+      (FX.calls || []).forEach(function (c) {
+        if (c.trans || !c.el || !/-in$|^(type|draw|scramble|drop-bounce|grow-x|grow-y)$/.test(c.name) || c.el.closest('.scene') !== s.el || c.el.querySelector('img,canvas,video,svg')) return;
+        var txt = (c.el.textContent || '').replace(/\s+/g, '');
+        var n = (txt.match(/[⺀-鿿豈-﫿]/g) || []).length + Math.ceil((txt.match(/[A-Za-z0-9$%.]/g) || []).length / 2);
+        if (n < 2) return;
+        var stag = typeof c.o.stagger === 'number' ? c.o.stagger : 0.08, left = s.end - (c.t + (c.n > 1 ? (c.n - 1) * stag : 0) + 0.3), need = 0.8 + n / 7;
+        if (left < need * 0.5) add('error', 'read-time', '来不及读：「' + txt.slice(0, 14) + '」入场后只停 ' + Math.max(0, left).toFixed(1) + ' 秒就换镜头了（' + n + ' 个字至少要 ' + need.toFixed(1) + ' 秒）。把入场提前，或挪到下一个分镜');
+        else if (left < need) add('warn', 'read-time', '读得有点赶：「' + txt.slice(0, 14) + '」入场后只停 ' + left.toFixed(1) + ' 秒（建议 ' + need.toFixed(1) + ' 秒以上）');
+      });
       [A, B].forEach(function (S) {
         [[S.own.texts, add], [S.over.texts, addOver]].forEach(function (pair) {
           pair[0].forEach(function (x) {
             if (S === B && x.size < minFont) pair[1]('error', 'small-text', '字太小 ' + x.size + 'px（下限 ' + minFont + 'px）：「' + x.text + '」');
-            if (S === B && (x.b.x < -12 || x.b.y < -12 || x.b.x + x.b.w > SW + 12 || x.b.y + x.b.h > SH + 12)) pair[1]('error', 'clipped', '文字出画：「' + x.text + '」');
+            var lb = pair[1] === add ? LB : 0;      // 有电影黑边时，分镜自己的字不能进黑边（常驻层的章节条、字幕本来就放在黑边里）
+            if (S === B && (x.b.x < -12 || x.b.y < lb - 12 || x.b.x + x.b.w > SW + 12 || x.b.y + x.b.h > SH - lb + 12)) pair[1]('error', 'clipped', (lb && x.b.x >= -12 && x.b.x + x.b.w <= SW + 12 ? '文字进了黑边：「' : '文字出画：「') + x.text + '」');
             if (x.emoji) pair[1]('warn', 'emoji', '用了 emoji：「' + x.text + '」。各台机器渲染不一致，尽量换成图片、图标或文字');
           });
         });
@@ -2113,7 +2135,7 @@
       var cur = FX.scenes.filter(function (s) { return !s.el.classList.contains('overlay') && t >= s.t && t < s.end; })[0];
       sEl.textContent = cur ? '#' + (cur.el.id || cur.i) + '  +' + (t - cur.t).toFixed(2) + 's' : '';
     }
-    tl.eventCallback('onUpdate', paint);
+    FX.onFrame(paint);
     tl.eventCallback('onComplete', function () { btn.textContent = '▶'; syncMedia(false); });
     function toggle() {
       if (tl.paused() || tl.progress() === 1) { if (tl.progress() === 1) tl.seek(0); tl.play(); btn.textContent = '❚❚'; syncMedia(true); }
