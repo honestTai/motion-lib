@@ -186,22 +186,25 @@
   var MAP = table({
     pop: 'pop-in scale-in pixel-in jack-in stick-on stop-in ping callout check toggle bring-front tada',
     thump: 'drop-bounce stamp-in fall-out drop-gather bignum squash',
-    swish: 'drop-in rise-in slide-in blur-rise-in wipe-in mask-rise flip-in tilt-in swing-in grow-x grow-y fan-in light-speed-in rise-out drop-out slide-out wipe-out scale-out hinge scatter-out swap flip-swap rotate-words morph stroke-in peel-in layer-rise cut-in paper-unfold lift pick slice-to helix-spin zoom-settle',
-    whoosh: 'zoom-to cam-look cam-wide zoom-here fly cutaway dive push-into',
-    tick: 'marker underline strike box border-beam scan circuit beam screen-to road-walk',
-    click: 'click',
-    type: 'type retype scramble',
+    swish: 'drop-in rise-in slide-in blur-rise-in wipe-in mask-rise flip-in tilt-in swing-in grow-x grow-y fan-in light-speed-in rise-out drop-out slide-out wipe-out scale-out hinge scatter-out swap flip-swap rotate-words morph stroke-in peel-in layer-rise cut-in paper-unfold lift pick slice-to helix-spin zoom-settle surround-in shape-morph reorder',
+    whoosh: 'zoom-to cam-look cam-wide zoom-here fly cutaway dive push-into path-move',
+    tick: 'marker underline strike box border-beam scan circuit beam screen-to road-walk code-focus',
+    click: 'click agent-go',
+    type: 'type retype scramble stream-in prompt run',
     roll: 'count roll clock',
-    rumble: 'shake cam-shake head-shake wobble overload',
+    rumble: 'shake cam-shake head-shake wobble overload overwhelm wiggle',
     snap: 'closeup',
-    shimmer: 'glow sheen spot spotlight',
+    shimmer: 'glow sheen spot spotlight light-sweep',
     sparkle: 'confetti sparkle burst burst3d',
-    glitch: 'glitch',
+    glitch: 'glitch dither-in',
     blip: 'choose pulse heartbeat',
     step: 'walk mini-walk',
-    card: 'deal-in',
+    card: 'deal-in msg diff',
     flap: 'flip-to split-flap',
-    swellup: 'fill ring'
+    swellup: 'fill ring light-leak',
+    paper: 'ink-circle ink-underline ink-box ink-arrow ink-mark',
+    dots: 'typing',
+    rise: 'hub-node'
   });
   var TRANS = { 'blur-cross': 'swish', 'zoom-through': 'whoosh', push: 'whoosh', wipe: 'swish', iris: 'swish', flash: 'hit', pixelate: 'glitch', 'paper-slide': 'paper', tear: 'paper', 'glitch-cut': 'glitch', open: 'swish', shatter: 'glitch', 'diagonal-split': 'swish', blinds: 'flap', 'crt-off': 'zap', 'portal-spin': 'whoosh', halftone: 'swish', 'cam-to': 'whoosh', 'cam-jump': 'swish', mosaic: 'glitch' };
   var EMOTE = { question: 'rise', exclaim: 'snap', sweat: 'fall', anger: 'buzz', sparkle: 'sparkle', idea: 'ding', heart: 'chime', zap: 'zap', dots: 'dots' };
@@ -241,13 +244,14 @@
       var t = c.t + (LAG[c.name] || 0) + (LAND[c.name] ? LAND[c.name][0] * num(o.dur, LAND[c.name][1]) : 0) + (c.trans ? -0.05 : 0), vol = num(o.vol, 1), pitch = num(o.pitch, 1), pan = panOf(c.el);
       // 同一种声音反复出现时，音高在三档之间轮换（差一个全音），听起来不机械
       if (o.pitch === undefined && VARY[kind]) { seen[kind] = (seen[kind] || 0) + 1; pitch *= [1, 1.122, 0.891][seen[kind] % 3]; }
-      var n = c.n || 1, st = typeof o.stagger === 'number' ? o.stagger : 0.08, dur = typeof o.dur === 'number' ? o.dur : undefined;
+      var n = o.__n || c.n || 1, st = typeof o.__st === 'number' ? o.__st : typeof o.stagger === 'number' ? o.stagger : 0.08, dur = typeof o.dur === 'number' ? o.dur : undefined;
       if (c.mod === 'chars' && n > 3 && !LONG[kind]) { out.push({ t: t, kind: 'type', dur: Math.min(1.4, n * st), gain: vol, pitch: pitch, pan: pan, seed: idx }); return; }
       if (n > 1 && !LONG[kind]) {
         for (var i = 0; i < Math.min(n, 6); i++) out.push({ t: t + i * st, kind: kind, gain: vol * (1 - i * 0.07), pitch: pitch * Math.pow(2, i * 2 / 12), pan: pan, seed: idx * 31 + i });
         return;
       }
       out.push({ t: t, kind: kind, dur: LONG[kind] ? dur : undefined, gain: vol, pitch: pitch, pan: pan, seed: idx });
+      if (o.__click !== undefined) out.push({ t: o.__click, kind: 'click', gain: vol, pitch: 1, pan: pan, seed: idx + 7 });
     });
     out = out.filter(function (c) { return c.t > -0.1 && c.t < total; }).sort(function (a, b) { return a.t - b.t; });
     // 太密就删：同一种声音 80 毫秒内只留第一个；任意 0.12 秒里最多留 3 个

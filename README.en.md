@@ -46,9 +46,9 @@
 <!-- STATS:START -->
 | | Count |
 |---|---|
-| Effects | **194** (Enter 26 · Exit 10 · Emphasis 41 · Text 9 · Data 6 · Camera 14 · Character 25 · Papercut 10 · Particles 8 · 3D 12 · Space 21 · Stage 7 · Sound 1 · Components 4) |
+| Effects | **217** (Enter 26 · Exit 10 · Emphasis 41 · Text 9 · Data 7 · Camera 14 · Character 25 · Papercut 10 · Particles 8 · 3D 12 · Space 21 · Stage 10 · Hand-drawn 5 · Chat & code 8 · Diagrams 3 · Shapes 3 · Sound 1 · Components 4) |
 | Transitions | **23** |
-| Component generators | **33** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox`) |
+| Component generators | **40** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape`) |
 | Skins | **6** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles · studio) |
 <!-- STATS:END -->
 
@@ -56,6 +56,9 @@
 <summary><b>✨ Release Highlights (v1.4: Real 3D VRM Presenters + 2D RubberHose IK + 12 New FX & Transitions)</b></summary>
 <br />
 
+- **New in v2.2 (depth)**: `data-depth` on a scene backdrop (mark the back wall indoors, the horizon outdoors, or supply a depth image) gives WebGL depth parallax: near things move and grow more than far ones when the camera moves. One-take wide shots turn the building to a 3/4 view, props turn slightly toward the camera, and characters become the nearest layer.
+- **New in v2.1 (free GSAP plugins + beat sync)**: optional module [`fx-shape.js`](fx-shape.js) (shape morphing, motion along a path, springy wiggles) and the ranking `reorder` effect; `FX.snapBeat` beat sync, with one-take room changes and push-ins landing on beats automatically; cinematic stage props for the black-gold skin.
+- **New in v2.0 (parts for AI videos)**: three optional modules, [`fx-ink.js`](fx-ink.js) (hand-drawn notes), [`fx-chat.js`](fx-chat.js) (chat window, typed prompt, terminal, code diff, agent cursor) and [`fx-diagram.js`](fx-diagram.js) (surround, overload, hub), plus pixel dithering and light sweeps / leaks in the stage module: 19 effects and 6 generators. Rhythm and algorithms learned from the [HyperFrames component registry](https://github.com/heygen-com/hyperframes) (Apache-2.0).
 - **New in v1.9 (one take)**: optional module [`fx-oner.js`](fx-oner.js): every scene is a room in the same building and **the whole film is one unbroken shot**. The camera pushes in from outside, tracks through walls and cranes through floors to reach the next room, pushes into a photo and back out on the way, and finally pulls back outside. Directional motion blur, parallax between props and room, and a letterbox frame are included. Three new camera effects (`cam`, `shot`, `push-into`) and two generators (`house`, `letterbox`); the core gains `FX.onFrame`, a callback that runs after every tween has updated for the frame.
 - **New in v1.8 (sound and atmosphere)**: optional module [`fx-sound.js`](fx-sound.js): **every effect carries its own sound** (a pop for pop-ins, a thump for landings, a swish for slides, a whoosh for transitions, ticks for typing). 27 sounds in 4 palettes, all synthesised in code with no audio files; `node sfx.mjs <project>` writes an effects track timed to the effects. Scene backdrops gain an **atmosphere layer**: colour grade and vignette, tilt-shift focus, breathing light sources and weather particles (dust, rain, snow, fireflies, embers, stars, light rays), so a still background comes alive. The self-check gains a reading-time rule. The ideas in this release were learned from [Lemo-Opuscar](https://github.com/lemomo-ai/lemo-opuscar) (MIT).
 - **New in v1.5 (World & Camera)**: optional module [`fx-world.js`](fx-world.js). Put `data-world` on the root element and every scene sits on one big canvas, so **changing scenes means the camera travels there** instead of flipping pages. Ships 21 new effects (in-place zoom, push-back blur, rack focus, deal-in, skeleton fill, depth tunnel, helix, 3D flip board, lift and make way, slice swap, walk-in road and more), 7 new generators, a 6th theme `theme-studio`, and a page lint `FX.lint()` (add `?lint` to the URL: it reports text that is too small, empty frames on camera arrival and clipped text).
@@ -154,11 +157,15 @@ motion-lib/
 ├── fx-puppet.js     optional module: sprite puppets (blink, breathe, lip-sync) and actors that follow the content
 ├── fx-stage.js      optional module: stage play (backdrops, mosaic scene change, device picture-in-picture, illustration inserts, mini actors)
 ├── fx-oner.js       optional module: one-take camera (a building in cross-section; push-ins, tracks through walls, cranes through floors, pushes into pictures, never a cut)
+├── fx-ink.js        optional module: hand-drawn notes (loop, underline, box, arrow, Vox-style marker notes; lines boil)
+├── fx-chat.js       optional module: AI chat window, typed prompt, terminal, code diff, agent cursor
+├── fx-diagram.js    optional module: surround, overload, hub-and-spoke
+├── fx-shape.js      optional module: shape morphing, motion along a path, springy wiggles (free GSAP plugins in vendor/gsap-plugins/)
 ├── fx-sound.js      optional module: sound layer (every effect carries a sound; 27 sounds × 4 palettes, synthesised in code)
 ├── sfx.mjs          writes the effects track: node sfx.mjs <project> → audio/sfx.wav
 ├── assets/          built-in CC0 1.0 Public Domain 3D VRM sample avatars (shino.vrm, vita.vrm)
 ├── fonts/           YouSheBiaoTiHei, Smiley Sans, Fusion Pixel, ZCOOL KuaiLe (licenses in fonts/README.md)
-├── vendor/          GSAP 3.15, three.js r187 (three-fx.min.js), @pixiv/three-vrm 3.5 (three-vrm.min.js)
+├── vendor/          GSAP 3.15 (gsap-plugins/: MorphSVG, MotionPath, CustomEase, CustomWiggle), three.js r187 (three-fx.min.js), @pixiv/three-vrm 3.5 (three-vrm.min.js)
 ├── new-project.sh   copies/updates the runtime into a video project (./new-project.sh my-video)
 ├── chrome-tall.sh   headless Chrome viewport wrapper (prevents bottom subtitle clipping)
 ├── gen-readme.mjs   auto-generates multi-language stats & full effect catalogs from source
@@ -428,6 +435,7 @@ Another common format: **a half-body presenter stays in the foreground, the back
 | `data-grade` | `warm` `cool` `dusk` `night` `neon` for a colour grade plus vignette; `plain` for the vignette alone |
 | `data-weather` | `dust` · `rays` · `rain` · `snow` · `fireflies` · `embers` · `stars`; several can be combined |
 | `data-lights` | `x,y,colour,radius` for a breathing glow, separated by semicolons; add `,slow` for the slow swell of a screen or window |
+| `data-depth` | `box:x0,y0,x1,y1` (interior: the back wall's rectangle in the picture, in source pixels), `ground:y` (exterior: the horizon height) or a depth image (white near, black far). When the camera moves, the near floor, walls and furniture shift and grow more than the back wall, so a flat picture gains depth (WebGL; the one-take camera drives it automatically) |
 
 Full example: [`examples/stage/`](examples/stage/index.html) ([▶ MP4](examples/stage/stage.mp4)). The little robot in it (four half-body poses, a full-body mini and one illustration) is original artwork that ships with the repo; sources are in `assets/puppet/src/`.
 
@@ -491,7 +499,64 @@ The cinematic version of the stage play: **every scene is a room in the same bui
 | Push into a picture | `push-into@t(dur=2)` | A photo appears as a framed print, the camera pushes in until it fills the screen, then pulls back out: the replacement for a hard-cut full-screen insert |
 | Mid-scene shot change | `shot@t(room=all)` | For example pulling back to the wide shot at the end |
 | Cinema frame | `data-make="letterbox"` | Black bars top and bottom; the self-check reports text that slips under them |
+| Depth | `data-depth` on the backdrops; the rest is automatic | Room pictures get depth parallax from their perspective; the building turns to a 3/4 view in wide shots and slowly turns back; props behave like boards standing in space, turning slightly toward where the camera looks; characters are the nearest layer and move most when the camera pans |
 | Always alive | Nothing to write | The camera keeps a very slow push and a hand-held sway; each room's back wall shifts slightly inside its frame, like looking into a shadow box |
+
+### 0.9 Parts for AI Videos: Hand-drawn Notes, AI Chat, Code, Diagrams (new in v2.0)
+
+The screens that keep coming back in videos about AI, built as parts that move with the rhythm of the real software. The timing constants (a message grows from 0.75 in 0.12 s, the measured token-gap table of a streamed answer, people typing one to three characters at a time, removed code lines collapsing in 0.55 s and added ones expanding in 0.6 s, hand-drawn lines boiling ten times a second…) were learned from the [HyperFrames component registry](https://github.com/heygen-com/hyperframes) (Apache-2.0); the code is rewritten in this library's declarative style.
+
+```html
+<script src="lib/fx-ink.js"></script>       <!-- hand-drawn notes -->
+<script src="lib/fx-chat.js"></script>      <!-- chat, prompt, terminal, code, agent cursor -->
+<script src="lib/fx-diagram.js"></script>   <!-- surround, overload, hub -->
+
+<div class="fx-prompt" data-fx="prompt@0.6(fix=reprot)">write my report</div>          <!-- types a typo, then fixes it -->
+<div data-make="chat" data-title="Assistant" data-fx="msg@2.9(i=1) typing@3.3(i=2,dur=1.1) stream-in@4.4(i=2)">
+  <p data-from="me">write my report</p>
+  <p data-from="ai" data-av="AI">Sure: three wins first, then next week's plan.</p>
+</div>
+<div data-make="code" data-title="cart.py" data-fx="diff@1 code-focus@3.6(i=2)"><pre>def total(items):
+-     return sum(items)
++     return sum(i.price for i in items)</pre></div>
+<div class="fx-sign" data-fx="ink-arrow@4.2(to=#code,tx=0.08,ty=0.3,curve=swoop)">one line changed</div>
+<div data-make="surround" data-center="You" data-chips="Chat,Tasks,Meetings,Email" data-fx="overwhelm@0.3(n=16)"></div>
+<div data-make="backdrop" data-src="sunset.jpg" data-dither="4" data-fx="dither-in@0"></div>
+```
+
+| Part | How to write it | What it does |
+|---|---|---|
+| Hand-drawn notes | `ink-circle` `ink-underline` `ink-box` `ink-arrow` `ink-mark` | Loop, underline, box, arrow, and the Vox-style marker with a leader line to a note; lines wobble, draw on in stroke order and boil once drawn |
+| Chat window | `data-make="chat"` + `msg` `typing` `stream-in` | Messages grow from the sender's corner; a typing bubble; AI answers arrive in bursts, fresh text inking from grey |
+| Prompt | `class="fx-prompt"` + `prompt` | Human typing in one-to-three-character chunks; the caret blinks while typing and stays on after; `fix=` types a typo first |
+| Terminal | `data-make="terminal"` + `run` | Type the command, a beat, output line by line, a fresh prompt |
+| Code | `data-make="code"` + `diff` `code-focus` | Lines starting `- ` turn red and collapse, `+ ` turn green and expand; a highlight sweeps one line |
+| Agent cursor | `data-make="agent"` + `agent-go` | The name tag types the next action, the cursor moves over and clicks |
+| Diagrams | `data-make="surround"` / `"hub"` + `surround-in` `overwhelm` `hub-node` | Surrounded, overwhelmed, hub-and-spoke; the center never moves |
+| Pixel dithering | `data-dither` on a backdrop + `dither-in` | Turns photo-like pictures into consistent pixel art; resolves from two-tone noise |
+| Light | `light-sweep` `light-leak` | One soft diagonal light pass (a premium touch); a film light leak (memories, turns) |
+
+Full example: [`examples/kit/`](examples/kit/index.html) ([▶ MP4](examples/kit/kit.mp4)).
+
+### 0.10 Free GSAP Plugins, Beat Sync, Cinematic Stage Props (new in v2.1)
+
+**Shapes (`fx-shape.js`)**: GSAP's MorphSVG, MotionPath, CustomEase and CustomWiggle are now free for commercial use; `vendor/gsap-plugins/` ships them at the same version as the core.
+
+```html
+<script src="lib/vendor/gsap-plugins/MorphSVGPlugin.min.js"></script>
+<script src="lib/vendor/gsap-plugins/MotionPathPlugin.min.js"></script>
+<script src="lib/vendor/gsap-plugins/CustomEase.min.js"></script>
+<script src="lib/vendor/gsap-plugins/CustomWiggle.min.js"></script>
+<script src="lib/fx-shape.js"></script>
+
+<div data-make="shape" data-shape="cross" data-color="#ff5a52" data-fx="shape-morph@1(to=check,color=#3ddc84) wiggle@3"></div>   <!-- ✗ becomes ✓, then a wiggle -->
+<img src="plane.svg" data-fx="path-move@0.5(path=#route,dur=2,draw=1)">                                                     <!-- fly along #route, drawing it -->
+<div class="rank" data-fx="reorder@2.5(order=3/1/2)"><div>Claude</div><div>GPT</div><div>DeepSeek</div></div>                   <!-- a ranking changes (no plugin needed) -->
+```
+
+**Beat sync**: once the page loads a beat table, `window.FX_BEATS = { bpm, beats: [...], downbeats: [...], hits: [...] }` (`bgm.mjs pick` in [auto-video-workflow](https://github.com/honestTai/auto-video-workflow) measures it from the music and writes `beats.js`), `FX.snapBeat(t, window)` moves a moment onto the nearest beat. One-take room changes (`fx-oner.js`) then land the camera on a beat automatically (chapter changes prefer the first beat of a bar), and push-ins reach full frame on a beat. Set `data-beats="off"` on the root to turn it off.
+
+**Cinematic stage props**: under `theme-gold`, `.fx-sign`, `.fx-score`, the choice menu, the chapter bar and the one-take building get a cinematic look (dark glass plates, thin gold rules, serif type, gold gradient numbers).
 
 ### 1. Real 3D Anime VRM Presenter (`fx-vrm.js`)
 
@@ -565,13 +630,14 @@ For flat rounded 2D SVG characters, [`fx-rig.js`](fx-rig.js) provides 2D two-bon
 - **Core Library (`fx*.js`, `fx.css`)**: [MIT License](LICENSE); third-party notices in [NOTICE](NOTICE).
 - **3D & VRM Runtime**: [three.js](https://github.com/mrdoob/three.js) (MIT, [vendor/three-LICENSE.txt](vendor/three-LICENSE.txt)) & [@pixiv/three-vrm](https://github.com/pixiv/three-vrm) (MIT, [vendor/three-vrm-LICENSE.txt](vendor/three-vrm-LICENSE.txt)).
 - **Sample 3D Avatars (`assets/shino.vrm`, `assets/vita.vrm`)**: Released under **CC0 1.0 Public Domain** by pixiv Inc. ([assets/README.md](assets/README.md)).
+- **Parts adapted from HyperFrames**: `fx-ink.js`, `fx-chat.js`, `fx-diagram.js` and the dithering / light sweep / light leak parts of `fx-stage.js` learn from the [HyperFrames component registry](https://github.com/heygen-com/hyperframes) (Apache-2.0, license text in [vendor/hyperframes-LICENSE.txt](vendor/hyperframes-LICENSE.txt)); the code is rewritten, with the source named in each file header and in [NOTICE](NOTICE).
 - **GSAP & Fonts**: GSAP under GreenSock [Standard License](https://gsap.com/standard-license); font licenses in [fonts/README.md](fonts/README.md).
 - **Credits & Sponsor**: Effect ideas in v1.1 were inspired by [animate.css](https://github.com/animate-css/animate.css), [Magic UI](https://github.com/magicuidesign/magicui), and [React Bits](https://github.com/DavidHDev/react-bits) (all independently re-implemented from scratch for frame-accurate seeking). Powered & sponsored by **[HRouter (hrouter.net)](https://hrouter.net/)** — one API key for Claude, GPT, Gemini & Grok.
 
 ---
 
 <!-- CATALOG:START -->
-## Effect catalog (194 effects + 23 transitions)
+## Effect catalog (217 effects + 23 transitions)
 
 > This section is generated from `fx.js` by `node gen-readme.mjs`. Do not edit it by hand.
 > All effects accept the common parameters `dur` (duration), `ease` (easing) and `stagger`; the tables below list only each effect's own parameters.
@@ -690,7 +756,7 @@ Made for text: shimmer, glitch, word swap, delete-and-retype, split-flap, stroke
 | `stroke-in` | Stroke text: draws a hollow outline in one direction first, then fills in the color (StrokeText). Params: w=stroke width, color=stroke color, hold=seconds to stay hollow |
 | `echo` | Echo entrance: several translucent copies trail behind and slide in together, then fade away once in place (EchoText). Params: n=number of echo layers, dist, dir |
 
-### Data (6)
+### Data (7)
 
 Numbers, progress and charts. Number effects automatically keep decimal places and thousands separators.
 
@@ -702,6 +768,7 @@ Numbers, progress and charts. Number effects automatically keep decimal places a
 | `fill` | Progress bar fill: grows the element's width (or height with dir=y) from from% to to% |
 | `ring` | Ring progress: use with data-make="ring". Params: from, to (0-1) |
 | `wave-live` | Waveform jumping: use with data-make="wave"; each bar fluctuates randomly from a seed. Params: dur, seed |
+| `reorder` | A ranking changes: the children of a column (or row) slide to their new places; the one that climbs grows slightly. Put it on the list container. Params: order (the new order as original positions separated by /, e.g. 3/1/2), dur (default 0.8) |
 
 ### Camera (14)
 
@@ -835,12 +902,15 @@ World canvas, camera and image-set moves; requires loading the extra `fx-world.j
 | `bignum` | Chapter card entrance: the big number drops in, the title slides out after it. Put it on `data-make="bignum"`. Param: dock (seconds before it shrinks into a small top-left label; omit to keep it) |
 | `segment` | Progress line advances to segment i (counted from 1). Put it on `data-make="segments"`, usually in a persistent overlay layer |
 
-### Stage (7)
+### Stage (10)
 
 Stage-play parts for "presenter in front, scene behind, information as picture-in-picture" explainers; requires loading the extra `fx-stage.js`. Scene backdrops (`backdrop`), devices with on-screen content (`device`), full-screen illustration inserts, a choice panel (`menu`) and small full-body actors (`mini`). Use it without `data-world`: scenes hard-cut, and `data-in="mosaic"` changes the backdrop.
 
 | Name | What it does / parameters |
 |---|---|
+| `dither-in` | The picture resolves from two-tone pixel noise to clear (like an old console booting or a signal locking on). Put it on a data-make="backdrop"; with data-dither it ends as pixel art, otherwise on the original picture. Params: dur (default 1.6) |
+| `light-sweep` | A soft diagonal light sweeps across once (a premium touch for a conclusion, a product or a ranking). Put it on a scene, a backdrop or any element. Params: dur (default 1.6), angle (band angle, default 115), color, strength (0–1, default 0.5) |
+| `light-leak` | A film light leak: warm light washes in from one side and fades (memories, turns, emotional peaks). Put it on a scene or a backdrop. Params: dur (default 4), tone=warm/cool, strength (0–1, default 0.9) |
 | `cutaway` | Illustration insert: a full-screen picture cuts in hard, pushes in very slowly, then cuts back out; it covers the actors while subtitles and the chapter bar stay. Put it on an `<img>` inside the scene. Params: dur (hold, 1.2–2.5 s), zoom (default 1.07), x / y (pan in percent), under=1 (sit below the actors so the presenter keeps talking over it; good for full-screen screen recordings) |
 | `screen-to` | On-screen cut: the content inside a device screen hard-cuts to item i (counted from 1; omit for the next one) with a faint flash. Put it on `data-make="device"` |
 | `dive` | Dive into the screen: the device zooms toward the camera until its screen fills the frame (give the next scene the same picture as its backdrop and it feels like walking into the screen). Put it on `data-make="device"`, usually in the last 0.5 s of the scene. Param: dur (default 0.5) |
@@ -848,6 +918,53 @@ Stage-play parts for "presenter in front, scene behind, information as picture-i
 | `choose` | Pick an option: the highlight bar of a choice panel jumps to item i and ticks it. Put it on `data-make="menu"`. Params: i (counted from 1; `2/4/1/3` makes several quick picks in a row), every (interval between quick picks, default 0.28 s) |
 | `mini-walk` | A mini actor walks over: two alternating walk frames plus horizontal movement, then stands still. Put it on `data-make="mini"`. Params: x (distance, negative goes left) or to=#target, dur, step (seconds per step, default 0.16) |
 | `mini-pose` | A mini actor switches action (raise hand, cheer, sit…) with a small squash-and-bounce. Put it on `data-make="mini"`. Params: name (an action listed in `data-poses`), hold (seconds before returning to idle; omit to keep it) |
+
+### Hand-drawn (5)
+
+Hand-drawn annotation, loaded from `fx-ink.js`. Lines wobble a little, draw on in stroke order, and once drawn they "boil" (re-pose ten times a second). Put them on the element you annotate; shared params `color` (defaults to the skin accent), `w` (line width), `dur`, `boil=calm|lively|off`.
+
+| Name | What it does / parameters |
+|---|---|
+| `ink-circle` | Hand-draw a loop around the element (pen starts at the upper left and overshoots a little), with an optional note beside it. Params: label (the note), at=right/left/top/bottom (where the note goes), pad (how much larger than the element, default 18), color, w, dur |
+| `ink-underline` | Hand-drawn lines: squiggly underline, strike-through, left bracket. Params: kind=squiggle/double/strike/bracket, color, w, dur |
+| `ink-box` | Hand-draw a box around the element, with an optional tab label at the top left. Params: label, pad (default 14), color, w, dur |
+| `ink-arrow` | Draw a hand-drawn arrow from this element to another. Params: to=#target (or dx / dy offsets in pixels), tx / ty (which point inside the target, 0–1; omit to point at the nearest point on the target's edge), curve=straight/gentle/swoop, side=1/-1 (which way it bends), gap (space left at both ends), color, w, dur |
+| `ink-mark` | Vox-style annotation: a marker stroke on one word of a sentence while a thin line draws out to a short note. Params: word (the word to mark; omit to mark the whole element), style=highlight/circle/underline/scribble, note (the note; omit for the mark alone), color, dur |
+
+### Chat & code (8)
+
+The screens that keep appearing in AI videos, loaded from `fx-chat.js`: a chat window (`data-make="chat"`), a typed prompt, a terminal (`data-make="terminal"`), code (`data-make="code"`) and an agent cursor (`data-make="agent"`). They move like the real software: messages grow from the sender's corner, AI answers arrive in bursts, people type in uneven chunks.
+
+| Name | What it does / parameters |
+|---|---|
+| `msg` | One chat message arrives, growing from the sender's corner in 0.12 s. Put it on data-make="chat". Params: i (which message, counted from 1) |
+| `typing` | The "typing…" bubble: three dots pop in where message i will appear and leave after dur seconds (usually followed by msg / stream-in for the same message). Put it on data-make="chat". Params: i, dur (default 1.2) |
+| `stream-in` | An AI answer arrives in bursts the way streamed tokens do; fresh text lands grey and inks to full colour over 0.27 s. Put it on data-make="chat" (message i) or on any block of text. Params: i, speed (default 1) |
+| `prompt` | Type into a prompt like a person: one to three characters at a time with uneven pauses; the caret blinks while typing and stays on after. Put it on an element that holds only text (add class="fx-prompt" for an input box). Params: fix (a mistyped word, typed first, deleted and corrected), glyph (leading glyph, default ›, none to hide), speed |
+| `run` | Run a command in a terminal: type it, pause a beat, print the output line by line, then show a fresh prompt. Put it on data-make="terminal". Params: every (seconds between output lines, default 0.22), speed (typing speed) |
+| `diff` | A code change: lines to remove turn red and collapse, lines to add turn green and expand. Put it on data-make="code" (lines starting with "- " are removed, "+ " added) |
+| `code-focus` | A highlight band sweeps across one line of code and the other lines dim. Put it on data-make="code". Params: i (line number as finally shown, from 1; 0 restores all) |
+| `agent-go` | Agent cursor: the name tag types out what the agent is about to do, then the cursor moves to the target and clicks with a ripple. Put it on data-make="agent"; write it several times in a row. Params: to=#target (omit to stay), say (text on the tag), click=0 (no click), done=1 (a check mark for a finished step) |
+
+### Diagrams (3)
+
+Relationship diagrams, loaded from `fx-diagram.js`: surround (`data-make="surround"`) and hub-and-spoke (`data-make="hub"`). The center never moves; only what surrounds it does.
+
+| Name | What it does / parameters |
+|---|---|
+| `surround-in` | The center settles, then the chips around it arrive one by one; with close=1 they then close in together while the edges darken. Put it on data-make="surround". Params: gap (seconds between chips, default 0.3), close=1 |
+| `overwhelm` | A crowd of chips rushes in from every side, faster and faster, and crowds the still center (overload, too much at once). Put it on data-make="surround" (labels cycle through data-chips). Params: n (8–24, default 16), intensity (0.5–2: higher packs tighter and faster), dur (how long the rush takes, default 2.2) |
+| `hub-node` | Node i of a hub diagram: its connector draws out from the center and the node pops on. Put it on data-make="hub", one per node as the narration reaches it. Params: i (from 1) |
+
+### Shapes (3)
+
+Shape morphing, motion along a path and springy wiggles, loaded from `fx-shape.js` plus the matching GSAP plugins in `vendor/gsap-plugins/` (MorphSVG, MotionPath, CustomEase, CustomWiggle, now free for commercial use). Twelve built-in shapes (`data-make="shape"`): check cross circle square triangle star heart bolt arrow-up arrow-down play bulb.
+
+| Name | What it does / parameters |
+|---|---|
+| `shape-morph` | A shape smoothly turns into another (✗ into ✓, a circle into a star…), optionally changing colour. Put it on data-make="shape" or on any svg holding one <path>. Params: to (a built-in shape: check cross circle square triangle star heart bolt arrow-up arrow-down play bulb, or #id of another path), color, dur (default 0.6). Needs MorphSVGPlugin |
+| `path-move` | Move along an SVG path, turning to follow it (a paper plane, a data packet, a delivery route). Put it on the moving element. Params: path=#path id (required), dur (default 1.6), rotate=0 (no turning), draw=1 (draw the path as it goes), from / to (which part of the path, 0–1). Needs MotionPathPlugin |
+| `wiggle` | A springy wiggle that settles (when something is called out, mocked or goes wrong). Params: n (how many swings, default 6), amp (degrees, default 8), dur (default 0.8), prop=rotation/x. Needs CustomEase + CustomWiggle |
 
 ### Sound (1)
 

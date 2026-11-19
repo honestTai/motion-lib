@@ -24,6 +24,22 @@
       "title": "角色",
       "intro": "給立繪 / 小人使用：換姿勢、口型、點頭、跳、走。"
     },
+    "手绘": {
+      "title": "手繪",
+      "intro": "手繪批註，需要額外載入 `fx-ink.js`。線條帶一點抖、按筆順描出來，畫好後每秒換 10 次姿勢輕輕「沸騰」。寫在要批註的元素上；通用參數 `color`（預設皮膚強調色）、`w`（線寬）、`dur`、`boil=calm|lively|off`。"
+    },
+    "对话": {
+      "title": "對話",
+      "intro": "講 AI 時最常出現的畫面，需要額外載入 `fx-chat.js`：聊天視窗（`data-make=\"chat\"`）、輸入框打字、終端機（`data-make=\"terminal\"`）、程式碼（`data-make=\"code\"`）、Agent 游標（`data-make=\"agent\"`）。節奏按真實軟體：訊息從發送者一角長出、AI 回答成段蹦出、真人打字一頓一頓。"
+    },
+    "图解": {
+      "title": "圖解",
+      "intro": "關係圖，需要額外載入 `fx-diagram.js`：包圍（`data-make=\"surround\"`）和中心輻射（`data-make=\"hub\"`）。中心永遠不動，動的是周圍的東西。"
+    },
+    "形状": {
+      "title": "形狀",
+      "intro": "圖形變形、沿路徑運動、彈性搖擺，需要額外載入 `fx-shape.js` 和 `vendor/gsap-plugins/` 裡對應的 GSAP 外掛（MorphSVG、MotionPath、CustomEase、CustomWiggle，現已免費商用）。內建 12 個圖形（`data-make=\"shape\"`）：check cross circle square triangle star heart bolt arrow-up arrow-down play bulb。"
+    },
     "声音": {
       "title": "聲音",
       "intro": "音效層，需要額外載入 `fx-sound.js`。載入後**每個動效自帶聲音**（彈出「啵」、落地「咚」、劃入「唰」、轉場「嘩」、打字「噠噠」…），全部用程式碼合成，不帶音訊檔；任何動效都可以加參數 `sfx=聲音名` 換一個聲音、`sfx=none` 不出聲。下面這個動效用來在畫面沒有動作的地方單獨放一個聲音。預覽時網址加 `?play` 就能聽到；出片用 `node lib/sfx.mjs <專案目錄>` 產生音效軌。"
@@ -296,6 +312,29 @@
     "声音/sfx": "單獨放一個音效（畫面上沒有動作也能響）。參數 kind=pop|tick|click|swish|whoosh|thump|snap|hit|ding|chime|blip|rise|fall|buzz|sparkle|zap|glitch|paper|flap|card|rumble|swellup|shimmer|type|roll|step|dots、vol（音量倍數）、pitch（音高倍數）、dur（持續類聲音的秒數）",
     "镜头/cam": "一鏡到底裡，房間內的鏡頭運動：平移、推近、虛化背景。寫在分鏡上。參數 x / y（畫面像素，正數往右 / 往下看）、z（推近倍數，1 是原位）、blur（背景虛化像素）、to=#元素（對準它，pull=0.5 走一半）、reset=1 回正、dur",
     "镜头/shot": "一鏡到底裡，分鏡中途換機位：鏡頭推進某個房間，或拉回樓外全景。寫在分鏡上。參數 room=房間號|all、dur",
-    "镜头/push-into": "推進畫裡：元素先以相框大小出現，鏡頭推進去直到它鋪滿全螢幕，停住，再拉出來。寫在分鏡裡一張絕對定位的圖上（left/top/width/height）。參數 dur（從開始推到拉完的總秒數）、in / out（推、拉各用多久）、cast=keep（角色不讓開）、stay=1（拉出來後相框留著）"
+    "镜头/push-into": "推進畫裡：元素先以相框大小出現，鏡頭推進去直到它鋪滿全螢幕，停住，再拉出來。寫在分鏡裡一張絕對定位的圖上（left/top/width/height）。參數 dur（從開始推到拉完的總秒數）、in / out（推、拉各用多久）、cast=keep（角色不讓開）、stay=1（拉出來後相框留著）",
+    "手绘/ink-circle": "手畫一個圈把元素圈起來（起筆在左上，多畫一點收尾），可以在旁邊寫一句。參數 label（旁邊的字）、at=right|left|top|bottom（字寫在哪邊）、pad（圈比元素大多少，預設 18）、color、w、dur",
+    "手绘/ink-underline": "手畫的線：波浪底線、劃掉、左括號。參數 kind=squiggle|double|strike|bracket、color、w、dur",
+    "手绘/ink-box": "手畫方框框住元素，可以在左上角貼一個標籤。參數 label、pad（預設 14）、color、w、dur",
+    "手绘/ink-arrow": "從這個元素畫一支手繪箭頭指向另一個元素。參數 to=#目標（或 dx / dy 直接給偏移像素）、tx / ty（指向目標裡的哪個位置，0–1；不寫就指向目標邊框上離起點最近的點）、curve=straight|gentle|swoop、side=1|-1（往哪邊彎）、gap（兩頭留多少空）、color、w、dur",
+    "手绘/ink-mark": "Vox 式批註：給句子裡的一個詞上馬克筆，同時拉一根細線到一行註釋。參數 word（要標的詞，不寫就標整個元素）、style=highlight|circle|underline|scribble、note（註釋文字，不寫就只畫記號）、color、dur",
+    "对话/msg": "聊天視窗裡的一則訊息彈出來：0.12 秒從發送者那一角長出來。寫在 data-make=\"chat\" 上。參數 i（第幾則，從 1 數）",
+    "对话/typing": "「正在輸入…」氣泡：在第 i 則訊息的位置彈出三個點，dur 秒後消失（通常緊接著同一則的 msg / stream-in）。寫在 data-make=\"chat\" 上。參數 i、dur（預設 1.2）",
+    "对话/stream-in": "AI 的回答按吐字節奏一段一段冒出來，新字先是灰的、0.27 秒後變成正常顏色。寫在 data-make=\"chat\" 上（第 i 則），也可以直接寫在任何一段文字上。參數 i、speed（倍速，預設 1）",
+    "对话/prompt": "輸入框裡像真人一樣打字：一次出 1–3 個字、長短不一的停頓，游標打字時閃、打完常亮。寫在一個只有文字的元素上（配 class=\"fx-prompt\" 就是一個輸入框）。參數 fix（先打錯的詞，刪掉再改對）、glyph（行首提示符，預設 ›，寫 none 去掉）、speed",
+    "对话/run": "終端機跑一條命令：敲命令、停一拍、輸出一行行印出來，最後出現新的提示符。寫在 data-make=\"terminal\" 上。參數 every（輸出行間隔，預設 0.22 秒）、speed（打字倍速）",
+    "对话/diff": "程式碼改動：要刪的行先變紅再收起，要加的行變綠展開。寫在 data-make=\"code\" 上（行首「- 」是刪、「+ 」是加）",
+    "对话/code-focus": "程式碼裡某一行亮起一條高光掃過，其餘行壓暗。寫在 data-make=\"code\" 上。參數 i（第幾行，按最終顯示的行數從 1 數；0 = 全部恢復）",
+    "对话/agent-go": "Agent 游標：名牌上打出它要做的事，游標移到目標上點一下（帶一圈波紋）。寫在 data-make=\"agent\" 上，可以連寫多次。參數 to=#目標（不寫就原地）、say（名牌上的字）、click=0（不點）、done=1（打一個勾表示做完）",
+    "图解/surround-in": "中心先落定，周圍的標籤一個個圍上來；close=1 時再一起往裡收、四周壓暗。寫在 data-make=\"surround\" 上。參數 gap（標籤之間隔幾秒，預設 0.3）、close=1",
+    "图解/overwhelm": "一大堆標籤從四面八方加速湧進來，擠在不動的中心周圍（資訊過載、事情太多）。寫在 data-make=\"surround\" 上（標籤文字從 data-chips 裡循環取）。參數 n（個數，8–24，預設 16）、intensity（壓力，0.5–2，越大擠得越近越快）、dur（湧入用多久，預設 2.2）",
+    "图解/hub-node": "中心輻射圖的第 i 個節點：連線從中心畫出去，節點彈亮。寫在 data-make=\"hub\" 上，念到哪個寫哪個。參數 i（從 1 數）",
+    "舞台/dither-in": "畫面從雙色像素雜訊一路變清楚（像老遊戲機開機、訊號接通）。寫在 data-make=\"backdrop\" 上；有 data-dither 時停在像素畫，沒有時停在原圖。參數 dur（預設 1.6）",
+    "舞台/light-sweep": "一道柔和的斜光從畫面上掃過一次（貴氣、高級感；用在結論、產品、榜單出現的那一刻）。寫在分鏡、背景或任何元素上。參數 dur（預設 1.6）、angle（光帶角度，預設 115）、color、strength（0–1，預設 0.5）",
+    "舞台/light-leak": "底片漏光：暖色的光斑從畫面一側漫進來又退掉（回憶、轉折、情緒高點）。寫在分鏡或背景上。參數 dur（預設 4）、tone=warm|cool、strength（0–1，預設 0.9）",
+    "形状/shape-morph": "圖形平滑變成另一個圖形（✗ 變 ✓、圓變星……），可同時換顏色。寫在 data-make=\"shape\" 上，或任何含一個 <path> 的 svg 上。參數 to（內建圖形名，或 #另一個路徑的 id）、color、dur（預設 0.6）。需要 MorphSVGPlugin",
+    "形状/path-move": "沿一條 SVG 路徑運動，朝向跟著路徑轉（紙飛機、資料包、快遞路線）。寫在要動的元素上。參數 path=#路徑 id（必填）、dur（預設 1.6）、rotate=0（不轉向）、draw=1（同時把路徑畫出來）、from / to（走路徑的哪一段，0–1）。需要 MotionPathPlugin",
+    "形状/wiggle": "有彈性的搖擺：左右晃幾下慢慢停住（被點名、被吐槽、出錯時晃一下）。參數 n（晃幾下，預設 6）、amp（角度，預設 8）、dur（預設 0.8）、prop=rotation|x。需要 CustomEase + CustomWiggle",
+    "数据/reorder": "榜單換名次：一列（或一行）子元素按新順序滑到各自的新位置，上升的那個略微放大。寫在列表容器上。參數 order（新順序，寫原來的序號，用 / 隔開，如 3/1/2）、dur（預設 0.8）"
   }
 }

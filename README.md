@@ -46,9 +46,9 @@
 <!-- STATS:START -->
 | | 数量 |
 |---|---|
-| 动效 | **194** 种（入场 26 · 退场 10 · 强调 41 · 文字 9 · 数据 6 · 镜头 14 · 角色 25 · 剪纸 10 · 粒子 8 · 3D 12 · 空间 21 · 舞台 7 · 声音 1 · 组件 4） |
+| 动效 | **217** 种（入场 26 · 退场 10 · 强调 41 · 文字 9 · 数据 7 · 镜头 14 · 角色 25 · 剪纸 10 · 粒子 8 · 3D 12 · 空间 21 · 舞台 10 · 手绘 5 · 对话 8 · 图解 3 · 形状 3 · 声音 1 · 组件 4） |
 | 转场 | **23** 种 |
-| 组件生成器 | **33** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox`） |
+| 组件生成器 | **40** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape`） |
 | 皮肤 | **6** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴 · 深空粒子 · 演播室） |
 <!-- STATS:END -->
 
@@ -56,6 +56,9 @@
 <summary><b>✨ 版本更新亮点（v1.4 全新升级：真 3D VRM 口播角色 + 2D 软管骨骼 IK + 12 种新特效/转场）</b></summary>
 <br />
 
+- **v2.2 新增（立体感）**：场景背景写 `data-depth`（室内标后墙、户外标地平线，或给一张深度图），镜头一动近处比远处移得多、推近时放大得多（WebGL 景深视差）；一镜到底的楼外全景转成 3/4 视角，道具朝镜头微转，角色成为最近的一层。
+- **v2.1 新增（GSAP 免费插件 + 卡点）**：可选模块 [`fx-shape.js`](fx-shape.js)（图形变形、沿路径运动、弹性摇摆）和榜单换名次 `reorder`；`FX.snapBeat` 卡点，一镜到底的换场和推进自动对拍；黑金电影皮肤的舞台道具样式。
+- **v2.0 新增（讲 AI 的零件）**：三个可选模块 [`fx-ink.js`](fx-ink.js)（手绘批注）、[`fx-chat.js`](fx-chat.js)（聊天窗、输入框打字、终端、代码 diff、Agent 光标）、[`fx-diagram.js`](fx-diagram.js)（包围、信息过载、中心辐射），舞台模块新增像素抖动、扫光、漏光，共 19 个动效、6 个组件。节奏和算法参考了 [HyperFrames 组件库](https://github.com/heygen-com/hyperframes)（Apache-2.0）。
 - **v1.9 新增（一镜到底）**：可选模块 [`fx-oner.js`](fx-oner.js)——所有场景是同一栋楼里的房间，**整条片子是一个不剪的长镜头**：从楼外推进第一个房间，横移穿墙、升降穿楼板走到下一间，中途推进墙上的照片再拉出来，最后拉回楼外。带方向性运动模糊、道具与房间之间的视差、电影黑边。新增 `cam` / `shot` / `push-into` 三个镜头动效和 `house` / `letterbox` 两个组件；核心新增 `FX.onFrame`（每帧所有补间更新之后的收尾回调）。
 - **v1.8 新增（声音与氛围）**：可选模块 [`fx-sound.js`](fx-sound.js)——**每个动效自带声音**（弹出「啵」、落地「咚」、划入「唰」、转场「哗」、打字「哒哒」），27 种音效、4 套音色全部用代码合成，不带任何音频文件；`node sfx.mjs <工程>` 按动效的触发时间生成一条音效轨。场景背景（`backdrop`）新增**氛围层**：调色暗角、移轴景深、会呼吸的光源、天气粒子（灰尘 / 雨 / 雪 / 萤火虫 / 火星 / 星星 / 光柱），一张静止的背景图就活了。自检新增「阅读时间」规则。这一版的思路参考了 [Lemo-Opuscar](https://github.com/lemomo-ai/lemo-opuscar)（MIT）。
 - **v1.5 新增（空间镜头）**：可选模块 [`fx-world.js`](fx-world.js)——根元素写一个 `data-world`，所有分镜就摆到同一块大画布上，**换分镜 = 镜头斜着推过去**，不再一页页翻。附带 21 个新动效（原位放大、背景虚化、景深移焦、发牌入场、骨架填充、纵深穿梭、环筒螺旋、三维翻转、放大让位、切片换图、走进画面……）、7 个新组件、第 6 套皮肤 `theme-studio`，以及页面自检 `FX.lint()`（网址加 `?lint`：字太小、镜头到位时空屏、文字出画都能查出来）。
@@ -154,11 +157,15 @@ motion-lib/
 ├── fx-puppet.js     可选模块：立绘木偶（眨眼、呼吸、对口型）+ 演员走位（角色跟着内容走）
 ├── fx-stage.js      可选模块：舞台剧（场景背景、马赛克换场、设备屏画中画、插画特写、小演员）
 ├── fx-oner.js       可选模块：一镜到底（一栋楼的剖面 + 推进 / 横移穿墙 / 升降穿楼板 / 推进画里，全程不剪）
+├── fx-ink.js        可选模块：手绘批注（圈、划、框、箭头、Vox 式马克笔注释，线条会沸腾）
+├── fx-chat.js       可选模块：AI 聊天窗、输入框打字、终端、代码 diff、Agent 光标
+├── fx-diagram.js    可选模块：包围、信息过载、中心辐射
+├── fx-shape.js      可选模块：图形变形、沿路径运动、弹性摇摆（用 vendor/gsap-plugins/ 里的 GSAP 免费插件）
 ├── fx-sound.js      可选模块：音效层（每个动效自带声音，27 种音效 × 4 套音色，纯代码合成）
 ├── sfx.mjs          生成音效轨：node sfx.mjs <工程目录> → audio/sfx.wav
 ├── assets/          内置 CC0 1.0 公共领域 3D VRM 示例角色（shino.vrm、vita.vrm）
 ├── fonts/           优设标题黑、得意黑、Fusion Pixel 像素体、站酷快乐体（许可见 fonts/README.md）
-├── vendor/          GSAP 3.15、three.js r187（three-fx.min.js）、@pixiv/three-vrm 3.5（three-vrm.min.js）
+├── vendor/          GSAP 3.15（gsap-plugins/：MorphSVG、MotionPath、CustomEase、CustomWiggle）、three.js r187（three-fx.min.js）、@pixiv/three-vrm 3.5（three-vrm.min.js）
 ├── new-project.sh   一键将运行库安装/同步到任意视频项目目录（./new-project.sh my-video）
 ├── chrome-tall.sh   无头渲染 Chrome 视口包装器（防止成片底部字幕被裁切）
 ├── gen-readme.mjs   从源码自动提取并同步四语种 README 统计表与全量动效目录
@@ -451,6 +458,7 @@ FX.subtitles([
 | `data-grade` | `warm` `cool` `dusk` `night` `neon` 调色 + 暗角；`plain` 只要暗角 |
 | `data-weather` | `dust` 灰尘 · `rays` 光柱 · `rain` 雨 · `snow` 雪 · `fireflies` 萤火虫 · `embers` 火星 · `stars` 星星，可以写多个 |
 | `data-lights` | `x,y,颜色,半径` 一团会呼吸的光，分号隔开；末尾加 `,slow` 是屏幕 / 窗户那种慢慢起伏的光 |
+| `data-depth` | `box:x0,y0,x1,y1`（室内：后墙在图里的矩形，原图像素）、`ground:y`（户外：地平线高度）或一张深度图（白近黑远）。镜头一动，近处的地板、墙、家具比后墙移得多、推近时放大得多，一张平面的图就有了纵深（WebGL；一镜到底的镜头会自动驱动它） |
 
 完整示例：[`examples/stage/`](examples/stage/index.html)（[▶ 成片](examples/stage/stage.mp4)）。示例里的小机器人（4 个半身姿势、全身小人、一张插画）是仓库原创素材，源文件在 `assets/puppet/src/`。
 
@@ -514,7 +522,64 @@ node sfx.mjs --audition out/               # 每套音色导出一条试听文�
 | 推进画里 | `push-into@t(dur=2)` | 一张照片先以相框大小出现，镜头推进去直到铺满全屏，再拉出来——代替「全屏插画硬切」 |
 | 中途换机位 | `shot@t(room=all)` | 比如片尾拉回楼外全景 |
 | 电影画幅 | `data-make="letterbox"` | 上下黑边；自检会查「文字进了黑边」 |
+| 立体感 | 背景写 `data-depth`；其余自动 | 房间背景按透视结构做景深视差；楼外全景时整栋楼转成 3/4 视角慢慢转回；道具像立在空间里的板，镜头往哪看就朝那边微微转过来；角色是最近的一层，镜头平移时移得最多 |
 | 一直在动 | 不用写 | 镜头始终有很慢的推近和手持微晃；每个房间的背景在窗框里有浅浅的错位，像看一个立体盒子 |
+
+### 0.9 讲 AI 的零件：手绘批注、AI 对话、代码、图解（v2.0 新增）
+
+讲 AI 的片子里反复出现的画面，按真实软件的节奏做成了零件。节奏数值（消息 0.12 秒从 0.75 倍长出、AI 吐字的间隔表、真人打字一次 1–3 个字、代码删行 0.55 秒 / 加行 0.6 秒、手画线每秒「沸腾」10 次……）参考了 [HyperFrames 组件库](https://github.com/heygen-com/hyperframes)（Apache-2.0），代码按本库的声明式写法重新写过。
+
+```html
+<script src="lib/fx-ink.js"></script>       <!-- 手绘批注 -->
+<script src="lib/fx-chat.js"></script>      <!-- 聊天窗、输入框、终端、代码、Agent 光标 -->
+<script src="lib/fx-diagram.js"></script>   <!-- 包围、过载、中心辐射 -->
+
+<div class="fx-prompt" data-fx="prompt@0.6(fix=周包)">帮我写一份周报</div>          <!-- 先打错再改对 -->
+<div data-make="chat" data-title="AI 助手" data-fx="msg@2.9(i=1) typing@3.3(i=2,dur=1.1) stream-in@4.4(i=2)">
+  <p data-from="me">帮我写一份周报</p>
+  <p data-from="ai" data-av="AI">好的：先列三件事，再写下周计划。</p>
+</div>
+<div data-make="code" data-title="cart.py" data-fx="diff@1 code-focus@3.6(i=2)"><pre>def total(items):
+-     return sum(items)
++     return sum(i.price for i in items)</pre></div>
+<div class="fx-sign" data-fx="ink-arrow@4.2(to=#code,tx=0.08,ty=0.3,curve=swoop)">只改一行</div>
+<div data-make="surround" data-center="你" data-chips="消息,待办,会议,邮件" data-fx="overwhelm@0.3(n=16)"></div>
+<div data-make="backdrop" data-src="sunset.jpg" data-dither="4" data-fx="dither-in@0"></div>
+```
+
+| 零件 | 写法 | 作用 |
+|---|---|---|
+| 手绘批注 | `ink-circle` `ink-underline` `ink-box` `ink-arrow` `ink-mark` | 圈、划、框、箭头、Vox 式「马克笔 + 引线注释」，线条带抖、按笔顺描出、画好后轻轻沸腾 |
+| 聊天窗 | `data-make="chat"` + `msg` `typing` `stream-in` | 消息从发送者一角长出；「正在输入…」；AI 回答成段蹦出、新字由灰变黑 |
+| 输入框 | `class="fx-prompt"` + `prompt` | 一次 1–3 个字的真人节奏，光标打字时闪、打完常亮；`fix=` 先打错再改 |
+| 终端 | `data-make="terminal"` + `run` | 敲命令、停一拍、逐行输出、新提示符 |
+| 代码 | `data-make="code"` + `diff` `code-focus` | 行首 `- ` 变红收起、`+ ` 变绿展开；高光扫过某一行 |
+| Agent 光标 | `data-make="agent"` + `agent-go` | 名牌打出要做的事，光标移过去点一下 |
+| 图解 | `data-make="surround"` / `"hub"` + `surround-in` `overwhelm` `hub-node` | 被包围、被淹没、中心辐射；中心永远不动 |
+| 像素抖动 | backdrop 上 `data-dither` + `dither-in` | 照片感的图统一成像素画；从双色噪点一路清晰出来 |
+| 光 | `light-sweep` `light-leak` | 扫过一道斜光（高级感）；胶片漏光（回忆、转折） |
+
+完整示例：[`examples/kit/`](examples/kit/index.html)（[▶ 成片](examples/kit/kit.mp4)）。
+
+### 0.10 GSAP 免费插件、卡点、黑金电影皮肤的舞台道具（v2.1 新增）
+
+**形状（`fx-shape.js`）**：GSAP 的 MorphSVG、MotionPath、CustomEase、CustomWiggle 现在免费商用，仓库的 `vendor/gsap-plugins/` 里带了和核心同版本的文件。
+
+```html
+<script src="lib/vendor/gsap-plugins/MorphSVGPlugin.min.js"></script>
+<script src="lib/vendor/gsap-plugins/MotionPathPlugin.min.js"></script>
+<script src="lib/vendor/gsap-plugins/CustomEase.min.js"></script>
+<script src="lib/vendor/gsap-plugins/CustomWiggle.min.js"></script>
+<script src="lib/fx-shape.js"></script>
+
+<div data-make="shape" data-shape="cross" data-color="#ff5a52" data-fx="shape-morph@1(to=check,color=#3ddc84) wiggle@3"></div>   <!-- ✗ 变 ✓，再晃一下 -->
+<img src="plane.svg" data-fx="path-move@0.5(path=#route,dur=2,draw=1)">                                                     <!-- 沿 #route 飞过去，顺手把路线画出来 -->
+<div class="rank" data-fx="reorder@2.5(order=3/1/2)"><div>Claude</div><div>GPT</div><div>DeepSeek</div></div>                   <!-- 榜单换名次（不需要插件） -->
+```
+
+**卡点**：页面加载一份拍点表 `window.FX_BEATS = { bpm, beats: [...], downbeats: [...], hits: [...] }`（[auto-video-workflow](https://github.com/honestTai/auto-video-workflow) 的 `bgm.mjs pick` 会从 BGM 里量出来写成 `beats.js`）以后，`FX.snapBeat(t, 窗口)` 把一个时刻挪到最近的拍子上；一镜到底的换房间（`fx-oner.js`）会自动让镜头到位的那一刻落在拍子上（换章节优先落在重拍上），推进照片铺满的那一刻也会对拍。根元素写 `data-beats="off"` 关掉。
+
+**黑金电影皮肤的舞台道具**：`theme-gold` 下，`.fx-sign`、`.fx-score`、选择面板、章节条、一镜到底的楼都有电影感的样式（深色玻璃牌、金色细边、衬线大字、金色渐变数字）。
 
 ### 1. 真 3D 二次元口播角色（`fx-vrm.js`）
 
@@ -673,6 +738,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 - **核心代码（`fx*.js`、`fx.css`）**：[MIT License](LICENSE)，第三方声明详见 [NOTICE](NOTICE)。
 - **3D 引擎与 VRM 运行时**：[three.js](https://github.com/mrdoob/three.js)（MIT，见 [vendor/three-LICENSE.txt](vendor/three-LICENSE.txt)）与 [@pixiv/three-vrm](https://github.com/pixiv/three-vrm)（MIT，见 [vendor/three-vrm-LICENSE.txt](vendor/three-vrm-LICENSE.txt)）。
 - **内置 3D 示例角色（`assets/shino.vrm`、`assets/vita.vrm`）**：由 pixiv Inc. 官方以 **CC0 1.0 公共领域贡献**发布（详见 [assets/README.md](assets/README.md)，可自由商用与修改）。
+- **借鉴 HyperFrames 的部分**：`fx-ink.js`、`fx-chat.js`、`fx-diagram.js` 以及 `fx-stage.js` 里的像素抖动、扫光、漏光，参考了 [HyperFrames 组件库](https://github.com/heygen-com/hyperframes)（Apache-2.0，原许可见 [vendor/hyperframes-LICENSE.txt](vendor/hyperframes-LICENSE.txt)），代码为重新编写，出处写在每个文件开头和 [NOTICE](NOTICE) 里。
 - **GSAP 与字体**：GSAP 遵循 GreenSock [Standard License](https://gsap.com/standard-license)；内置四款开源/免费商用字体详见 [fonts/README.md](fonts/README.md)。
 
 ### 致谢与生态支持
@@ -682,7 +748,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 ---
 
 <!-- CATALOG:START -->
-## 动效目录（194 种动效 + 23 种转场）
+## 动效目录（217 种动效 + 23 种转场）
 
 > 这一节由 `node gen-readme.mjs` 从 `fx.js` 自动生成，不要手改。
 > 所有动效都支持通用参数 `dur`（时长）、`ease`（缓动）、`stagger`（错峰）；下表只列各自特有的参数。
@@ -801,7 +867,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `stroke-in` | 描边字：先沿一个方向画出空心描边，再把颜色灌满（StrokeText）。参数 w=描边粗细、color=描边色、hold=空心停留秒数 |
 | `echo` | 残影入场：几层半透明的拷贝拖在后面一起滑入，到位后残影散掉（EchoText）。参数 n=残影层数、dist、dir |
 
-### 数据（6）
+### 数据（7）
 
 数字、进度、图表类。数字类动效会自动保留小数位和千分位。
 
@@ -813,6 +879,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `fill` | 进度条填充：把元素宽度（或 dir=y 时高度）从 from% 补到 to% |
 | `ring` | 圆环进度：配 data-make="ring"。参数 from、to（0~1） |
 | `wave-live` | 波形跳动：配 data-make="wave"，每根条按种子随机起伏。参数 dur、seed |
+| `reorder` | 榜单换名次：一列（或一行）子元素按新顺序滑到各自的新位置，上升的那个略微放大、带一点高光。写在列表容器上。参数 order（新顺序，写原来的序号，用 / 隔开，如 3/1/2）、dur（默认 0.8） |
 
 ### 镜头（14）
 
@@ -946,12 +1013,15 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `bignum` | 章节卡入场：大数字先落下，标题跟着滑出。写在 data-make="bignum" 上。参数 dock（几秒后缩成左上角小标签，不写就不缩） |
 | `segment` | 进度线走到第 i 段（从 1 数）。写在 data-make="segments" 上，一般放在常驻叠加层里 |
 
-### 舞台（7）
+### 舞台（10）
 
 「主持人在前、场景在后、信息用画中画给」这种动画科普片的舞台零件，需要额外加载 `fx-stage.js`。场景背景（`backdrop`）、带屏幕的设备（`device`）、全屏插画特写、选择面板（`menu`）、全身小演员（`mini`）。不写 `data-world` 时使用：分镜之间硬切，换场景背景时用 `data-in="mosaic"`。
 
 | 名字 | 作用 / 参数 |
 |---|---|
+| `dither-in` | 画面从双色像素噪点一路变清楚（像老游戏机开机、信号接通）。写在 data-make="backdrop" 上；有 data-dither 时停在像素画，没有时停在原图。参数 dur（默认 1.6） |
+| `light-sweep` | 一道柔和的斜光从画面上扫过一次（贵气、高级感；用在结论、产品、榜单出现的那一刻）。写在分镜、背景或任何元素上。参数 dur（默认 1.6）、angle（光带角度，默认 115）、color、strength（0–1，默认 0.5） |
+| `light-leak` | 胶片漏光：暖色的光斑从画面一侧漫进来又退掉（回忆、转折、情绪高点）。写在分镜或背景上。参数 dur（默认 4）、tone=warm/cool、strength（0–1，默认 0.9） |
 | `cutaway` | 插画特写：一张全屏插画硬切进来，很慢地推近，到时间硬切回去；期间盖住演员，字幕和章节条还在。写在 <img> 上（放在所在分镜里即可）。参数 dur（停多久，1.2–2.5 秒）、zoom（推到多大，默认 1.07）、x / y（同时平移百分比）、under=1（放在演员下面：主持人继续站在画面上讲，适合全屏录屏） |
 | `screen-to` | 屏内切换：设备屏幕里的内容硬切到第 i 个（从 1 数；不写就是下一个），带一下很轻的闪白。写在 data-make="device" 上 |
 | `dive` | 钻进屏幕：设备朝镜头放大，直到它的屏幕铺满全屏（下一个分镜用同一张画面当背景，就像走进了屏幕里）。写在 data-make="device" 上，一般放在分镜最后 0.5 秒。参数 dur（默认 0.5） |
@@ -959,6 +1029,53 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `choose` | 选一项：选择面板的高亮条跳到第 i 项并打勾。写在 data-make="menu" 上。参数 i（从 1 数；写成 2/4/1/3 就是连着快速选好几次）、every（连选时每次间隔，默认 0.28 秒） |
 | `mini-walk` | 小演员走过去：两帧步态交替 + 水平移动，走到后站定。写在 data-make="mini" 上。参数 x（走多远，负数向左）或 to=#目标（走到它旁边）、dur、step（每步多久，默认 0.16 秒） |
 | `mini-pose` | 小演员换动作（举手、欢呼、坐下…），带一下挤压回弹。写在 data-make="mini" 上。参数 name（动作名，对应 data-poses 里的名字）、hold（几秒后自动回到站立，不写就一直保持） |
+
+### 手绘（5）
+
+手绘批注，需要额外加载 `fx-ink.js`。线条带一点抖、按笔顺描出来，画好后每秒换 10 次姿势轻轻「沸腾」。写在要批注的元素上；通用参数 `color`（默认皮肤强调色）、`w`（线宽）、`dur`、`boil=calm|lively|off`。
+
+| 名字 | 作用 / 参数 |
+|---|---|
+| `ink-circle` | 手画一个圈把元素圈起来（起笔在左上，多画一点收尾），可以在旁边写一句。参数 label（旁边的字）、at=right/left/top/bottom（字写在哪边）、pad（圈比元素大多少，默认 18）、color、w、dur |
+| `ink-underline` | 手画的线：波浪下划线、划掉、左括号。参数 kind=squiggle/double/strike/bracket、color、w、dur |
+| `ink-box` | 手画方框框住元素，可以在左上角贴一个标签。参数 label、pad（默认 14）、color、w、dur |
+| `ink-arrow` | 从这个元素画一支手绘箭头指向另一个元素。参数 to=#目标（或 dx / dy 直接给偏移像素）、tx / ty（指向目标里的哪个位置，0–1；不写就指向目标边框上离起点最近的点）、curve=straight/gentle/swoop、side=1/-1（往哪边弯）、gap（离两头留多少空）、color、w、dur |
+| `ink-mark` | Vox 式批注：给句子里的一个词上马克笔，同时拉一根细线到一行注释。参数 word（要标的词，不写就标整个元素）、style=highlight/circle/underline/scribble、note（注释文字，不写就只画记号）、color、dur |
+
+### 对话（8）
+
+讲 AI 时最常出现的画面，需要额外加载 `fx-chat.js`：聊天窗（`data-make="chat"`）、输入框打字、终端（`data-make="terminal"`）、代码（`data-make="code"`）、Agent 光标（`data-make="agent"`）。节奏按真实软件：消息从发送者一角长出、AI 回答成段蹦出、真人打字一顿一顿。
+
+| 名字 | 作用 / 参数 |
+|---|---|
+| `msg` | 聊天窗里的一条消息弹出来：0.12 秒从发送者那一角长出来。写在 data-make="chat" 上。参数 i（第几条，从 1 数） |
+| `typing` | 「正在输入…」气泡：在第 i 条消息的位置弹出三个点，dur 秒后消失（通常紧接着 msg / stream-in 同一条）。写在 data-make="chat" 上。参数 i、dur（默认 1.2） |
+| `stream-in` | AI 的回答按吐字节奏一段一段冒出来，新字先是灰的、0.27 秒后变成正常颜色。写在 data-make="chat" 上（第 i 条消息），也可以直接写在任何一段文字上。参数 i、speed（倍速，默认 1） |
+| `prompt` | 输入框里像真人一样打字：一次出 1–3 个字、长短不一的停顿，光标打字时闪、打完常亮。写在一个只有文字的元素上（配 class="fx-prompt" 就是一个输入框）。参数 fix（先打错的词，删掉再改对）、glyph（行首的提示符，默认 ›，写 none 去掉）、speed |
+| `run` | 终端跑一条命令：敲命令、停一拍、输出一行行打印出来，最后出现新的提示符。写在 data-make="terminal" 上。参数 every（输出行间隔，默认 0.22 秒）、speed（打字倍速） |
+| `diff` | 代码改动：要删的行先变红再收起，要加的行变绿展开。写在 data-make="code" 上（行首「- 」是删、「+ 」是加） |
+| `code-focus` | 代码里某一行亮起一条高光扫过，其余行压暗。写在 data-make="code" 上。参数 i（第几行，按最终显示的行数从 1 数；0 = 全部恢复） |
+| `agent-go` | Agent 光标：名牌上打出它要做的事，光标移到目标上点一下（带一圈波纹）。写在 data-make="agent" 上，可以连写多次。参数 to=#目标（不写就原地）、say（名牌上的字）、click=0（不点）、done=1（打一个勾表示做完） |
+
+### 图解（3）
+
+关系图，需要额外加载 `fx-diagram.js`：包围（`data-make="surround"`）和中心辐射（`data-make="hub"`）。中心永远不动，动的是周围的东西。
+
+| 名字 | 作用 / 参数 |
+|---|---|
+| `surround-in` | 中心先落定，周围的标签一个个围上来；close=1 时再一起往里收、四周压暗。写在 data-make="surround" 上。参数 gap（标签之间隔几秒，默认 0.3）、close=1 |
+| `overwhelm` | 一大堆标签从四面八方加速涌进来，挤在不动的中心周围（信息过载、事情太多）。写在 data-make="surround" 上（标签文字从 data-chips 里循环取）。参数 n（个数，8–24，默认 16）、intensity（压力，0.5–2，越大挤得越近越快）、dur（涌入用多久，默认 2.2） |
+| `hub-node` | 中心辐射图的第 i 个节点：连线从中心画出去，节点弹亮。写在 data-make="hub" 上，念到哪个写哪个。参数 i（从 1 数） |
+
+### 形状（3）
+
+图形变形、沿路径运动、弹性摇摆，需要额外加载 `fx-shape.js` 和 `vendor/gsap-plugins/` 里对应的 GSAP 插件（MorphSVG、MotionPath、CustomEase、CustomWiggle，现已免费商用）。内置 12 个图形（`data-make="shape"`）：check cross circle square triangle star heart bolt arrow-up arrow-down play bulb。
+
+| 名字 | 作用 / 参数 |
+|---|---|
+| `shape-morph` | 图形平滑变成另一个图形（✗ 变 ✓、圆变星……），可同时换颜色。写在 data-make="shape" 上，或任何含一个 <path> 的 svg 上。参数 to（内置形状名：check cross circle square triangle star heart bolt arrow-up arrow-down play bulb，或 #另一个路径的 id）、color、dur（默认 0.6）。需要 MorphSVGPlugin |
+| `path-move` | 沿一条 SVG 路径运动，朝向跟着路径转（纸飞机、数据包、快递路线）。写在要动的元素上。参数 path=#路径的 id（必填）、dur（默认 1.6）、rotate=0（不转向）、draw=1（同时把路径画出来）、from / to（走路径的哪一段，0–1）。需要 MotionPathPlugin |
+| `wiggle` | 有弹性的摇摆：左右晃几下慢慢停住（被点名、被吐槽、出错时晃一下）。参数 n（晃几下，默认 6）、amp（角度，默认 8）、dur（默认 0.8）、prop=rotation/x。需要 CustomEase + CustomWiggle |
 
 ### 声音（1）
 

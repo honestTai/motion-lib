@@ -24,6 +24,22 @@
       "title": "Character",
       "intro": "For stand-up portraits and little characters: switch poses, lip sync, nod, hop, walk."
     },
+    "手绘": {
+      "title": "Hand-drawn",
+      "intro": "Hand-drawn annotation, loaded from `fx-ink.js`. Lines wobble a little, draw on in stroke order, and once drawn they \"boil\" (re-pose ten times a second). Put them on the element you annotate; shared params `color` (defaults to the skin accent), `w` (line width), `dur`, `boil=calm|lively|off`."
+    },
+    "对话": {
+      "title": "Chat & code",
+      "intro": "The screens that keep appearing in AI videos, loaded from `fx-chat.js`: a chat window (`data-make=\"chat\"`), a typed prompt, a terminal (`data-make=\"terminal\"`), code (`data-make=\"code\"`) and an agent cursor (`data-make=\"agent\"`). They move like the real software: messages grow from the sender's corner, AI answers arrive in bursts, people type in uneven chunks."
+    },
+    "图解": {
+      "title": "Diagrams",
+      "intro": "Relationship diagrams, loaded from `fx-diagram.js`: surround (`data-make=\"surround\"`) and hub-and-spoke (`data-make=\"hub\"`). The center never moves; only what surrounds it does."
+    },
+    "形状": {
+      "title": "Shapes",
+      "intro": "Shape morphing, motion along a path and springy wiggles, loaded from `fx-shape.js` plus the matching GSAP plugins in `vendor/gsap-plugins/` (MorphSVG, MotionPath, CustomEase, CustomWiggle, now free for commercial use). Twelve built-in shapes (`data-make=\"shape\"`): check cross circle square triangle star heart bolt arrow-up arrow-down play bulb."
+    },
     "声音": {
       "title": "Sound",
       "intro": "The sound layer, loaded from `fx-sound.js`. Once loaded, **every effect carries its own sound** (a pop for pop-ins, a thump for landings, a swish for slides, a whoosh for transitions, ticks for typing…), all synthesised in code with no audio files. Any effect takes `sfx=name` to use another sound or `sfx=none` to stay silent. The effect below places a sound where nothing moves on screen. Add `?play` to the URL to hear it in the preview; `node lib/sfx.mjs <project>` writes the effects track for the final film."
@@ -296,6 +312,29 @@
     "声音/sfx": "Play one sound effect on its own (it sounds even when nothing moves on screen). Params: kind=pop|tick|click|swish|whoosh|thump|snap|hit|ding|chime|blip|rise|fall|buzz|sparkle|zap|glitch|paper|flap|card|rumble|swellup|shimmer|type|roll|step|dots, vol (volume multiplier), pitch (pitch multiplier), dur (seconds, for sustained sounds)",
     "镜头/cam": "In a one-take film, a camera move inside a room: pan, push in, soften the background. Put it on the scene. Params: x / y (screen pixels; positive looks right / down), z (push-in factor, 1 is neutral), blur (background blur in pixels), to=#element (aim at it; pull=0.5 goes halfway), reset=1 to return to neutral, dur",
     "镜头/shot": "In a one-take film, change the camera position mid-scene: push into a room, or pull back to the wide shot outside the building. Put it on the scene. Params: room=number|all, dur",
-    "镜头/push-into": "Push into a picture: the element first appears as a framed photo, the camera pushes in until it fills the screen, holds, then pulls back out. Put it on an absolutely positioned image inside the scene (left/top/width/height). Params: dur (total seconds from the push to the end of the pull), in / out (seconds for the push and the pull), cast=keep (characters stay), stay=1 (the frame remains after pulling out)"
+    "镜头/push-into": "Push into a picture: the element first appears as a framed photo, the camera pushes in until it fills the screen, holds, then pulls back out. Put it on an absolutely positioned image inside the scene (left/top/width/height). Params: dur (total seconds from the push to the end of the pull), in / out (seconds for the push and the pull), cast=keep (characters stay), stay=1 (the frame remains after pulling out)",
+    "手绘/ink-circle": "Hand-draw a loop around the element (pen starts at the upper left and overshoots a little), with an optional note beside it. Params: label (the note), at=right|left|top|bottom (where the note goes), pad (how much larger than the element, default 18), color, w, dur",
+    "手绘/ink-underline": "Hand-drawn lines: squiggly underline, strike-through, left bracket. Params: kind=squiggle|double|strike|bracket, color, w, dur",
+    "手绘/ink-box": "Hand-draw a box around the element, with an optional tab label at the top left. Params: label, pad (default 14), color, w, dur",
+    "手绘/ink-arrow": "Draw a hand-drawn arrow from this element to another. Params: to=#target (or dx / dy offsets in pixels), tx / ty (which point inside the target, 0–1; omit to point at the nearest point on the target's edge), curve=straight|gentle|swoop, side=1|-1 (which way it bends), gap (space left at both ends), color, w, dur",
+    "手绘/ink-mark": "Vox-style annotation: a marker stroke on one word of a sentence while a thin line draws out to a short note. Params: word (the word to mark; omit to mark the whole element), style=highlight|circle|underline|scribble, note (the note; omit for the mark alone), color, dur",
+    "对话/msg": "One chat message arrives, growing from the sender's corner in 0.12 s. Put it on data-make=\"chat\". Params: i (which message, counted from 1)",
+    "对话/typing": "The \"typing…\" bubble: three dots pop in where message i will appear and leave after dur seconds (usually followed by msg / stream-in for the same message). Put it on data-make=\"chat\". Params: i, dur (default 1.2)",
+    "对话/stream-in": "An AI answer arrives in bursts the way streamed tokens do; fresh text lands grey and inks to full colour over 0.27 s. Put it on data-make=\"chat\" (message i) or on any block of text. Params: i, speed (default 1)",
+    "对话/prompt": "Type into a prompt like a person: one to three characters at a time with uneven pauses; the caret blinks while typing and stays on after. Put it on an element that holds only text (add class=\"fx-prompt\" for an input box). Params: fix (a mistyped word, typed first, deleted and corrected), glyph (leading glyph, default ›, none to hide), speed",
+    "对话/run": "Run a command in a terminal: type it, pause a beat, print the output line by line, then show a fresh prompt. Put it on data-make=\"terminal\". Params: every (seconds between output lines, default 0.22), speed (typing speed)",
+    "对话/diff": "A code change: lines to remove turn red and collapse, lines to add turn green and expand. Put it on data-make=\"code\" (lines starting with \"- \" are removed, \"+ \" added)",
+    "对话/code-focus": "A highlight band sweeps across one line of code and the other lines dim. Put it on data-make=\"code\". Params: i (line number as finally shown, from 1; 0 restores all)",
+    "对话/agent-go": "Agent cursor: the name tag types out what the agent is about to do, then the cursor moves to the target and clicks with a ripple. Put it on data-make=\"agent\"; write it several times in a row. Params: to=#target (omit to stay), say (text on the tag), click=0 (no click), done=1 (a check mark for a finished step)",
+    "图解/surround-in": "The center settles, then the chips around it arrive one by one; with close=1 they then close in together while the edges darken. Put it on data-make=\"surround\". Params: gap (seconds between chips, default 0.3), close=1",
+    "图解/overwhelm": "A crowd of chips rushes in from every side, faster and faster, and crowds the still center (overload, too much at once). Put it on data-make=\"surround\" (labels cycle through data-chips). Params: n (8–24, default 16), intensity (0.5–2: higher packs tighter and faster), dur (how long the rush takes, default 2.2)",
+    "图解/hub-node": "Node i of a hub diagram: its connector draws out from the center and the node pops on. Put it on data-make=\"hub\", one per node as the narration reaches it. Params: i (from 1)",
+    "舞台/dither-in": "The picture resolves from two-tone pixel noise to clear (like an old console booting or a signal locking on). Put it on a data-make=\"backdrop\"; with data-dither it ends as pixel art, otherwise on the original picture. Params: dur (default 1.6)",
+    "舞台/light-sweep": "A soft diagonal light sweeps across once (a premium touch for a conclusion, a product or a ranking). Put it on a scene, a backdrop or any element. Params: dur (default 1.6), angle (band angle, default 115), color, strength (0–1, default 0.5)",
+    "舞台/light-leak": "A film light leak: warm light washes in from one side and fades (memories, turns, emotional peaks). Put it on a scene or a backdrop. Params: dur (default 4), tone=warm|cool, strength (0–1, default 0.9)",
+    "形状/shape-morph": "A shape smoothly turns into another (✗ into ✓, a circle into a star…), optionally changing colour. Put it on data-make=\"shape\" or on any svg holding one <path>. Params: to (a built-in shape: check cross circle square triangle star heart bolt arrow-up arrow-down play bulb, or #id of another path), color, dur (default 0.6). Needs MorphSVGPlugin",
+    "形状/path-move": "Move along an SVG path, turning to follow it (a paper plane, a data packet, a delivery route). Put it on the moving element. Params: path=#path id (required), dur (default 1.6), rotate=0 (no turning), draw=1 (draw the path as it goes), from / to (which part of the path, 0–1). Needs MotionPathPlugin",
+    "形状/wiggle": "A springy wiggle that settles (when something is called out, mocked or goes wrong). Params: n (how many swings, default 6), amp (degrees, default 8), dur (default 0.8), prop=rotation|x. Needs CustomEase + CustomWiggle",
+    "数据/reorder": "A ranking changes: the children of a column (or row) slide to their new places; the one that climbs grows slightly. Put it on the list container. Params: order (the new order as original positions separated by /, e.g. 3/1/2), dur (default 0.8)"
   }
 }

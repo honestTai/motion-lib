@@ -6,5 +6,5 @@ set -e
 LIB="$(cd "$(dirname "$0")" && pwd)"
 DIR="${1:?用法: new-project.sh <项目目录>}"
 mkdir -p "$DIR/lib"
-rsync -a --delete "$LIB/fx.js" "$LIB/fx-particles.js" "$LIB/fx-3d.js" "$LIB/fx-rig.js" "$LIB/fx-vrm.js" "$LIB/fx-world.js" "$LIB/fx-puppet.js" "$LIB/fx-stage.js" "$LIB/fx-oner.js" "$LIB/fx-sound.js" "$LIB/sfx.mjs" "$LIB/fx.css" "$LIB/chrome-tall.sh" "$LIB/fonts" "$LIB/vendor" "$LIB/assets" "$DIR/lib/"
+rsync -a --delete "$LIB/fx.js" "$LIB/fx-particles.js" "$LIB/fx-3d.js" "$LIB/fx-rig.js" "$LIB/fx-vrm.js" "$LIB/fx-world.js" "$LIB/fx-puppet.js" "$LIB/fx-stage.js" "$LIB/fx-oner.js" "$LIB/fx-ink.js" "$LIB/fx-chat.js" "$LIB/fx-diagram.js" "$LIB/fx-shape.js" "$LIB/fx-sound.js" "$LIB/sfx.mjs" "$LIB/fx.css" "$LIB/chrome-tall.sh" "$LIB/fonts" "$LIB/vendor" "$LIB/assets" "$DIR/lib/"
 echo "✓ 动效库已装到 $DIR/lib"

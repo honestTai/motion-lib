@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>motion-lib · 讲 AI 的零件：手绘批注、AI 对话、代码、图解</title>
+<link rel="stylesheet" href="lib/fx.css" />
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/fx.js"></script>
+<script src="lib/fx-stage.js"></script>      <!-- 场景背景、像素抖动、扫光、漏光 -->
+<script src="lib/fx-ink.js"></script>        <!-- 手绘批注 -->
+<script src="lib/fx-chat.js"></script>       <!-- 聊天窗、输入框、终端、代码、Agent 光标 -->
+<script src="lib/fx-diagram.js"></script>    <!-- 包围、过载、中心辐射 -->
+<script src="lib/fx-sound.js"></script>      <!-- 每个动效自带声音（放在最后） -->
+<style>
+  .abs { position: absolute; }
+</style>
+</head>
+<body>
+<!-- 讲 AI 的片子里最常用的几样零件。每个分镜演示一组，写法见 README「0.9」一节。素材全部是代码画的，没有外部图片（第 5 镜的背景图也是代码画的）。 -->
+<div id="root" class="theme-pixel" data-composition-id="main" data-width="1920" data-height="1080" data-fps="30" data-mode="stage">
+
+  <!-- 1 · 输入框像真人一样打字（先打错再改）→ 消息发出 → 「正在输入…」→ AI 一段段吐字 -->
+  <section class="scene" data-d="7.2">
+    <div data-make="backdrop" data-kind="room" data-focus="tilt" data-grade="warm" data-weather="dust"></div>
+    <div class="fx-sign abs" style="left:150px;top:150px" data-fx="drop-bounce@0.2">问 AI 一句</div>
+    <div class="fx-prompt abs" style="left:150px;top:330px" data-fx="prompt@0.6(fix=周包)">帮我写一份周报</div>
+    <div class="abs" style="left:1000px;top:170px;width:800px" data-make="chat" data-title="AI 助手"
+         data-fx="pop-in@2.5 msg@2.9(i=1) typing@3.3(i=2,dur=1.1) stream-in@4.4(i=2)">
+      <p data-from="me">帮我写一份周报</p>
+      <p data-from="ai" data-av="AI">好的：先列三件事，再写下周计划。</p>
+    </div>
+  </section>
+
+  <!-- 2 · 终端跑命令，一行行输出；Agent 光标去点「发布」 -->
+  <section class="scene" data-d="7" data-in="mosaic">
+    <div data-make="backdrop" data-kind="night" data-focus="tilt" data-grade="cool" data-weather="stars"></div>
+    <div class="abs" style="left:140px;top:150px;width:900px" data-make="terminal" data-title="deploy" data-fx="run@0.3">
+      <p data-cmd>npm run deploy</p>
+      <p><span class="ok">✓</span> 构建完成 <span class="muted">2.1s</span></p>
+      <p><span class="ok">✓</span> 测试 42 项通过</p>
+      <p><span class="ok">✓</span> 已上线</p>
+    </div>
+    <div id="ship" class="fx-sign red abs" style="left:1250px;top:470px" data-fx="pop-in@2.6">发布</div>
+    <div class="abs" style="left:1380px;top:200px" data-make="agent" data-name="Agent"
+         data-fx="agent-go@3.2(to=#ship,say=点击发布) agent-go@5.0(done=1,say=完成)"></div>
+  </section>
+
+  <!-- 3 · 代码改动：删的行变红收起、加的行变绿展开；高光落在改的那一行；手画箭头指过去 -->
+  <section class="scene" data-d="7">
+    <div data-make="backdrop" data-kind="night" data-focus="tilt" data-grade="cool" data-weather="stars"></div>
+    <div id="code" class="abs" style="left:780px;top:200px;width:1000px" data-make="code" data-title="cart.py" data-fx="diff@1.0 code-focus@3.6(i=2)">
+<pre>def total(items):
+-     return sum(items)
++     return sum(i.price for i in items)
+</pre>
+    </div>
+    <div class="fx-sign abs" style="left:160px;top:560px" data-fx="drop-bounce@0.3 ink-arrow@4.2(to=#code,tx=0.08,ty=0.3,curve=swoop,side=-1)">只改一行</div>
+    <div class="fx-sign dark abs" style="left:160px;top:200px" data-fx="pop-in@0.5 ink-underline@1.4(kind=squiggle)">修个 Bug</div>
+  </section>
+
+  <!-- 4 · 信息过载：一堆事从四面八方涌进来，挤在不动的「你」周围 -->
+  <section class="scene" data-d="6.4" data-in="mosaic">
+    <div data-make="backdrop" data-kind="city" data-focus="tilt" data-grade="dusk" data-weather="fireflies"></div>
+    <div class="abs" style="left:460px;top:150px;width:1000px;height:700px" data-make="surround" data-center="你"
+         data-chips="消息,待办,会议,邮件,日报,审批" data-fx="overwhelm@0.3(n=16,intensity=1.2)"></div>
+    <div class="fx-sign red tilt abs" style="left:120px;top:140px" data-fx="stamp-in@3.0 ink-circle@3.6(label=太多了,at=bottom)">信息过载</div>
+  </section>
+
+  <!-- 5 · 中心辐射：一个助手，四种用法（念到哪个亮哪个）；背景从像素噪点里清晰出来，最后扫一道光 -->
+  <section class="scene" data-d="7.4" data-in="mosaic">
+    <div data-make="backdrop" data-src="assets/sunset.jpg" data-dither="4" data-focus="tilt" data-grade="plain" data-fx="dither-in@0(dur=1.4)"></div>
+    <div class="abs" style="left:560px;top:250px;width:800px;height:600px" data-make="hub" data-center="AI 助手" data-nodes="写代码,读文档,做表格,画图"
+         data-fx="hub-node@1.4(i=1) hub-node@2.1(i=2) hub-node@2.8(i=3) hub-node@3.5(i=4)"></div>
+    <div class="fx-sign abs" style="left:620px;top:110px" data-fx="drop-bounce@0.6 ink-mark@4.4(word=四种,style=highlight,note=实测)">一个助手，四种用法</div>
+    <div class="abs" style="inset:0" data-fx="light-sweep@5.6(dur=1.4) light-leak@5.2(dur=2.2)"></div>
+  </section>
+
+</div>
+<script>FX.build();</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 /*!
- * FX 动效库 v1.9  ——  给「HTML → 视频」用的声明式动效库
+ * FX 动效库 v2.2  ——  给「HTML → 视频」用的声明式动效库
  * 依赖：GSAP 3（vendor/gsap.min.js）。渲染器：HyperFrames，或任何逐帧 seek 时间线的工具。
  *
  * 用法一句话：在元素上写 data-fx="动效名@秒数(参数)"，最后调用 FX.build()。
@@ -758,6 +758,19 @@
   /* ═════════════════════════ 转场 ═════════════════════════
    * 写在「后一个场景」上：data-in="blur-cross(dur=0.5)"。
    * fn(tl, t, prev, next, o) 返回这次转场需要前一个场景多留多久（秒）。 */
+  def('reorder', '数据', '榜单换名次：一列（或一行）子元素按新顺序滑到各自的新位置，上升的那个略微放大、带一点高光。写在列表容器上。参数 order（新顺序，写原来的序号，用 / 隔开，如 3/1/2）、dur（默认 0.8）', function (c) {
+    var kids = Array.prototype.slice.call(c.el.children), order = String(c.o.order || '').split(/[\/,]/).map(function (x) { return parseInt(x, 10) - 1; }).filter(function (k) { return k >= 0 && k < kids.length; });
+    if (order.length !== kids.length) { console.warn('FX：reorder 的 order 要把 ' + kids.length + ' 个子元素的新顺序都写上，例如 order=3/1/2'); return; }
+    var slots = kids.map(function (k) { return { x: k.offsetLeft, y: k.offsetTop }; }), d = num(c.o.dur, 0.8);
+    order.forEach(function (from, to) {
+      var k = kids[from], dx = slots[to].x - slots[from].x, dy = slots[to].y - slots[from].y; if (!dx && !dy) return;
+      var up = to < from;
+      c.tl.to(k, { x: '+=' + dx, y: '+=' + dy, duration: d, ease: 'power3.inOut', zIndex: up ? 3 : 1 }, c.t + (up ? 0 : 0.04));
+      if (up) c.tl.fromTo(k, { scale: 1 }, { scale: 1.06, duration: d / 2, ease: 'power2.out', yoyo: true, repeat: 1, immediateRender: false }, c.t);
+    });
+    c.o.dur = d;
+  });
+
   function defT(name, desc, fn) { FX.trans[name] = fn; FX.catalog.push({ name: name, cat: '转场', desc: desc }); }
 
   defT('cut', '硬切（默认）。最常用，节奏最快', function () { return 0; });
@@ -1961,6 +1974,18 @@
   };
 
   /** 场景内的秒数 → 全片绝对秒数 */
+  /** 卡点：把时刻 t 挪到最近的拍子上（页面加载了 bgm.mjs 生成的 beats.js 时才生效）。
+   *  win：最多挪多少秒；lo / hi：挪完不能早于 / 晚于；down=true 时优先落在每小节第一拍（重拍）上。没有合适的拍子就原样返回 t。
+   *  根元素写 data-beats="off" 可以整片关掉。 */
+  FX.snapBeat = function (t, win, lo, hi, down) {
+    var B = g.FX_BEATS, st = document.querySelector('[data-composition-id]');
+    if (!B || !B.beats || (st && st.getAttribute('data-beats') === 'off')) return t;
+    lo = lo === undefined ? -1e9 : lo; hi = hi === undefined ? 1e9 : hi;
+    var pick = function (list, w) { var best = null; (list || []).forEach(function (b) { if (b >= lo && b <= hi && Math.abs(b - t) <= w && (best === null || Math.abs(b - t) < Math.abs(best - t))) best = b; }); return best; };
+    var b = (down ? pick(B.downbeats, win * 1.5) : null); if (b === null) b = pick(B.beats, win);
+    return b === null ? t : b;
+  };
+
   FX.at = function (sceneId, local) { var s = FX.sceneMap[sceneId]; return (s ? s.t : 0) + (local || 0); };
 
   /* ═════════════════════ 自检（网址加 ?lint，或手动调 FX.lint()） ═════════════════════
@@ -2066,7 +2091,9 @@
       // 阅读时间：文字入场后离分镜结束太近，观众来不及读。标准比纯字幕片宽（这里的字有口播在念）：0.8 秒 + 每 7 个字 1 秒
       (FX.calls || []).forEach(function (c) {
         if (c.trans || !c.el || !/-in$|^(type|draw|scramble|drop-bounce|grow-x|grow-y)$/.test(c.name) || c.el.closest('.scene') !== s.el || c.el.querySelector('img,canvas,video,svg')) return;
-        var txt = (c.el.textContent || '').replace(/\s+/g, '');
+        // 聊天窗、终端、代码、图解这类容器是一条条显出来的（各自有 msg / run / diff / hub-node），容器本身的入场不按整段字数算
+        if (!c.o.__readText && c.el.matches && c.el.matches('.fx-chat, .fx-term, .fx-code, .fx-surround, .fx-hub')) return;
+        var txt = (c.o.__readText || c.el.textContent || '').replace(/\s+/g, '');
         var n = (txt.match(/[⺀-鿿豈-﫿]/g) || []).length + Math.ceil((txt.match(/[A-Za-z0-9$%.]/g) || []).length / 2);
         if (n < 2) return;
         var stag = typeof c.o.stagger === 'number' ? c.o.stagger : 0.08, left = s.end - (c.t + (c.n > 1 ? (c.n - 1) * stag : 0) + 0.3), need = 0.8 + n / 7;

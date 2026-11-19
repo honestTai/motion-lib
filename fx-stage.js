@@ -73,7 +73,7 @@
   FX.make.backdrop = function (el) {
     el.classList.add('fx-backdrop');
     var src = attr(el, 'src', '');
-    if (src) { el.style.backgroundImage = 'url("' + src + '")'; atmos(el, src); return; }
+    if (src) { el.style.backgroundImage = 'url("' + src + '")'; if (el.hasAttribute('data-dither')) dither(el, src, false); else if (el.hasAttribute('data-depth')) depth3d(el, src); atmos(el, src); return; }
     var W = 320, H = 180, cv = document.createElement('canvas');
     cv.width = W; cv.height = H;
     var ctx = cv.getContext('2d'), r = FX.rand(num(attr(el, 'seed'), 3));
@@ -100,7 +100,8 @@
     var it = { el: el, lights: [], rays: [], layers: [], seed: num(attr(el, 'seed'), 3) }, r = FX.rand(it.seed * 131 + 7);
     var pos = function (x, y) { return 'left:' + ((x / W + 0.03) / 1.06 * 100).toFixed(3) + '%;top:' + ((y / H + 0.03) / 1.06 * 100).toFixed(3) + '%;'; };
     if (focus && img) ['top', 'bottom'].forEach(function (side) {
-      var b = mk('div', 'fx-bd-blur ' + side); b.style.backgroundImage = 'url("' + img + '")';
+      // 有景深视差时，虚化带不能再用一张静止的图（会和动起来的画面错位）：改成把它后面的画面直接虚化
+      var b = mk('div', 'fx-bd-blur ' + side + (el.__depth3d ? ' live' : '')); if (!el.__depth3d) b.style.backgroundImage = 'url("' + img + '")';
       if (!isNaN(+focus)) b.style.setProperty('--blur', +focus + 'px');
       el.appendChild(b);
     });
@@ -204,6 +205,186 @@
       tl.set(el, { opacity: 0 }, 0);
       tl.to(el, { opacity: 1, duration: 0.1, ease: 'none' }, first - 0.02);
     });
+  });
+
+  /* ═════════════════════════ 像素抖动：把照片感的背景统一成像素画 ═════════════════════════
+   * backdrop 上写 data-dither（或 data-dither="4"：每个颜色通道几档），图会按 4×4 Bayer 有序抖动降色、按 data-dither-px（默认 4）的像素块放大。
+   * AI 生成的背景图风格不一，抖动一遍以后颗粒和色阶就统一了。dither-in 让画面从双色噪点一路清晰出来。
+   * 有序抖动（每个像素只看自己和阈值表，和别的像素、上一帧都无关）参考了 HyperFrames 组件库（Apache-2.0）的 ordered-dither-pass。 */
+  var DITHER = [], BAYER4 = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(function (v) { return (v + 0.5) / 16; });
+  function rgbOf(s, d) {
+    s = String(s || '').trim(); var m = /^#([0-9a-f]{6})$/i.exec(s);
+    if (m) return [parseInt(m[1].slice(0, 2), 16), parseInt(m[1].slice(2, 4), 16), parseInt(m[1].slice(4), 16)];
+    m = /rgba?\(([^)]+)\)/.exec(s); if (m) return m[1].split(',').slice(0, 3).map(function (x) { return parseFloat(x); });
+    return d;
+  }
+  function dither(el, src, clean) {
+    if (el.__dither) { if (!clean) el.__dither.clean = false; return el.__dither; }
+    var px = num(attr(el, 'dither-px'), 4), W = Math.max(8, Math.round(el.offsetWidth / px)), H = Math.max(8, Math.round(el.offsetHeight / px));
+    var cv = mk('canvas', 'fx-bd-dither'); cv.width = W; cv.height = H;
+    var d3 = el.querySelector('.fx-bd-3d'); el.insertBefore(cv, d3 ? d3.nextSibling : el.firstChild);   // 有景深视差时盖在它上面
+    var st = stageEl(), cs = st ? g.getComputedStyle(st) : null;
+    var D = { el: el, cv: cv, ctx: cv.getContext('2d'), W: W, H: H, src: null, levels: Math.max(2, Math.min(8, num(attr(el, 'dither'), 4))), clean: !!clean, ramps: [], last: null,
+      dark: null, light: rgbOf(cs && (cs.getPropertyValue('--fx-dither-light') || cs.getPropertyValue('--fx-accent-2')), [255, 211, 77]) };
+    // 噪点的暗色：皮肤的文字色是深色就用它（像素皮肤），否则（深色皮肤的文字是浅色）用近黑
+    var ink = rgbOf(cs && (cs.getPropertyValue('--fx-dither-dark') || cs.getPropertyValue('--fx-ink')), [29, 27, 25]);
+    D.dark = (0.299 * ink[0] + 0.587 * ink[1] + 0.114 * ink[2]) / 255 < 0.5 ? ink : [10, 12, 18];
+    var img = mk('img'); img.style.display = 'none'; img.alt = ''; el.appendChild(img);
+    img.onload = function () {
+      var o = document.createElement('canvas'); o.width = W; o.height = H;
+      var x = o.getContext('2d'), k = Math.max(W / img.naturalWidth, H / img.naturalHeight), dw = img.naturalWidth * k, dh = img.naturalHeight * k;
+      x.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+      try { D.src = x.getImageData(0, 0, W, H).data; }
+      catch (e) { cv.style.display = 'none'; console.warn('FX：像素抖动读不到图片像素（用 file:// 直接打开时浏览器不允许）。用本地服务器预览，或交给渲染器渲染就正常'); return; }
+      D.out = D.ctx.createImageData(W, H); D.last = null;
+      paintDither(D, D.t || 0);
+      if (!D.clean && !D.ramps.length) Array.prototype.forEach.call(el.querySelectorAll('.fx-bd-blur'), function (b) { b.style.backgroundImage = 'url("' + cv.toDataURL() + '")'; });
+    };
+    img.src = src;
+    el.__dither = D; DITHER.push(D);
+    return D;
+  }
+  /** a：1 = 双色噪点，0 = 结束状态（clean 时是原图，否则是降色抖动后的像素画） */
+  function ditherAmount(D, t) {
+    var a = 0; D.ramps.forEach(function (r) { var p = Math.max(0, Math.min(1, (t - r.t) / r.d)); p = p < 0.5 ? 2 * p * p : 1 - 2 * (1 - p) * (1 - p); if (t < r.t + r.d) a = Math.max(a, 1 - p); if (t < r.t) a = 1; });
+    return a;
+  }
+  function paintDither(D, t) {
+    D.t = t; if (!D.src) return;
+    var a = ditherAmount(D, t), key = a.toFixed(3);
+    D.cv.style.visibility = D.clean && a === 0 ? 'hidden' : '';     // 清晰出来以后让开，露出下面会动的那层
+    if (key === D.last) return; D.last = key;
+    var S = D.src, O = D.out.data, W = D.W, H = D.H, L1 = D.levels - 1, contrast = Math.min(1, (1 - a) * 1.6), duo = Math.max(0, Math.min(1, (a - 0.55) / 0.45)),
+      cleanMix = D.clean ? Math.max(0, Math.min(1, (1 - a - 0.55) / 0.45)) : 0, dk = D.dark, lt = D.light;
+    for (var y = 0; y < H; y++) for (var x = 0; x < W; x++) {
+      var th = BAYER4[(y & 3) * 4 + (x & 3)], i = (y * W + x) * 4;
+      var vr = 0.5 + (S[i] / 255 - 0.5) * contrast, vg = 0.5 + (S[i + 1] / 255 - 0.5) * contrast, vb = 0.5 + (S[i + 2] / 255 - 0.5) * contrast;
+      var qr = Math.min(1, Math.max(0, Math.floor(vr * L1 + th) / L1)), qg = Math.min(1, Math.max(0, Math.floor(vg * L1 + th) / L1)), qb = Math.min(1, Math.max(0, Math.floor(vb * L1 + th) / L1));
+      var tone = 0.299 * vr + 0.587 * vg + 0.114 * vb > th ? 1 : 0;
+      var r = qr * 255, gg = qg * 255, b = qb * 255;
+      r += ((dk[0] + (lt[0] - dk[0]) * tone) - r) * duo; gg += ((dk[1] + (lt[1] - dk[1]) * tone) - gg) * duo; b += ((dk[2] + (lt[2] - dk[2]) * tone) - b) * duo;
+      O[i] = r + (S[i] - r) * cleanMix; O[i + 1] = gg + (S[i + 1] - gg) * cleanMix; O[i + 2] = b + (S[i + 2] - b) * cleanMix; O[i + 3] = 255;
+    }
+    D.ctx.putImageData(D.out, 0, 0);
+  }
+  def('dither-in', CAT, '画面从双色像素噪点一路变清楚（像老游戏机开机、信号接通）。写在 data-make="backdrop" 上；有 data-dither 时停在像素画，没有时停在原图。参数 dur（默认 1.6）', function (c) {
+    var src = attr(c.el, 'src', ''); if (!src) { console.warn('FX：dither-in 要写在带 data-src 的 backdrop 上'); return; }
+    var D = dither(c.el, src, !c.el.hasAttribute('data-dither'));
+    D.ramps.push({ t: c.t, d: num(c.o.dur, 1.6) }); D.last = null;
+  });
+  (FX.afterBuild = FX.afterBuild || []).push(function (tl) {
+    if (!DITHER.length) return;
+    var paint = function () { var t = tl.time(); DITHER.forEach(function (D) { if (D.ramps.length || D.last === null) paintDither(D, t); }); };
+    if (FX.onFrame) FX.onFrame(paint); paint();
+  });
+
+  /* ═════════════════════════ 景深视差：一张图也有前后 ═════════════════════════
+   * backdrop 上写 data-depth，镜头一动，近处（地板、两侧的墙、前景家具）比远处（后墙、窗外）移得多、推近时放大得多，
+   * 一张平面的图就有了纵深。深度从哪来：
+   *   data-depth="box:x0,y0,x1,y1"   室内一点透视：后墙在图里的矩形（原图像素，按 1920×1080），后墙最远，越往画面四边越近
+   *   data-depth="ground:y"          户外：y 是地平线，地平线以上是远景，往下越来越近
+   *   data-depth="xxx_depth.jpg"      一张深度图（白近黑远，和原图同构图）
+   * 镜头由一镜到底（fx-oner.js）驱动；没有一镜到底时，跟着背景自己的落位和慢推动。WebGL 绘制，读不到图片像素（file:// 打开）时退回平面图。 */
+  var DEPTHS = [];
+  var VS = 'attribute vec2 p; varying vec2 uv; void main(){ uv = vec2(p.x * 0.5 + 0.5, 0.5 - p.y * 0.5); gl_Position = vec4(p, 0.0, 1.0); }';
+  var FS = 'precision mediump float; varying vec2 uv; uniform sampler2D img; uniform sampler2D dep; uniform vec2 off; uniform float zoom; uniform float d0;' +
+    'void main(){ vec2 c = vec2(0.5); vec2 q = uv; for (int i = 0; i < 3; i++) { float d = texture2D(dep, q).r - d0; q = c + (uv - c) / (1.0 + zoom * d) + off * d; }' +
+    ' gl_FragColor = texture2D(img, clamp(q, vec2(0.001), vec2(0.999))); }';
+  function depthImage(spec, w, h) {
+    var cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    var x = cv.getContext('2d'), im = x.createImageData(w, h), D = im.data, sx = w / 1920, sy = h / 1080, m;
+    if ((m = /^box:\s*([-\d.]+),\s*([-\d.]+),\s*([-\d.]+),\s*([-\d.]+)/.exec(spec))) {
+      var x0 = +m[1] * sx, y0 = +m[2] * sy, x1 = +m[3] * sx, y1 = +m[4] * sy, vx = (x0 + x1) / 2, vy = (y0 + y1) / 2, hw = (x1 - x0) / 2, hh = (y1 - y0) / 2;
+      for (var j = 0; j < h; j++) for (var i = 0; i < w; i++) {
+        var dx = i - vx, dy = j - vy, sw = Math.min(Math.abs(dx) > 1e-6 ? hw / Math.abs(dx) : 1e9, Math.abs(dy) > 1e-6 ? hh / Math.abs(dy) : 1e9);
+        var sf = Math.min(dx > 0 ? (w - vx) / dx : dx < 0 ? vx / -dx : 1e9, dy > 0 ? (h - vy) / dy : dy < 0 ? vy / -dy : 1e9);
+        var v = sw >= 1 ? 0 : Math.max(0, Math.min(1, (1 - sw) / Math.max(1e-6, sf - sw)));
+        var k = (j * w + i) * 4; D[k] = D[k + 1] = D[k + 2] = Math.round(Math.pow(v, 0.8) * 255); D[k + 3] = 255;
+      }
+    } else if ((m = /^ground:\s*([-\d.]+)/.exec(spec))) {
+      var hy = +m[1] * sy;
+      for (var jj = 0; jj < h; jj++) { var g = jj <= hy ? 0.04 + 0.06 * (jj / Math.max(1, hy)) : 0.1 + 0.9 * Math.pow((jj - hy) / Math.max(1, h - hy), 0.85); for (var ii = 0; ii < w; ii++) { var kk = (jj * w + ii) * 4; D[kk] = D[kk + 1] = D[kk + 2] = Math.round(g * 255); D[kk + 3] = 255; } }
+    } else return null;
+    x.putImageData(im, 0, 0); return cv;
+  }
+  function depth3d(el, src) {
+    var spec = attr(el, 'depth', ''), W = Math.max(64, el.offsetWidth), H = Math.max(36, el.offsetHeight);
+    var cv = mk('canvas', 'fx-bd-3d'); cv.width = W; cv.height = H;
+    var gl = cv.getContext('webgl', { premultipliedAlpha: false, preserveDrawingBuffer: true, antialias: false });
+    if (!gl) { console.warn('FX：这台机器没有 WebGL，景深视差关掉了'); return; }
+    el.insertBefore(cv, el.firstChild);
+    var sh = function (type, code) { var o = gl.createShader(type); gl.shaderSource(o, code); gl.compileShader(o); return o; };
+    var pg = gl.createProgram(); gl.attachShader(pg, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pg, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pg); gl.useProgram(pg);
+    var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    var loc = gl.getAttribLocation(pg, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    var tex = function (unit, source) {
+      var t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t);
+      [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(function (k) { gl.texParameteri(gl.TEXTURE_2D, k, gl.CLAMP_TO_EDGE); });
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+    };
+    var U = { off: gl.getUniformLocation(pg, 'off'), zoom: gl.getUniformLocation(pg, 'zoom'), d0: gl.getUniformLocation(pg, 'd0') };
+    gl.uniform1i(gl.getUniformLocation(pg, 'img'), 0); gl.uniform1i(gl.getUniformLocation(pg, 'dep'), 1);
+    var D = { el: el, cv: cv, ready: 0, ext: false, v: [0, 0, 0], last: '', k: num(attr(el, 'depth-k'), 0.18), kz: num(attr(el, 'depth-kz'), 0.7), d0: num(attr(el, 'depth-d0'), 0.35) };
+    D.set = function (ox, oy, oz) { D.v = [ox, oy, oz]; D.draw(); };
+    D.draw = function () {
+      if (D.ready < 2) return;
+      var key = D.v.map(function (x) { return x.toFixed(4); }).join(','); if (key === D.last) return; D.last = key;
+      gl.viewport(0, 0, W, H); gl.uniform2f(U.off, D.v[0] * D.k, D.v[1] * D.k * (W / H) * 0.6); gl.uniform1f(U.zoom, D.v[2] * D.kz); gl.uniform1f(U.d0, D.d0);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    };
+    var fail = function () { cv.style.display = 'none'; D.ready = -9; console.warn('FX：景深视差读不到图片像素（用 file:// 直接打开时浏览器不允许），这次先显示平面图；交给渲染器渲染就正常'); };
+    var img = mk('img'); img.style.display = 'none'; img.alt = ''; el.appendChild(img);
+    img.onload = function () { try { tex(0, img); D.ready++; D.last = ''; D.draw(); } catch (e) { fail(); } };
+    img.src = src;
+    var dimg = depthImage(spec, 512, 288);
+    if (dimg) { tex(1, dimg); D.ready++; }
+    else { var di = mk('img'); di.style.display = 'none'; di.alt = ''; el.appendChild(di); di.onload = function () { try { tex(1, di); D.ready++; D.last = ''; D.draw(); } catch (e) { fail(); } }; di.src = spec; }
+    el.__depth3d = D; DEPTHS.push(D);
+    return D;
+  }
+  FX.depth3d = DEPTHS;
+  // 没有一镜到底在驱动时：跟着背景自己的位移和缩放（落位、慢推）产生视差
+  (FX.afterBuild = FX.afterBuild || []).push(function (tl) {
+    if (!DEPTHS.length) return;
+    var paint = function () {
+      DEPTHS.forEach(function (D) {
+        if (D.ext || !g.gsap) return;
+        var x = +g.gsap.getProperty(D.el, 'x') || 0, sc = +g.gsap.getProperty(D.el, 'scale') || 1, w = D.el.offsetWidth || 1920;
+        D.set(-x / w * 6, 0, sc - 1);
+      });
+    };
+    if (FX.onFrame) FX.onFrame(paint); paint();
+  });
+
+  /* ═════════════════════════ 光：扫光、漏光 ═════════════════════════
+   * 参考了 HyperFrames 组件库（Apache-2.0）的 light-sweep-pass 和 organic-light-leak-overlay。 */
+  function overlay(el, cls) {
+    if (g.getComputedStyle(el).position === 'static') el.style.position = 'relative';
+    var o = mk('div', cls); el.appendChild(o); return o;
+  }
+  def('light-sweep', CAT, '一道柔和的斜光从画面上扫过一次（贵气、高级感；用在结论、产品、榜单出现的那一刻）。写在分镜、背景或任何元素上。参数 dur（默认 1.6）、angle（光带角度，默认 115）、color、strength（0–1，默认 0.5）', function (c) {
+    var o = overlay(c.el, 'fx-sweep'), band = mk('i'); o.appendChild(band);
+    var col = c.o.color || '#fff4d6', k = Math.max(0, Math.min(1, num(c.o.strength, 0.5))), d = num(c.o.dur, 1.6);
+    band.style.background = 'linear-gradient(90deg, transparent, ' + col + ' 50%, transparent)';
+    band.style.transform = 'rotate(' + (num(c.o.angle, 115) - 90) + 'deg)';
+    c.tl.set(o, { opacity: 0 }, 0);
+    c.tl.set(o, { opacity: k }, c.t);
+    c.tl.fromTo(band, { xPercent: -160 }, { xPercent: 260, duration: d, ease: 'power1.inOut', immediateRender: false }, c.t);
+    c.tl.set(o, { opacity: 0 }, c.t + d);
+    c.o.dur = d;
+  });
+  def('light-leak', CAT, '胶片漏光：暖色的光斑从画面一侧漫进来又退掉（回忆、转折、情绪高点）。写在分镜或背景上。参数 dur（默认 4）、tone=warm|cool、strength（0–1，默认 0.9）', function (c) {
+    var o = overlay(c.el, 'fx-leak ' + (c.o.tone === 'cool' ? 'cool' : 'warm')), d = num(c.o.dur, 4), k = Math.max(0, Math.min(1, num(c.o.strength, 0.9)));
+    var a = mk('i', 'a'), r = mk('i', 'b'), gd = mk('i', 'c'); o.appendChild(a); o.appendChild(r); o.appendChild(gd);
+    c.tl.set(o, { opacity: 0 }, 0);
+    c.tl.fromTo(o, { opacity: 0 }, { opacity: k, duration: d * 0.24, ease: 'sine.out', immediateRender: false }, c.t + d * 0.08);
+    c.tl.to(o, { opacity: k * 0.5, duration: d * 0.2, ease: 'sine.inOut' }, c.t + d * 0.42);
+    c.tl.to(o, { opacity: 0, duration: d * 0.26, ease: 'sine.in' }, c.t + d * 0.68);
+    c.tl.fromTo(a, { xPercent: -20, scale: 0.92, rotation: -4 }, { xPercent: 18, scale: 1.1, rotation: 2, duration: d, ease: 'sine.inOut', immediateRender: false }, c.t);
+    c.tl.fromTo(r, { xPercent: 20, yPercent: -8, scale: 1.08 }, { xPercent: -16, yPercent: 8, scale: 0.94, duration: d, ease: 'sine.inOut', immediateRender: false }, c.t);
+    c.tl.fromTo(gd, { xPercent: -28, rotation: -6 }, { xPercent: 24, rotation: 4, duration: d, ease: 'sine.inOut', immediateRender: false }, c.t);
+    c.o.dur = d;
   });
 
   /* ═════════════════════════ 换场：马赛克 ═════════════════════════ */
