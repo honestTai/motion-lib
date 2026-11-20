@@ -1,5 +1,5 @@
 /*!
- * FX 动效库 v2.2  ——  给「HTML → 视频」用的声明式动效库
+ * FX 动效库 v2.3  ——  给「HTML → 视频」用的声明式动效库
  * 依赖：GSAP 3（vendor/gsap.min.js）。渲染器：HyperFrames，或任何逐帧 seek 时间线的工具。
  *
  * 用法一句话：在元素上写 data-fx="动效名@秒数(参数)"，最后调用 FX.build()。

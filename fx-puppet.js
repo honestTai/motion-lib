@@ -15,6 +15,7 @@
  *        data-make="puppet" data-src="assets/chars/host_explain" data-eyes="296,232,50,50/382,232,48,50" data-neck="335,320"
  *        data-fx="pup-talk@0.4(dur=3.2) pup-emote@2(kind=idea) pup-nod@4.5"></div>
  *   data-src 是不带后缀的路径，库会去读 <src>_m0.png / _m1.png / _m2.png；坐标都按原图像素写。
+ *   有闭眼图时写 data-lid="1"（读 <src>_blink.png），眨眼时在眼睛的位置换成闭眼图，适合精细的画风。
  *
  * 脚本用法（多姿势、自己排时间）：
  *   var p = FX.puppet(el, { size: 600, poses: { explain: { src: 'chars/host_explain', eyes: [[296,232,50,50],[382,232,48,50]], neck: [335,320] } } });
@@ -81,6 +82,11 @@
         im.onload = redraw;
         im.src = def.frames ? def.frames[i] : def.src + '_m' + i + '.png';
         p.imgs.push(im);
+      }
+      if (def.lid) {                                   // 闭眼图（<src>_blink.png，或直接给路径）：眨眼时换这张，比把眼睛压扁更适合精细的画风
+        p.lid = new Image();
+        p.lid.onload = redraw;
+        p.lid.src = typeof def.lid === 'string' ? def.lid : def.src + '_blink.png';
       }
       P[name] = p;
       if (!poseKeys.length) poseKeys.push({ t: -1, name: name });
@@ -165,6 +171,19 @@
       if (!im || !im.complete || !im.naturalWidth) return false;
       var k = SZ / im.naturalWidth;
       bx.drawImage(im, 0, 0, SZ, SZ);
+      if (p.lid && p.lid.complete && p.lid.naturalWidth && p.eyes.length) {
+        // 闭眼图除了眼睛和张嘴前的原图一样，只在眼睛的椭圆里叠上去，嘴型不受影响。
+        // 像动画里那样直接切换（半透明叠化会出现两层眼睛的重影），闭眼约 0.14 秒
+        if (blink > 0.55) {
+          bx.save();
+          bx.beginPath();
+          p.eyes.forEach(function (e) { bx.moveTo(e[0] + e[2] * 0.78, e[1]); bx.ellipse(e[0], e[1], e[2] * 0.78, e[3] * 0.78, 0, 0, Math.PI * 2); });
+          bx.clip();
+          bx.drawImage(p.lid, 0, 0, SZ, SZ);
+          bx.restore();
+        }
+        return true;
+      }
       if (blink > 0.01) p.eyes.forEach(function (e) {
         // 眼睛纵向压成一条线：上方的皮肤往下拉（竖着的刘海拉长后看不出来），眼睛本身压扁，下方略微上提
         var cx = e[0], cy = e[1], w = e[2], h = e[3], mx = w * 0.16, my = h * 0.16;
@@ -368,7 +387,7 @@
     var neck = String(attr(el, 'neck', '')).split(',').map(Number), home = String(attr(el, 'home', '60,0,420')).split(',').map(Number), src = attr(el, 'src', ''), poses = {};
     var names = String(attr(el, 'poses', '')).split('/').filter(Boolean);       // data-poses="wave/point/think"：每个姿势读 <src>_<姿势>_m0.png…，眼睛和脖子位置共用
     (names.length ? names : ['base']).forEach(function (n) {
-      var p = { src: names.length ? src + '_' + n : src, eyes: eyes };
+      var p = { src: names.length ? src + '_' + n : src, eyes: eyes, lid: attr(el, 'lid', '') === '1' };
       if (neck.length === 2 && !isNaN(neck[0])) p.neck = neck;
       poses[n] = p;
     });
@@ -380,7 +399,7 @@
   var LIST = [];
   FX.make.puppet = function (el) {
     var eyes = String(attr(el, 'eyes', '')).split('/').filter(Boolean).map(function (s) { return s.split(',').map(Number); });
-    var neck = String(attr(el, 'neck', '')).split(',').map(Number), pose = { src: attr(el, 'src', ''), eyes: eyes };
+    var neck = String(attr(el, 'neck', '')).split(',').map(Number), pose = { src: attr(el, 'src', ''), eyes: eyes, lid: attr(el, 'lid', '') === '1' };
     if (neck.length === 2 && !isNaN(neck[0])) pose.neck = neck;
     el.classList.add('fx-puppet');
     el.__puppet = FX.puppet(el, { size: num(attr(el, 'size'), 600), seed: num(attr(el, 'seed'), LIST.length + 1), poses: { base: pose } });
