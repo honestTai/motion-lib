@@ -2110,6 +2110,40 @@
           });
         });
         S.own.texts.forEach(function (x) { if (SUBS && x.b.y + x.b.h > subTop + 14 && x.b.y < SH - 20) add('warn', 'under-subs', '会被字幕压住（主内容不要低于 y=' + subTop + '）：「' + x.text + '」'); });
+        if (S === B) {
+          var isBoundedBox = function (el) {
+            if (!el || el === STAGE || el === s.el || el.classList.contains('scene') || el.classList.contains('layer')) return false;
+            if (el.matches('span,b,i,em,svg,path,img,canvas,.fx-surround,.fx-hub,[data-lint="overflow-ok"]')) return false;
+            var cs = getComputedStyle(el), bw = parseFloat(cs.borderTopWidth) > 0.5 || parseFloat(cs.borderLeftWidth) > 0.5;
+            var bg = cs.backgroundColor, hasBg = (cs.backgroundImage && cs.backgroundImage !== 'none') || (bg && bg !== 'transparent' && !/,\s*0\)$/.test(bg));
+            if (!bw && !hasBg) return false;
+            var rb = box(el.getBoundingClientRect());
+            return rb.w > 40 && rb.h > 28 && rb.w * rb.h < SW * SH * 0.85;
+          };
+          S.own.texts.forEach(function (x) {
+            var anc = x.el;
+            while (anc && anc !== s.el && !isBoundedBox(anc)) anc = anc.parentElement;
+            if (!anc || anc === s.el || anc.closest('.fx-surround, .fx-hub')) return;
+            var ab = box(anc.getBoundingClientRect());
+            if (x.b.x < ab.x - 4 || x.b.x + x.b.w > ab.x + ab.w + 4 || x.b.y < ab.y - 6 || x.b.y + x.b.h > ab.y + ab.h + 6) {
+              add('error', 'box-overflow', '元素超出框外：「' + x.text + '」超出了父容器边界');
+            }
+          });
+          var fxDecos = s.el.querySelectorAll('.fx-sweep, .fx-sheen, .fx-leak');
+          Array.prototype.forEach.call(fxDecos, function (d) { d.style.display = 'none'; });
+          Array.prototype.forEach.call(s.el.querySelectorAll('*'), function (el) {
+            if (!isBoundedBox(el) || el.closest('.fx-surround, .fx-hub, .fx-sweep, .fx-sheen, .fx-leak, .pbar')) return;
+            var cs = getComputedStyle(el);
+            if (cs.visibility === 'hidden' || cs.display === 'none' || opacityOf(el) < 0.3) return;
+            if (el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 4) {
+              add('error', 'box-overflow', '内容超出框宽：「' + (el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 20) + '」（内容宽 ' + el.scrollWidth + 'px > 容器宽 ' + el.clientWidth + 'px）');
+            }
+            if (el.clientHeight > 0 && cs.overflowY !== 'visible' && el.scrollHeight > el.clientHeight + 6) {
+              add('error', 'box-overflow', '内容超出框高被截断：「' + (el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 20) + '」（内容高 ' + el.scrollHeight + 'px > 容器高 ' + el.clientHeight + 'px）');
+            }
+          });
+          Array.prototype.forEach.call(fxDecos, function (d) { d.style.display = ''; });
+        }
         var T = S.own.texts;
         for (var a = 0; a < T.length; a++) for (var b = a + 1; b < T.length; b++) {
           var p = T[a], q = T[b];

@@ -665,7 +665,7 @@ html, body { width: var(--fx-w); height: var(--fx-h); overflow: hidden; backgrou
 
 /* ───────── 像素抖动、扫光、漏光（fx-stage.js） ───────── */
 .fx-backdrop canvas.fx-bd-dither { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
-.fx-sweep { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 6; mix-blend-mode: screen; }
+.fx-sweep { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; pointer-events: none; z-index: 6; mix-blend-mode: screen; }
 .fx-sweep i { position: absolute; top: -50%; left: 0; width: 34%; height: 200%; filter: blur(18px); }
 .fx-leak { position: absolute; inset: -16%; overflow: hidden; pointer-events: none; z-index: 6; mix-blend-mode: screen; opacity: 0; }
 .fx-leak i { position: absolute; inset: -20%; }
@@ -727,8 +727,9 @@ html, body { width: var(--fx-w); height: var(--fx-h); overflow: hidden; backgrou
 .theme-gold .fx-house-ground { background: linear-gradient(#141210, #0a0908 40%, #050505); box-shadow: inset 0 18px 0 #1f1a14; }
 
 /* ───────── 榜单（配合 reorder）：一列名次条 ───────── */
-.fx-rank { display: flex; flex-direction: column; gap: 14px; }
-.fx-rank > div { position: relative; display: flex; align-items: center; gap: 22px; padding: 12px 28px; min-width: 620px; background: var(--fx-card); color: var(--fx-card-ink); border-radius: 14px; box-shadow: var(--fx-card-shadow); font-size: 44px; font-weight: 800; white-space: nowrap; }
+.fx-rank { display: flex; flex-direction: column; gap: 14px; max-width: 100%; box-sizing: border-box; }
+.fx-rank > div { position: relative; display: flex; align-items: center; gap: 22px; padding: 12px 28px; min-width: 0; width: 100%; max-width: 100%; box-sizing: border-box; background: var(--fx-card); color: var(--fx-card-ink); border-radius: 14px; box-shadow: var(--fx-card-shadow); font-size: 44px; font-weight: 800; white-space: nowrap; }
+.scene > .fx-rank > div { min-width: 620px; width: auto; }
 .fx-rank > div b { margin-left: auto; font-family: var(--fx-font-num); font-size: 1.5em; line-height: 1; }
 .fx-rank > div i { font-style: normal; font-size: .72em; opacity: .65; font-weight: 600; }
 .theme-pixel .fx-rank > div { border-radius: 0; border: 5px solid #1d1b19; box-shadow: 7px 7px 0 #1d1b19; font-family: var(--fx-font-pixel); font-weight: 400; }
