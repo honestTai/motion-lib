@@ -46,10 +46,10 @@
 <!-- STATS:START -->
 | | 數量 |
 |---|---|
-| 動效 | **217** 種（入場 26 · 退場 10 · 強調 41 · 文字 9 · 資料 7 · 鏡頭 14 · 角色 25 · 剪紙 10 · 粒子 8 · 3D 12 · 空間 21 · 舞台 10 · 手繪 5 · 對話 8 · 圖解 3 · 形狀 3 · 聲音 1 · 元件 4） |
-| 轉場 | **23** 種 |
-| 元件產生器 | **40** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape`） |
-| 外觀主題 | **6** 套（白紫科技 · 黑金電影 · 像素復古 · 剪紙拼貼 · 深空粒子 · 演播室） |
+| 動效 | **247** 種（入場 26 · 退場 10 · 強調 41 · 文字 9 · 資料 7 · 鏡頭 14 · 角色 25 · 剪紙 10 · 粒子 8 · 3D 12 · 立體 30 · 空間 21 · 舞台 10 · 手繪 5 · 對話 8 · 圖解 3 · 形狀 3 · 聲音 1 · 元件 4） |
+| 轉場 | **24** 種 |
+| 元件產生器 | **58** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape` `phone3d` `card3d` `box3d` `layers3d` `deck3d` `wall3d` `flap3d` `letterdeck` `sleeve3d` `carousel3d` `slabs3d` `coins3d` `timeline3d` `paperstack` `callouts3d` `youarehere` `calgrid3d` `ctabar`） |
+| 外觀主題 | **7** 套（白紫科技 · 黑金電影 · 像素復古 · 剪紙拼貼 · 深空粒子 · 演播室 · 白底立體） |
 <!-- STATS:END -->
 
 <details open>
@@ -350,7 +350,7 @@ node sfx.mjs --audition out/               # 每套音色匯出一條試聽檔
 ---
 
 <!-- CATALOG:START -->
-## 動效目錄（217 種動效 + 23 種轉場）
+## 動效目錄（247 種動效 + 24 種轉場）
 
 > 本節由 `node gen-readme.mjs` 從 `fx.js` 自動產生，請勿手動修改。
 > 所有動效都支援通用參數 `dur`（時長）、`ease`（緩動）、`stagger`（錯峰）；下表只列出各自特有的參數。
@@ -587,6 +587,43 @@ node sfx.mjs --audition out/               # 每套音色匯出一條試聽檔
 | `cam3d` | 移動攝影機：從目前位置飛到新位置，同時把視線轉向新目標。參數 x / y / z=飛到哪、lx / ly / lz=看向哪、fov=視角、dur、ease（dur=0 就是直接切過去）。沒寫的參數維持不變 |
 | `orbit3d` | 環繞鏡頭：攝影機繞著目標轉圈，可以同時拉近 / 升高。參數 turn=轉多少度（負數反向）、from=起始角度（不寫就從目前位置開始）、r=結束時離目標多遠、h=結束時的高度、lx / ly / lz=繞著哪裡轉、dur、ease |
 
+### 立體 (30)
+
+白底立體影棚與白格牌桌動效，需要額外載入 `fx-desk3d.js`（搭配 `theme-white3d` 純白無影棚或 `theme-white3d desk` 白格立體桌面）。提供真厚度 3D 手機（`phone3d`）、雙面厚邊撲克/拍立得卡（`card3d`）、六面體包裝盒（`box3d`）、三維爆炸分層（`layers3d`）、馬蹄弧厚牌堆（`deck3d`）、傾斜懸浮卡片牆（`wall3d`）與機械翻牌格（`flap3d`），所有姿態與檯面投影隨 Z 軸高度即時聯動。
+
+| 名稱 | 作用 / 參數 |
+|---|---|
+| `pose-3d` | 立體姿態推演：把 `phone3d` / `card3d` / `box3d` 或普通卡片推到指定 3D 傾角與高度，檯面投影自動隨高度拉遠擴散。參數 ry / rx / rz（角度）、z（抬升高度 px）、s（縮放）、x / y、dur |
+| `flip-3d` | 真 3D 騰空翻面：把 `card3d`（或帶 `.front` / `.back` 的雙面徽章）躍起抬高 Z 軸、空中翻轉 180° 後落回白底桌面，翻到 90° 時投影拉遠變柔、落地收緊。參數 lift（預設 110）、dur（預設 0.72） |
+| `deal-arc` | 厚牌堆弧形發牌：寫在 `data-make="deck3d"` 上，牌從厚牌堆頂上一張接一張沿 3D 馬蹄弧或扇形滑到位。參數 dur（預設 1.1） |
+| `deck-gather` | 散牌交錯收攏歸堆：寫在 `data-make="deck3d"` 上，把鋪開的弧形/馬蹄牌陣重新收攏疊回一整摞厚牌磚。參數 dur（預設 0.85） |
+| `letter-shuffle` | 單字撲克牌陣洗牌變色：寫在 `data-make="letterdeck"` 上，大括號標的重點字牌騰空翻轉染紅並微傾。參數 dur（預設 0.55） |
+| `sleeve-draw` | 牌盒開口滑出厚牌：寫在 `data-make="sleeve3d"` 上，外層立體黑盒左滑讓位，內部整摞厚牌向右抽出並扇開首張。參數 dur（預設 0.9） |
+| `grid-hero` | 多宮格牌陣越級放大：把第 i 張（從 1 數；i=0 收回）沿 Z 軸高高托起居中放大，其餘卡片退後柔化。參數 i、s（預設 1.65）、dur |
+| `carousel-next` | 檯面拍立得連切輪播：寫在 `data-make="carousel3d"` 上，主展卡左滑退場、右側傾斜預告卡扶正入主位，底部手牌同步微動。參數 i 或 steps、dur |
+| `card-storm` | 3D 卡片螺旋風暴：容器內多張卡片在三維空間沿螺旋軌道高速飛舞，前景帶景深虛化掠過鏡頭。參數 dur（預設 2.6）、r（預設 320） |
+| `box-drop` | 立體盒重力落桌：六面體 `box3d` 從高處帶微傾砸落白底桌面，落地微彈穩住、接觸投影壓實。參數 drop（預設 220）、dur（預設 0.68） |
+| `slab-shatter` | 3D 厚石碑骨牌撞碎：寫在 `data-make="slabs3d"` 上，厚板依次傾倒撞擊後炸裂成數十塊 3D 碎片飛散。參數 dur（預設 1.35） |
+| `coin-drop` | 3D 立體籌碼/金幣拋灑彈跳：寫在 `data-make="coins3d"` 上，帶圓邊厚度的金幣翻滾落下彈跳。參數 dur（預設 0.78） |
+| `polaroid-eject` | 拍立得相紙吐出 + 進度條讀滿：`card3d` 相紙從上方滑出微傾落位，底部進度條推進至 100%。參數 dur（預設 0.9） |
+| `layer-explode` | 三維爆炸展開：寫在 `data-make="layers3d"` 上，原本壓合的多層透視平板沿垂直軸拉開間距，四角虛線輔助線與左側水平引線同步生長。參數 dur（預設 0.9） |
+| `layer-focus` | 分層點亮聚焦：寫在 `data-make="layers3d"` 上，抬高並點亮第 i 層（從底往上 1..N；i=0 全部恢復），其餘層柔和退讓。參數 i、dur |
+| `board-lay` | 面板後仰變 3D 時間軸：寫在 `data-make="timeline3d"` 上，面板向後仰倒 56° 鋪成軌道，內部卡片立起並滑過播放指針。參數 dur（預設 1.2） |
+| `stack-print` | 白紙複印疊厚 + 衰減條聯動：寫在 `data-make="paperstack"` 上，白紙連續飛入疊高，底部新鮮感進度條同步跌至 `to%`。參數 to（預設 62）、dur（預設 1.4） |
+| `lock-callouts` | 四角取景框鎖定 + 多分支引線展開：寫在 `data-make="callouts3d"` 上，取景角標收縮鎖定，左側水平引線依次打出。參數 dur（預設 0.7） |
+| `pin-move` | 全片路標游標推進：寫在 `data-make="youarehere"` 上，紅色 `YOU ARE HERE` 游標從 `from` 滑到 `to`（0–1）。參數 from、to、dur |
+| `wall-pull` | 立體卡片牆拉遠/推進：寫在 `data-make="wall3d"` 上，從單張正對特寫平滑拉遠並傾斜俯視整面 3D 懸浮卡片牆（`dir=in` 則反向推進）。參數 dur（預設 1.25）、zoom（預設 2.3） |
+| `rig-focus` | 多樣機立體移焦：寫在放了多台樣機/多欄盲測的容器上，講到第 i 件（1..N；i=0 恢復同台全景）時它朝鏡頭轉正並前推放大，其餘側轉退後。參數 i、s（預設 1.06）、dur |
+| `phone-split` | 真機居中特寫分身雙欄：3D 手機先在中央大特寫，隨後橫移歸位並展開旁邊的橫屏副卡。參數 dur（預設 0.78） |
+| `screen-pop` | 螢幕內局部切片剝離放大：把取證行（`.fx-pop-slice` 或 `to=#id`）沿 +Z 軸浮出螢幕外放大並投下深陰影。參數 to、s（預設 1.12）、dur |
+| `phone-wave` | 多色豎屏真機陣列波浪排開：寫在一排 `phone3d` 容器上，多台手機呈骨牌波浪依次立起陳列。參數 dur（預設 0.65）、stagger（預設 0.08） |
+| `float-pop` | 白底懸浮彈出：評語膠囊（`.fx-float-pill`）或打分卡（`.fx-score-card`）從貼地微縮狀態沿 Z 軸彈起懸浮，撐開柔和影棚空氣陰影。參數 dur（預設 0.46） |
+| `flap-to` | 機械翻牌跳字：寫在 `data-make="flap3d"` 上，把每位翻牌格機械折頁翻到 `to`（千分位逗號在參數裡可寫底線如 `10_000+`）指定的新文字。參數 to、dur（預設 0.36）、stagger（預設 0.06） |
+| `cal-flip` | 30 天日曆翻牌矩陣 + 數字狂飆：寫在 `data-make="calgrid3d"` 上，小藍牌按天翻成日曆格，頂部指標同步滾到 `to`。參數 to（預設 18862）、dur（預設 1.6） |
+| `bubble-pop3d` | 手機聊天氣泡破框懸浮彈出：對話氣泡（`.fx-pop-bub`）從傾斜手機螢幕逐層躍出到半空 Z 軸。參數 dur（預設 0.5） |
+| `cta-click` | 白底互動膠囊游標點擊 + 爆彩帶：寫在 `data-make="ctabar"` 上，滑鼠飛入點擊切換為已關注/已發送並炸出彩片。參數 dur（預設 0.9） |
+| `desk-invert` | 白格桌面 ⇄ 暗黑金格反相：瞬間切換為深色暗金網格桌面，`mode=reset` 恢復白格桌面。參數 mode=dark/reset |
+
 ### 空間 (21)
 
 世界畫布、相機與圖片組動效，需要額外載入 `fx-world.js`。在根元素寫上 `data-world`，所有分鏡就變成同一塊大畫布上的機位，換分鏡 = 鏡頭走過去。鏡頭類動效需要 `data-world`；焦點類和圖片組類在任何頁面都能用。
@@ -698,7 +735,7 @@ node sfx.mjs --audition out/               # 每套音色匯出一條試聽檔
 | `check` | 清單打勾：搭配 .fx-check 元件，勾畫出來、文字變實 |
 | `toggle` | 撥動開關：搭配 data-make="switches"，把第 i 個開關（支援 2/3/5 批次）撥到開(on=1)或關(on=0)。參數 i、on=0/1、stagger |
 
-### 轉場 (23)
+### 轉場 (24)
 
 寫在**後一個**場景上：`<section class="scene" data-in="blur-cross(dur=0.5)">`。
 
@@ -727,4 +764,5 @@ node sfx.mjs --audition out/               # 每套音色匯出一條試聽檔
 | `cam-to` | 世界畫布專用（預設）：鏡頭斜著推到下一個機位，先往後拉一點再推進，先慢再快再慢。參數 dur（0.6–0.9）、arc（路上多繞幾度，預設 8）、pull（回拉幅度，預設 0.07） |
 | `cam-jump` | 世界畫布專用：鏡頭直接跳到下一個機位（硬切），只在換大章節時用 |
 | `mosaic` | 馬賽克換場：紙色方塊從上往下隨機蓋滿，再隨機揭開新場景；方塊在演員和常駐層下面，主持人不會被蓋住（換章節、換場景背景時用）。參數 cols（一行幾塊，預設 24）、color、dur、seed |
+| `card-wipe` | 3D 巨卡貼臉擦鏡轉場（普通模式與世界畫布通用）：超大雙面厚邊撲克從鏡頭極近處翻滾掠過遮滿全螢幕，無縫帶出下一幕。參數 dur（預設 0.78）、emblem（預設 A）、color |
 <!-- CATALOG:END -->

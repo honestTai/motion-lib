@@ -46,10 +46,10 @@
 <!-- STATS:START -->
 | | Count |
 |---|---|
-| Effects | **217** (Enter 26 · Exit 10 · Emphasis 41 · Text 9 · Data 7 · Camera 14 · Character 25 · Papercut 10 · Particles 8 · 3D 12 · Space 21 · Stage 10 · Hand-drawn 5 · Chat & code 8 · Diagrams 3 · Shapes 3 · Sound 1 · Components 4) |
-| Transitions | **23** |
-| Component generators | **40** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape`) |
-| Skins | **6** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles · studio) |
+| Effects | **247** (Enter 26 · Exit 10 · Emphasis 41 · Text 9 · Data 7 · Camera 14 · Character 25 · Papercut 10 · Particles 8 · 3D 12 · White 3D 30 · Space 21 · Stage 10 · Hand-drawn 5 · Chat & code 8 · Diagrams 3 · Shapes 3 · Sound 1 · Components 4) |
+| Transitions | **24** |
+| Component generators | **58** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape` `phone3d` `card3d` `box3d` `layers3d` `deck3d` `wall3d` `flap3d` `letterdeck` `sleeve3d` `carousel3d` `slabs3d` `coins3d` `timeline3d` `paperstack` `callouts3d` `youarehere` `calgrid3d` `ctabar`) |
+| Skins | **7** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles · studio · white 3D) |
 <!-- STATS:END -->
 
 <details open>
@@ -638,7 +638,7 @@ For flat rounded 2D SVG characters, [`fx-rig.js`](fx-rig.js) provides 2D two-bon
 ---
 
 <!-- CATALOG:START -->
-## Effect catalog (217 effects + 23 transitions)
+## Effect catalog (247 effects + 24 transitions)
 
 > This section is generated from `fx.js` by `node gen-readme.mjs`. Do not edit it by hand.
 > All effects accept the common parameters `dur` (duration), `ease` (easing) and `stagger`; the tables below list only each effect's own parameters.
@@ -875,6 +875,43 @@ Real 3D scenes (three.js); requires loading the extra `vendor/three-fx.min.js` a
 | `cam3d` | Move the camera: fly from the current position to a new one while turning the view toward a new target. Params: x / y / z=where to fly to, lx / ly / lz=where to look, fov=field of view, dur, ease (dur=0 cuts straight there). Any parameter you omit stays unchanged |
 | `orbit3d` | Orbit camera: the camera circles a target, optionally moving in or rising at the same time. Params: turn=degrees to turn (negative goes the other way), from=start angle (omit to start from the current position), r=distance from the target at the end, h=height at the end, lx / ly / lz=what to circle around, dur, ease |
 
+### White 3D (30)
+
+Tactile 3D white-studio & grid-desk motion, loaded from `fx-desk3d.js` (paired with `theme-white3d` or `theme-white3d desk`). Provides extruded 3D phones (`phone3d`), thick double-sided cards (`card3d`), 6-face boxes (`box3d`), exploded isometric layer stacks (`layers3d`), curved card decks (`deck3d`), tilted floating card walls (`wall3d`) and mechanical split-flap counters (`flap3d`), with floor shadows linked to Z-height.
+
+| Name | What it does / parameters |
+|---|---|
+| `pose-3d` | 3D pose transition: moves a `phone3d`, `card3d`, `box3d` or card to target 3D angles and Z-height while shifting and diffusing its floor shadow. Params: ry / rx / rz, z, s, x / y, dur |
+| `flip-3d` | Mid-air 3D flip: lifts a `card3d` (or `.front`/`.back` badge) in Z, flips 180° in air with dynamic shadow spread, and lands back on the white desk. Params: lift (default 110), dur (default 0.72) |
+| `deal-arc` | Curved deck deal: deals thick cards from a stacked pile out along a 3D horseshoe or fan arc on `data-make="deck3d"`. Param: dur (default 1.1) |
+| `deck-gather` | Gather deck back into a stack: sweeps spread/curved cards on `data-make="deck3d"` back into a neat thick deck brick. Param: dur (default 0.85) |
+| `letter-shuffle` | Poker letter-tile shuffle: bounces `data-make="letterdeck"` tiles and flips `{highlighted}` character cards red with a playful tilt. Param: dur (default 0.55) |
+| `sleeve-draw` | Draw thick deck from slipcase: slides the 3D outer box of `data-make="sleeve3d"` aside while drawing out the inner stack of cards. Param: dur (default 0.9) |
+| `grid-hero` | Grid card Z-promotion: elevates card i (1..N; 0 restores) from a grid into center-stage foreground while softening surrounding cards. Params: i, s (default 1.65), dur |
+| `carousel-next` | Tabletop Polaroid carousel: advances `data-make="carousel3d"` to card i (or `steps` ahead) while rippling the bottom poker hand. Params: i, steps, dur |
+| `card-storm` | 3D card vortex storm: swirls child cards along a 3D spiral with foreground depth-of-field blur (great for information overload). Params: dur (default 2.6), r (default 320) |
+| `box-drop` | 3D box gravity drop: drops a 6-face `box3d` onto the white surface with settle bounce and contact shadow compression. Params: drop (default 220), dur (default 0.68) |
+| `slab-shatter` | 3D monolith domino & shatter: topples `data-make="slabs3d"` thick slabs into one another and blasts them into tumbling 3D shards. Param: dur (default 1.35) |
+| `coin-drop` | 3D coin / chip toss & bounce: drops thick metallic `data-make="coins3d"` with 3D spin and tightening floor shadows. Param: dur (default 0.78) |
+| `polaroid-eject` | Polaroid slot eject + progress bar: slides a `card3d` Polaroid out from above and fills its bottom progress bar to 100%. Param: dur (default 0.9) |
+| `layer-explode` | Exploded 3D stack: separates compressed plates vertically on `data-make="layers3d"` while drawing dashed corner guides and horizontal callout lines. Param: dur (default 0.9) |
+| `layer-focus` | Focus layer i: lifts and highlights layer i (1..N from bottom; 0 restores all) on `data-make="layers3d"` while dimming other layers cleanly. Params: i, dur |
+| `board-lay` | Tilt board into 3D timeline: lays `data-make="timeline3d"` back 56° onto the desk while popping clip cards upright and sweeping the playhead. Param: dur (default 1.2) |
+| `stack-print` | Paper stack print + decay bar: stacks printed sheets onto `data-make="paperstack"` while draining the freshness meter to `to%`. Params: to (default 62), dur (default 1.4) |
+| `lock-callouts` | Viewfinder lock + multi-leader callouts: snaps 4 corner brackets onto `data-make="callouts3d"` and draws horizontal leader lines. Param: dur (default 0.7) |
+| `pin-move` | Timeline pin advance: slides the red `YOU ARE HERE` pin across `data-make="youarehere"` from `from` to `to` (0–1). Params: from, to, dur |
+| `wall-pull` | 3D card wall pull-back / push-in: pulls back from a flat close-up on the center card to a tilted 3D floating card matrix on `data-make="wall3d"` (`dir=in` pushes in). Params: dur (default 1.25), zoom (default 2.3) |
+| `rig-focus` | Multi-mockup 3D focus shift: rotates item i (1..N; 0 restores ensemble) toward the camera and steps it forward in Z while angling siblings back. Params: i, s (default 1.06), dur |
+| `phone-split` | Hero phone center-to-split: starts with the 3D phone centered large, then glides it aside to reveal its companion card. Param: dur (default 0.78) |
+| `screen-pop` | On-screen slice pop-out: peels a highlighted row (`.fx-pop-slice` or `to=#id`) out of a device screen along +Z with deep shadow. Params: to, s (default 1.12), dur |
+| `phone-wave` | 3D phone wave lineup: ripples a row of `phone3d` mockups upright in a staggered 3D domino wave. Params: dur (default 0.65), stagger (default 0.08) |
+| `float-pop` | White-studio Z-pop: pops floating pills (`.fx-float-pill`) or score cards (`.fx-score-card`) forward in Z with soft studio elevation shadow. Param: dur (default 0.46) |
+| `flap-to` | Mechanical split-flap advance: flips tiles on `data-make="flap3d"` to `to` (or `data-to`; write `_` for commas inside params, e.g. `10_000+`). Params: to, dur (default 0.36), stagger (default 0.06) |
+| `cal-flip` | 30-day calendar card flip + counter surge: flips all tiles of `data-make="calgrid3d"` while rolling the top KPI counter to `to`. Params: to (default 18862), dur (default 1.6) |
+| `bubble-pop3d` | 3D off-screen chat bubble pop: launches `.fx-pop-bub` bubbles out of a tilted phone screen into layered Z-space. Param: dur (default 0.5) |
+| `cta-click` | White-pill cursor click + confetti: flies cursor onto `data-make="ctabar"`, clicks button to completed state and bursts confetti. Param: dur (default 0.9) |
+| `desk-invert` | White desk ⇄ dark gold grid invert: flips the desk surface to dark charcoal-gold grid (`mode=reset` restores white desk). Param: mode=dark/reset |
+
 ### Space (21)
 
 World canvas, camera and image-set moves; requires loading the extra `fx-world.js`. Put `data-world` on the root element and every scene becomes a station on one big canvas: changing scenes means the camera travels there. Camera effects need `data-world`; the focus and image-set effects work on any page.
@@ -986,7 +1023,7 @@ Used together with components generated by `data-make`.
 | `check` | Checklist tick: use with the .fx-check component; the check mark is drawn and the text turns solid |
 | `toggle` | Flip switches: pair with data-make="switches" to flip switch i (supports 2/3/5 batch) ON (on=1) or OFF (on=0). Params: i, on=0/1, stagger |
 
-### Transitions (23)
+### Transitions (24)
 
 Written on the **later** scene: `<section class="scene" data-in="blur-cross(dur=0.5)">`.
 
@@ -1015,4 +1052,5 @@ Written on the **later** scene: `<section class="scene" data-in="blur-cross(dur=
 | `cam-to` | World canvas only (default): the camera travels diagonally to the next station, pulling back slightly first, slow-fast-slow. Params: dur (0.6–0.9), arc (extra degrees swung on the way, default 8), pull (pull-back amount, default 0.07) |
 | `cam-jump` | World canvas only: the camera jumps straight to the next station (hard cut); only for major chapter changes |
 | `mosaic` | Mosaic scene change: paper-coloured blocks cover the frame roughly top to bottom in random order, then uncover the new scene at random; the blocks sit below the actors and persistent overlays, so the presenter is never covered (use for chapter or backdrop changes). Params: cols (blocks per row, default 24), color, dur, seed |
+| `card-wipe` | 3D giant poker-card lens wipe (works in both normal scenes and `data-world`): sweeps an oversized double-sided 3D card right across the camera to reveal the next scene. Params: dur (default 0.78), emblem (default A), color |
 <!-- CATALOG:END -->

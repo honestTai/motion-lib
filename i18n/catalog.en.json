@@ -68,6 +68,10 @@
       "title": "3D",
       "intro": "Real 3D scenes (three.js); requires loading the extra `vendor/three-fx.min.js` and `fx-3d.js`. Write them on a stage made with `data-make=\"stage3d\"`: some effects put objects into the stage, others move the camera (`cam3d`, `orbit3d`). Common parameters for objects: `dur` (how long it exists), `fade` / `out` (fade in / out seconds), `px` / `py` / `pz` (placement), `s` (overall scale), `seed`."
     },
+    "立体": {
+      "title": "White 3D",
+      "intro": "Tactile 3D white-studio & grid-desk motion, loaded from `fx-desk3d.js` (paired with `theme-white3d` or `theme-white3d desk`). Provides extruded 3D phones (`phone3d`), thick double-sided cards (`card3d`), 6-face boxes (`box3d`), exploded isometric layer stacks (`layers3d`), curved card decks (`deck3d`), tilted floating card walls (`wall3d`) and mechanical split-flap counters (`flap3d`), with floor shadows linked to Z-height."
+    },
     "空间": {
       "title": "Space",
       "intro": "World canvas, camera and image-set moves; requires loading the extra `fx-world.js`. Put `data-world` on the root element and every scene becomes a station on one big canvas: changing scenes means the camera travels there. Camera effects need `data-world`; the focus and image-set effects work on any page."
@@ -86,7 +90,7 @@
     "makers": "Component generators",
     "makersLine": "**{n}** ({list})",
     "skins": "Skins",
-    "skinsLine": "**6** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles · studio)"
+    "skinsLine": "**7** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles · studio · white 3D)"
   },
   "catalog": {
     "heading": "Effect catalog ({nFx} effects + {nTrans} transitions)",
@@ -335,6 +339,37 @@
     "形状/shape-morph": "A shape smoothly turns into another (✗ into ✓, a circle into a star…), optionally changing colour. Put it on data-make=\"shape\" or on any svg holding one <path>. Params: to (a built-in shape: check cross circle square triangle star heart bolt arrow-up arrow-down play bulb, or #id of another path), color, dur (default 0.6). Needs MorphSVGPlugin",
     "形状/path-move": "Move along an SVG path, turning to follow it (a paper plane, a data packet, a delivery route). Put it on the moving element. Params: path=#path id (required), dur (default 1.6), rotate=0 (no turning), draw=1 (draw the path as it goes), from / to (which part of the path, 0–1). Needs MotionPathPlugin",
     "形状/wiggle": "A springy wiggle that settles (when something is called out, mocked or goes wrong). Params: n (how many swings, default 6), amp (degrees, default 8), dur (default 0.8), prop=rotation|x. Needs CustomEase + CustomWiggle",
-    "数据/reorder": "A ranking changes: the children of a column (or row) slide to their new places; the one that climbs grows slightly. Put it on the list container. Params: order (the new order as original positions separated by /, e.g. 3/1/2), dur (default 0.8)"
+    "数据/reorder": "A ranking changes: the children of a column (or row) slide to their new places; the one that climbs grows slightly. Put it on the list container. Params: order (the new order as original positions separated by /, e.g. 3/1/2), dur (default 0.8)",
+    "立体/pose-3d": "3D pose transition: moves a `phone3d`, `card3d`, `box3d` or card to target 3D angles and Z-height while shifting and diffusing its floor shadow. Params: ry / rx / rz, z, s, x / y, dur",
+    "立体/flip-3d": "Mid-air 3D flip: lifts a `card3d` (or `.front`/`.back` badge) in Z, flips 180° in air with dynamic shadow spread, and lands back on the white desk. Params: lift (default 110), dur (default 0.72)",
+    "立体/deal-arc": "Curved deck deal: deals thick cards from a stacked pile out along a 3D horseshoe or fan arc on `data-make=\"deck3d\"`. Param: dur (default 1.1)",
+    "立体/box-drop": "3D box gravity drop: drops a 6-face `box3d` onto the white surface with settle bounce and contact shadow compression. Params: drop (default 220), dur (default 0.68)",
+    "立体/layer-explode": "Exploded 3D stack: separates compressed plates vertically on `data-make=\"layers3d\"` while drawing dashed corner guides and horizontal callout lines. Param: dur (default 0.9)",
+    "立体/layer-focus": "Focus layer i: lifts and highlights layer i (1..N from bottom; 0 restores all) on `data-make=\"layers3d\"` while dimming other layers cleanly. Params: i, dur",
+    "立体/rig-focus": "Multi-mockup 3D focus shift: rotates item i (1..N; 0 restores ensemble) toward the camera and steps it forward in Z while angling siblings back. Params: i, s (default 1.06), dur",
+    "立体/wall-pull": "3D card wall pull-back / push-in: pulls back from a flat close-up on the center card to a tilted 3D floating card matrix on `data-make=\"wall3d\"` (`dir=in` pushes in). Params: dur (default 1.25), zoom (default 2.3)",
+    "立体/float-pop": "White-studio Z-pop: pops floating pills (`.fx-float-pill`) or score cards (`.fx-score-card`) forward in Z with soft studio elevation shadow. Param: dur (default 0.46)",
+    "立体/flap-to": "Mechanical split-flap advance: flips tiles on `data-make=\"flap3d\"` to `to` (or `data-to`; write `_` for commas inside params, e.g. `10_000+`). Params: to, dur (default 0.36), stagger (default 0.06)",
+    "立体/deck-gather": "Gather deck back into a stack: sweeps spread/curved cards on `data-make=\"deck3d\"` back into a neat thick deck brick. Param: dur (default 0.85)",
+    "立体/letter-shuffle": "Poker letter-tile shuffle: bounces `data-make=\"letterdeck\"` tiles and flips `{highlighted}` character cards red with a playful tilt. Param: dur (default 0.55)",
+    "立体/sleeve-draw": "Draw thick deck from slipcase: slides the 3D outer box of `data-make=\"sleeve3d\"` aside while drawing out the inner stack of cards. Param: dur (default 0.9)",
+    "立体/grid-hero": "Grid card Z-promotion: elevates card i (1..N; 0 restores) from a grid into center-stage foreground while softening surrounding cards. Params: i, s (default 1.65), dur",
+    "立体/carousel-next": "Tabletop Polaroid carousel: advances `data-make=\"carousel3d\"` to card i (or `steps` ahead) while rippling the bottom poker hand. Params: i, steps, dur",
+    "立体/card-storm": "3D card vortex storm: swirls child cards along a 3D spiral with foreground depth-of-field blur (great for information overload). Params: dur (default 2.6), r (default 320)",
+    "立体/slab-shatter": "3D monolith domino & shatter: topples `data-make=\"slabs3d\"` thick slabs into one another and blasts them into tumbling 3D shards. Param: dur (default 1.35)",
+    "立体/coin-drop": "3D coin / chip toss & bounce: drops thick metallic `data-make=\"coins3d\"` with 3D spin and tightening floor shadows. Param: dur (default 0.78)",
+    "立体/polaroid-eject": "Polaroid slot eject + progress bar: slides a `card3d` Polaroid out from above and fills its bottom progress bar to 100%. Param: dur (default 0.9)",
+    "立体/board-lay": "Tilt board into 3D timeline: lays `data-make=\"timeline3d\"` back 56° onto the desk while popping clip cards upright and sweeping the playhead. Param: dur (default 1.2)",
+    "立体/stack-print": "Paper stack print + decay bar: stacks printed sheets onto `data-make=\"paperstack\"` while draining the freshness meter to `to%`. Params: to (default 62), dur (default 1.4)",
+    "立体/lock-callouts": "Viewfinder lock + multi-leader callouts: snaps 4 corner brackets onto `data-make=\"callouts3d\"` and draws horizontal leader lines. Param: dur (default 0.7)",
+    "立体/pin-move": "Timeline pin advance: slides the red `YOU ARE HERE` pin across `data-make=\"youarehere\"` from `from` to `to` (0–1). Params: from, to, dur",
+    "立体/phone-split": "Hero phone center-to-split: starts with the 3D phone centered large, then glides it aside to reveal its companion card. Param: dur (default 0.78)",
+    "立体/screen-pop": "On-screen slice pop-out: peels a highlighted row (`.fx-pop-slice` or `to=#id`) out of a device screen along +Z with deep shadow. Params: to, s (default 1.12), dur",
+    "立体/phone-wave": "3D phone wave lineup: ripples a row of `phone3d` mockups upright in a staggered 3D domino wave. Params: dur (default 0.65), stagger (default 0.08)",
+    "立体/cal-flip": "30-day calendar card flip + counter surge: flips all tiles of `data-make=\"calgrid3d\"` while rolling the top KPI counter to `to`. Params: to (default 18862), dur (default 1.6)",
+    "立体/bubble-pop3d": "3D off-screen chat bubble pop: launches `.fx-pop-bub` bubbles out of a tilted phone screen into layered Z-space. Param: dur (default 0.5)",
+    "立体/cta-click": "White-pill cursor click + confetti: flies cursor onto `data-make=\"ctabar\"`, clicks button to completed state and bursts confetti. Param: dur (default 0.9)",
+    "立体/desk-invert": "White desk ⇄ dark gold grid invert: flips the desk surface to dark charcoal-gold grid (`mode=reset` restores white desk). Param: mode=dark|reset",
+    "转场/card-wipe": "3D giant poker-card lens wipe (works in both normal scenes and `data-world`): sweeps an oversized double-sided 3D card right across the camera to reveal the next scene. Params: dur (default 0.78), emblem (default A), color"
   }
 }

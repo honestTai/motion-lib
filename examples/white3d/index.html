@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>motion-lib · 白底立体全系示例（18 组件 · 30 动效 · 巨卡转场）</title>
+<link rel="stylesheet" href="lib/fx.css" />
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/fx.js"></script>
+<script src="lib/fx-world.js"></script>
+<script src="lib/fx-chat.js"></script>
+<script src="lib/fx-desk3d.js"></script>
+<script src="lib/fx-sound.js"></script>
+<style>
+  .box-face { height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+  .box-face .no { font-family: var(--fx-font-num); font-size: 118px; font-weight: 800; line-height: .88; }
+  .box-face strong { display: block; font-size: 44px; font-weight: 900; line-height: 1.15; }
+  .box-face span { display: block; margin-top: 6px; font-size: 34px; opacity: .85; font-weight: 700; }
+  .arena { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; align-items: start; }
+  .arena-col { position: relative; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .mystery-pill {
+    display: inline-flex; align-items: center; justify-content: center; min-width: 230px; height: 64px; padding: 0 26px;
+    border-radius: 999px; background: #111318; color: #ffffff; font-size: 36px; font-weight: 900;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, .2);
+  }
+  .mystery-pill .back { color: #93c5fd; }
+  .phone-ui {
+    width: 100%; height: 100%; padding: 58px 24px 26px; display: flex; flex-direction: column; justify-content: space-between;
+    background: linear-gradient(180deg, #151924 0%, #0d1017 100%); color: #f8fafc;
+  }
+  .phone-ui h4 { font-size: 36px; font-weight: 900; text-align: center; }
+  .phone-ui .metric {
+    padding: 20px; border-radius: 20px; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .14); text-align: center;
+  }
+  .phone-ui .metric b { font-family: var(--fx-font-num); font-size: 80px; color: #60a5fa; line-height: 1; display: block; }
+  .phone-ui .metric span { font-size: 32px; color: #94a3b8; font-weight: 700; }
+  .storm-card {
+    width: 260px; height: 156px; border-radius: 16px; background: #ffffff; padding: 8px;
+    box-shadow: 0 22px 44px rgba(15, 23, 42, .2);
+  }
+  .storm-card img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block; }
+</style>
+</head>
+<body>
+<div id="root" class="theme-white3d desk" data-composition-id="main" data-width="1920" data-height="1080" data-fps="60"
+     data-world="snake" data-cols="4" data-tilt="5,3">
+
+  <!-- S01 · 单字扑克牌阵洗牌翻红 + 牌盒开口抽牌 + 红章盖落 -->
+  <section class="scene" data-scene="S01" data-d="5.4">
+    <div class="abs" style="left:110px;top:240px" data-make="letterdeck" data-text="知识讲解博|迎来{大洗牌}"
+         data-fx="letter-shuffle@0.5"></div>
+    <div class="abs fx-stamp" style="left:520px;top:610px;z-index:20" data-fx="stamp-in@1.4">
+      <span>我说的</span><small>WHITE 3D DECK</small>
+    </div>
+    <div class="abs" style="left:1100px;top:220px" data-make="sleeve3d" data-no="01" data-title="第一批" data-sub="立体牌桌套件"
+         data-fx="sleeve-draw@2.1"></div>
+  </section>
+
+  <!-- S02 · 3D 巨卡贴脸擦镜转场 → 底部扇形手牌 + 台面拍立得连切轮播 -->
+  <section class="scene" data-scene="S02" data-d="5.6" data-in="card-wipe(emblem=A)">
+    <div class="fx-head"><i>01 · 拍立得轮播</i><h2>底部手牌托底，模板<em>连切</em>展示</h2></div>
+    <div class="abs" style="left:120px;top:268px;width:1680px;height:620px" data-make="carousel3d" data-hand="6"
+         data-fx="carousel-next@1.2(i=2) carousel-next@2.9(i=3)">
+      <img src="assets/paper.jpg" data-title="彩色几何" data-sub="数学演示" alt="">
+      <img src="assets/violet.jpg" data-title="瑞士网格" data-sub="知识科普" alt="">
+      <img src="assets/gold.jpg" data-title="双色孔版" data-sub="数据拆解" alt="">
+      <img src="assets/space.jpg" data-title="地铁线路" data-sub="逻辑导图" alt="">
+    </div>
+  </section>
+
+  <!-- S03 · 双面厚卡腾空翻面 + 拍立得相纸吐出读满进度 + 多宫格越级放大 -->
+  <section class="scene" data-scene="S03" data-d="5.6">
+    <div class="fx-head"><i>02 · 腾空翻牌</i><h2>双面厚边翻转与相纸<em>出槽</em></h2></div>
+    <div class="abs" style="left:140px;top:290px;width:1640px;height:520px;display:flex;justify-content:space-between"
+         data-fx="grid-hero@3.2(i=2,s=1.22)">
+      <div style="width:500px;height:480px" data-make="card3d" data-facedown="1" data-tilt="180,6,-3" data-polaroid="01|手账拼贴|双面厚卡"
+           data-fx="flip-3d@0.45(lift=120)">
+        <img src="assets/pixel.jpg" alt="">
+      </div>
+      <div style="width:520px;height:480px" data-make="card3d" data-tilt="-4,6,2" data-polaroid="02|牌桌洗牌|代码已上传" data-progress="1"
+           data-fx="polaroid-eject@1.2(dur=1.1)">
+        <img src="assets/promo.jpg" alt="">
+      </div>
+      <div style="width:500px;height:480px" data-make="card3d" data-facedown="1" data-back="B" data-back-color="#111318" data-tilt="180,6,3" data-polaroid="03|空间镜头|三维运镜"
+           data-fx="flip-3d@2.0(lift=120)">
+        <img src="assets/three.jpg" alt="">
+      </div>
+    </div>
+  </section>
+
+  <!-- S04 · 马蹄弧厚牌堆连续发牌 + 交错收拢归堆 + 3D 卡片螺旋风暴 -->
+  <section class="scene" data-scene="S04" data-d="5.8">
+    <div class="fx-head"><i>03 · 发牌与风暴</i><h2>马蹄弧发牌收拢，三维<em>螺旋风暴</em></h2></div>
+    <div class="abs" style="left:90px;top:230px;width:900px;height:620px"
+         data-make="deck3d" data-count="10" data-layout="horseshoe" data-dealt="0"
+         data-fx="deal-arc@0.25(dur=1.2) deck-gather@3.2(dur=0.95)"></div>
+    <div class="abs" style="left:1050px;top:260px;width:740px;height:560px" data-fx="card-storm@0.2(dur=5.2,r=250)">
+      <div class="storm-card"><img src="assets/violet.jpg" alt=""></div>
+      <div class="storm-card"><img src="assets/gold.jpg" alt=""></div>
+      <div class="storm-card"><img src="assets/paper.jpg" alt=""></div>
+      <div class="storm-card"><img src="assets/pixel.jpg" alt=""></div>
+      <div class="storm-card"><img src="assets/space.jpg" alt=""></div>
+      <div class="storm-card"><img src="assets/three.jpg" alt=""></div>
+    </div>
+  </section>
+
+  <!-- S05 · 三维爆炸分层架构台 -->
+  <section class="scene" data-scene="S05" data-d="5.6">
+    <div class="fx-head"><i>04 · 爆炸分层</i><h2>内容是根基，模板做<em>乘法</em></h2></div>
+    <div class="abs" style="left:240px;top:175px;width:1440px;height:690px"
+         data-make="layers3d" data-gap="116"
+         data-fx="layer-explode@0.2(dur=0.95) layer-focus@1.8(i=2) layer-focus@3.2(i=3) layer-focus@4.4(i=0)">
+      <div data-label="底层支撑" data-sub="BASE LAYER" data-color="#2563eb" data-tag="技术底座"></div>
+      <div data-label="模板下限" data-sub="FLOOR" data-color="#ef4444" data-tag="画面下限"></div>
+      <div data-label="你的内容本身" data-sub="CONTENT" data-color="#0f1117" data-top="card">
+        <img src="assets/promo.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:16px" alt="">
+      </div>
+    </div>
+  </section>
+
+  <!-- S06 · 立面面板后仰 56° 变 3D 剪辑时间轴轨道 + 全片路标游标 -->
+  <section class="scene" data-scene="S06" data-d="5.6">
+    <div class="fx-head"><i>05 · 立体轨道</i><h2>面板仰倒铺成<em>三维时间轴</em></h2></div>
+    <div class="abs" style="left:80px;top:240px;width:1040px;height:600px"
+         data-make="timeline3d" data-title="AI 技术支撑" data-sub="TIMELINE · 自动剪辑轨道" data-badge="AI 自动剪辑"
+         data-fx="board-lay@0.6(dur=1.3)">
+      <img src="assets/violet.jpg" alt="">
+      <img src="assets/paper.jpg" alt="">
+      <img src="assets/gold.jpg" alt="">
+    </div>
+    <div class="abs" style="left:1140px;top:410px;width:680px"
+         data-make="youarehere" data-title="全片进度" data-time="01:42 / 03:20" data-segments="6" data-at="0.3"
+         data-fx="pin-move@1.8(from=0.2,to=0.72,dur=1.1)"></div>
+  </section>
+
+  <!-- S07 · 黑金巨卡贴脸擦镜 → 桌面暗黑反相 + 3D 厚石碑多米诺撞碎 -->
+  <section class="scene" data-scene="S07" data-d="5.4" data-in="card-wipe(color=#181920,emblem=M)">
+    <div class="fx-head" data-fx="desk-invert@0.05(mode=dark) desk-invert@2.5(mode=reset)">
+      <i>06 · 反相撞碎</i><h2>打破门槛垄断，回归<em>创作平权</em></h2>
+    </div>
+    <div class="abs" style="left:370px;top:250px" data-make="slabs3d" data-labels="资本,MCN,流量"
+         data-fx="slab-shatter@0.9(dur=1.45)"></div>
+    <div class="abs card center" style="left:510px;top:360px;width:900px;height:320px;z-index:20" data-fx="float-pop@2.4">
+      <div class="t-title">创作平权</div>
+      <div class="t-body muted" style="margin-top:12px">人人都能自由表达</div>
+    </div>
+  </section>
+
+  <!-- S08 · 机械翻牌计数器 → 3D 倾斜悬浮卡片墙拉远 -->
+  <section class="scene" data-scene="S08" data-d="5.6">
+    <div class="abs" style="inset:0" data-make="wall3d" data-cols="4" data-w="450" data-h="254" data-tilt="-14,22,-8"
+         data-fx="wall-pull@1.5(dur=1.4,zoom=2.2)">
+      <div><img src="assets/violet.jpg" alt=""></div>
+      <div><img src="assets/gold.jpg" alt=""></div>
+      <div><img src="assets/pixel.jpg" alt=""></div>
+      <div><img src="assets/paper.jpg" alt=""></div>
+      <div><img src="assets/space.jpg" alt=""></div>
+      <div><img src="assets/promo.jpg" alt=""></div>
+      <div><img src="assets/three.jpg" alt=""></div>
+      <div><img src="assets/violet.jpg" alt=""></div>
+      <div><img src="assets/paper.jpg" alt=""></div>
+      <div><img src="assets/gold.jpg" alt=""></div>
+      <div><img src="assets/space.jpg" alt=""></div>
+      <div><img src="assets/pixel.jpg" alt=""></div>
+    </div>
+    <div class="abs card center" style="left:450px;top:330px;width:1020px;height:350px;background:rgba(255,255,255,.94)">
+      <div data-make="flap3d" data-value="1,000+" data-fx="flap-to@0.5(to=10_000+)"></div>
+      <div style="margin-top:20px;font-size:44px;font-weight:900">人在用 · 立体模板开源</div>
+    </div>
+  </section>
+
+  <!-- S09 · 30 天日历翻牌墙联动涨粉 + 真六面体盒落桌 + 3D 金币弹跳 -->
+  <section class="scene" data-scene="S09" data-d="5.8">
+    <div class="fx-head"><i>07 · 日历与盒币</i><h2>三十天翻牌狂飙，批次盒配<em>立体币</em></h2></div>
+    <div class="abs" style="left:110px;top:284px" data-make="calgrid3d" data-days="24" data-label="单平台涨粉"
+         data-fx="cal-flip@0.4(to=18862,dur=1.8)"></div>
+    <div class="abs" style="left:860px;top:300px;width:430px;height:460px"
+         data-make="box3d" data-depth="48" data-color="#2563eb" data-side="BATCH 02 · WHITE 3D" data-tilt="-8,38,-4"
+         data-fx="box-drop@0.8">
+      <div class="box-face"><b class="no">02</b><div><strong>第二批</strong><span>白底立体模块</span></div></div>
+    </div>
+    <div class="abs" style="left:1340px;top:300px" data-make="coins3d" data-count="5" data-symbol="$"
+         data-fx="coin-drop@1.6"></div>
+  </section>
+
+  <!-- S10 · 白纸复印叠厚衰减 + 四角取景框锁定多分支引线 -->
+  <section class="scene" data-scene="S10" data-d="5.6">
+    <div class="fx-head"><i>08 · 叠纸与取景</i><h2>告别疲劳，锁定<em>真人表达</em></h2></div>
+    <div class="abs" style="left:80px;top:240px;width:820px;height:560px"
+         data-make="paperstack" data-sheets="8" data-label="新鲜感" data-sheet-tag="AI 生成"
+         data-fx="stack-print@0.5(to=62,dur=1.5)"></div>
+    <div class="abs" style="left:940px;top:290px" data-make="callouts3d" data-items="你本人,你的面孔,你的声音"
+         data-fx="lock-callouts@1.8">
+      <img src="assets/promo.jpg" style="width:360px;height:440px;object-fit:cover;border-radius:18px;display:block" alt="">
+    </div>
+  </section>
+
+  <!-- S11 · 纯白无影棚：真机居中分身双栏 + 聊天气泡破框弹出 + 局部切片剥离 -->
+  <section class="scene" data-scene="S11" data-d="6.0">
+    <div class="fx-head"><i>09 · 影棚真机</i><h2>分身双栏，气泡与<em>取证行</em>破框</h2></div>
+    <div class="abs" style="left:110px;top:250px;width:1700px;height:620px;display:flex;align-items:center;justify-content:space-between"
+         data-fx="phone-split@0.2(dur=0.85,shift=360) rig-focus@3.6(i=1)">
+      <div style="width:310px;height:590px;margin-left:30px" data-make="phone3d" data-tilt="16,5,0" data-color="graphite">
+        <div class="phone-ui">
+          <h4>利率报告</h4>
+          <div class="metric"><b>2.96%</b><span>贷款利率</span></div>
+          <div class="metric"><b>1.20%</b><span>存款成本</span></div>
+        </div>
+      </div>
+      <div style="width:760px" data-make="code" data-title="desk3d.js" data-fx="code-focus@2.0(i=2)">
+<pre>FX.make.phone3d(el);
+paintRig(rig);
+</pre>
+      </div>
+    </div>
+    <div id="slice11" class="abs fx-pop-slice" style="left:500px;top:360px;z-index:35" data-fx="screen-pop@1.5">
+      原表取证 · 下降 0.19%
+    </div>
+    <div class="abs" style="left:500px;top:510px;display:flex;flex-direction:column;gap:18px;z-index:36"
+         data-fx="each:bubble-pop3d@2.4(stagger=0.22)">
+      <div class="fx-pop-bub">38.8 万播放</div>
+      <div class="fx-pop-bub dark">用的白底立体库</div>
+    </div>
+  </section>
+
+  <!-- S12 · 多色真机波浪列队 + 问号翻牌揭晓 + 悬浮打分卡 + 鼠标点击关注爆彩带 -->
+  <section class="scene" data-scene="S12" data-d="6.4" data-fx="cam-wide@4.8(dur=1.3)">
+    <div class="fx-head"><i>10 · 波浪展台</i><h2>多机波浪列队，点击关注<em>爆彩带</em></h2></div>
+    <div class="abs arena" style="left:140px;top:280px;width:1640px" data-fx="phone-wave@0.15">
+      <div class="arena-col">
+        <div class="mystery-pill" data-fx="flip-3d@0.9"><span class="front">? 选手 A</span><span class="back">Opus 5.5</span></div>
+        <div style="width:240px;height:430px" data-make="phone3d" data-tilt="14,5,0" data-color="graphite">
+          <img src="assets/gold.jpg" alt="">
+        </div>
+        <div class="abs fx-score-card" style="left:8px;bottom:14px;z-index:20" data-fx="float-pop@1.7">
+          <b>90<small>分</small></b><span>审美领先</span>
+        </div>
+      </div>
+      <div class="arena-col">
+        <div class="mystery-pill" data-fx="flip-3d@1.2"><span class="front">? 选手 B</span><span class="back">GPT Sol</span></div>
+        <div style="width:240px;height:430px" data-make="phone3d" data-tilt="0,5,0" data-color="silver">
+          <img src="assets/violet.jpg" alt="">
+        </div>
+        <div class="abs fx-score-card mid" style="left:8px;bottom:14px;z-index:20" data-fx="float-pop@2.0">
+          <b>50<small>分</small></b><span>中规中矩</span>
+        </div>
+      </div>
+      <div class="arena-col">
+        <div class="mystery-pill" data-fx="flip-3d@1.5"><span class="front">? 选手 C</span><span class="back">Astra</span></div>
+        <div style="width:240px;height:430px" data-make="phone3d" data-tilt="-14,5,0" data-color="blue">
+          <img src="assets/pixel.jpg" alt="">
+        </div>
+        <div class="abs fx-score-card low" style="left:8px;bottom:14px;z-index:20" data-fx="float-pop@2.3">
+          <b>20<small>分</small></b><span>版式单调</span>
+        </div>
+      </div>
+    </div>
+    <div class="abs" style="left:1180px;top:126px;z-index:40" data-make="ctabar" data-kind="follow" data-text="全套立体组件"
+         data-fx="cta-click@3.0"></div>
+  </section>
+
+  <!-- 常驻层：工程坐标栏 + 进度线 -->
+  <section class="scene overlay" data-t="0" data-d="68.4">
+    <div class="fx-coord-bar">
+      <span>// WHITE-3D · 18 MAKERS · 30 EFFECTS · CARD-WIPE</span>
+      <b>motion-lib v2.4</b>
+    </div>
+    <div class="abs" style="left:96px;right:96px;top:76px" data-make="segments" data-n="12"
+         data-fx="segment@0(i=1) segment@5.4(i=2) segment@11.0(i=3) segment@16.6(i=4) segment@22.4(i=5) segment@28.0(i=6) segment@33.6(i=7) segment@39.0(i=8) segment@44.6(i=9) segment@50.4(i=10) segment@56.0(i=11) segment@62.0(i=12)"></div>
+  </section>
+
+</div>
+<script>
+  var lines = [
+    '单字扑克洗牌翻红，牌盒抽出{整摞厚牌}',
+    '巨卡贴脸擦镜，底部手牌配{拍立得连切}',
+    '双面厚卡腾空翻转，相纸出槽{读满进度}',
+    '马蹄弧发牌收拢，右侧掀起{三维卡片风暴}',
+    '三维{爆炸分层}，把底层逻辑讲得通透',
+    '面板仰倒铺成{三维时间轴}，路标同步推进',
+    '桌面反相暗金网格，三块厚碑{骨牌撞碎}',
+    '机械翻牌跳字破万，拉远俯瞰{立体卡片墙}',
+    '日历翻牌涨粉狂飙，立体盒配{金币弹跳}',
+    '白纸叠厚衰减预警，取景框锁定{真人表达}',
+    '真机分身双栏，聊天气泡与{取证行}破框而出',
+    '多机波浪列队打分，点击关注{炸出彩带}'
+  ];
+  var t = 0, cues = [];
+  document.querySelectorAll('#root > .scene:not(.overlay)').forEach(function (s, i) {
+    var d = parseFloat(s.getAttribute('data-d'));
+    if (lines[i]) cues.push([t + 0.15, t + d - 0.15, lines[i]]);
+    t += d;
+  });
+  FX.subtitles(cues, { style: 'pill' });
+  FX.build();
+</script>
+</body>
+</html>

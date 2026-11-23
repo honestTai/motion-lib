@@ -46,16 +46,17 @@
 <!-- STATS:START -->
 | | 数量 |
 |---|---|
-| 动效 | **217** 种（入场 26 · 退场 10 · 强调 41 · 文字 9 · 数据 7 · 镜头 14 · 角色 25 · 剪纸 10 · 粒子 8 · 3D 12 · 空间 21 · 舞台 10 · 手绘 5 · 对话 8 · 图解 3 · 形状 3 · 声音 1 · 组件 4） |
-| 转场 | **23** 种 |
-| 组件生成器 | **40** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape`） |
-| 皮肤 | **6** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴 · 深空粒子 · 演播室） |
+| 动效 | **247** 种（入场 26 · 退场 10 · 强调 41 · 文字 9 · 数据 7 · 镜头 14 · 角色 25 · 剪纸 10 · 粒子 8 · 3D 12 · 立体 30 · 空间 21 · 舞台 10 · 手绘 5 · 对话 8 · 图解 3 · 形状 3 · 声音 1 · 组件 4） |
+| 转场 | **24** 种 |
+| 组件生成器 | **58** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape` `phone3d` `card3d` `box3d` `layers3d` `deck3d` `wall3d` `flap3d` `letterdeck` `sleeve3d` `carousel3d` `slabs3d` `coins3d` `timeline3d` `paperstack` `callouts3d` `youarehere` `calgrid3d` `ctabar`） |
+| 皮肤 | **7** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴 · 深空粒子 · 演播室 · 白底立体） |
 <!-- STATS:END -->
 
 <details open>
 <summary><b>✨ 版本更新亮点（v1.4 全新升级：真 3D VRM 口播角色 + 2D 软管骨骼 IK + 12 种新特效/转场）</b></summary>
 <br />
 
+- **v2.4 新增（白底立体全系套件：18 组件 + 30 动效 + 巨卡转场）**：可选模块 [`fx-desk3d.js`](fx-desk3d.js) + 第 7 套皮肤 `theme-white3d`（默认**纯白无影棚**，加 `.desk` 切换为随相机视差平移的**白格立体牌桌**）——完整覆盖单字扑克牌阵（`letterdeck`）、牌盒抽牌（`sleeve3d`）、双面厚卡（`card3d`）、台面拍立得连切轮播（`carousel3d`）、马蹄弧厚牌堆（`deck3d`）、六面体包装盒（`box3d`）、3D 厚石碑撞碎（`slabs3d`）、立体金币弹跳（`coins3d`）、三维爆炸分层（`layers3d`）、面板仰倒变时间轴（`timeline3d`）、白纸叠高衰减（`paperstack`）、四角取景引线组（`callouts3d`）、全片路标游标（`youarehere`）、倾斜卡片墙（`wall3d`）、真厚度 3D 手机群（`phone3d` + 居中分身 / 屏幕局部剥离 / 波浪列队 / 聊天气泡破框弹出）、机械翻牌格（`flap3d`）、30 天日历翻牌狂飙（`calgrid3d`）、拟物交互胶囊爆彩带（`ctabar`）、白黑桌面反相（`desk-invert`）与 `card-wipe` 3D 巨卡贴脸擦镜转场（见 [`examples/white3d/`](examples/white3d/index.html)）。
 - **v2.3 新增**：立绘眨眼可以用一张闭眼图——每个姿势多给一张 `<src>_blink.png`，写 `data-lid="1"`（脚本接口里姿势写 `lid: true`），眨眼时在眼睛的位置直接换成闭眼图，比把眼睛压扁更适合精细的厚涂画风。
 - **v2.2 新增（立体感）**：场景背景写 `data-depth`（室内标后墙、户外标地平线，或给一张深度图），镜头一动近处比远处移得多、推近时放大得多（WebGL 景深视差）；一镜到底的楼外全景转成 3/4 视角，道具朝镜头微转，角色成为最近的一层。
 - **v2.1 新增（GSAP 免费插件 + 卡点）**：可选模块 [`fx-shape.js`](fx-shape.js)（图形变形、沿路径运动、弹性摇摆）和榜单换名次 `reorder`；`FX.snapBeat` 卡点，一镜到底的换场和推进自动对拍；黑金电影皮肤的舞台道具样式。
@@ -140,6 +141,23 @@
       <sub><a href="examples/three/three.mp4">▶ 观看成片</a> · <a href="examples/three/index.html">查看源码</a></sub>
     </td>
   </tr>
+  <tr>
+    <td width="33%" align="center">
+      <a href="examples/white3d/white3d.mp4"><img src="examples/white3d/cover.jpg" width="100%" alt="theme-white3d" /></a><br />
+      <b>白底立体</b> <code>theme-white3d</code><br />
+      <sub><a href="examples/white3d/white3d.mp4">▶ 观看成片</a> · <a href="examples/white3d/index.html">查看源码</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/world/world.mp4"><img src="examples/world/cover.jpg" width="100%" alt="theme-studio" /></a><br />
+      <b>空间镜头</b> <code>theme-studio</code><br />
+      <sub><a href="examples/world/world.mp4">▶ 观看成片</a> · <a href="examples/world/index.html">查看源码</a></sub>
+    </td>
+    <td width="33%" align="center">
+      <a href="examples/kit/kit.mp4"><img src="examples/kit/cover.jpg" width="100%" alt="fx-chat.js" /></a><br />
+      <b>AI 讲解套件</b> <code>fx-chat / fx-ink</code><br />
+      <sub><a href="examples/kit/kit.mp4">▶ 观看成片</a> · <a href="examples/kit/index.html">查看源码</a></sub>
+    </td>
+  </tr>
 </table>
 
 ---
@@ -162,6 +180,7 @@ motion-lib/
 ├── fx-chat.js       可选模块：AI 聊天窗、输入框打字、终端、代码 diff、Agent 光标
 ├── fx-diagram.js    可选模块：包围、信息过载、中心辐射
 ├── fx-shape.js      可选模块：图形变形、沿路径运动、弹性摇摆（用 vendor/gsap-plugins/ 里的 GSAP 免费插件）
+├── fx-desk3d.js     可选模块：白底立体影棚与白格牌桌（真厚度 3D 手机、双面扑克、六面体盒、爆炸分层、机械翻牌）
 ├── fx-sound.js      可选模块：音效层（每个动效自带声音，27 种音效 × 4 套音色，纯代码合成）
 ├── sfx.mjs          生成音效轨：node sfx.mjs <工程目录> → audio/sfx.wav
 ├── assets/          内置 CC0 1.0 公共领域 3D VRM 示例角色（shino.vrm、vita.vrm）
@@ -749,7 +768,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 ---
 
 <!-- CATALOG:START -->
-## 动效目录（217 种动效 + 23 种转场）
+## 动效目录（247 种动效 + 24 种转场）
 
 > 这一节由 `node gen-readme.mjs` 从 `fx.js` 自动生成，不要手改。
 > 所有动效都支持通用参数 `dur`（时长）、`ease`（缓动）、`stagger`（错峰）；下表只列各自特有的参数。
@@ -986,6 +1005,43 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `cam3d` | 移动摄像机：从当前位置飞到新位置，同时把视线转向新目标。参数 x / y / z=飞到哪、lx / ly / lz=看向哪、fov=视角、dur、ease（dur=0 就是直接切过去）。没写的参数保持不变 |
 | `orbit3d` | 环绕镜头：摄像机绕着目标转圈，可以同时拉近 / 升高。参数 turn=转多少度（负数反向）、from=起始角度（不写就从当前位置开始）、r=结束时离目标多远、h=结束时的高度、lx / ly / lz=绕着哪里转、dur、ease |
 
+### 立体（30）
+
+白底立体影棚与白格牌桌动效，需要额外加载 `fx-desk3d.js`（配 `theme-white3d` 纯白无影棚或 `theme-white3d desk` 白格立体桌面）。提供真厚度 3D 手机（`phone3d`）、双面厚边扑克/拍立得卡（`card3d`）、六面体包装盒（`box3d`）、三维爆炸分层（`layers3d`）、马蹄弧厚牌堆（`deck3d`）、倾斜悬浮卡片墙（`wall3d`）和机械翻牌格（`flap3d`），所有姿态与台面投影随 Z 轴高度实时联动。
+
+| 名字 | 作用 / 参数 |
+|---|---|
+| `pose-3d` | 立体姿态推演：把 phone3d / card3d / box3d 或普通卡片推到指定 3D 倾角与高度，台面投影随高度拉远扩散。参数 ry / rx / rz（角度）、z（抬升高度 px）、s（缩放）、x / y、dur |
+| `flip-3d` | 真 3D 腾空翻面：把 card3d（或带 .front / .back 的双面徽章）跃起抬高 Z 轴、空中翻转 180° 后落回白底桌面，翻到 90° 时投影拉远变柔、落地收紧。参数 lift（默认 110）、dur（默认 0.72） |
+| `deal-arc` | 厚牌堆弧形发牌：写在 data-make="deck3d" 上，牌从厚牌堆顶上一张接一张沿 3D 马蹄弧或扇形滑到位。参数 dur（默认 1.15） |
+| `deck-gather` | 散牌交错收拢归堆：写在 data-make="deck3d" 上，把铺开的弧形/马蹄牌阵重新收拢叠回一整摞整齐的厚牌砖。参数 dur（默认 0.85） |
+| `letter-shuffle` | 单字扑克牌阵洗牌变色：写在 data-make="letterdeck" 上，各张字牌轻弹排齐，花括号标的重点字牌腾空翻转染红并微倾。参数 dur（默认 0.55） |
+| `sleeve-draw` | 牌盒开口滑出厚牌：写在 data-make="sleeve3d" 上，外层立体黑盒向左滑让，内部整摞厚牌向右抽出并扇开首张。参数 dur（默认 0.9） |
+| `grid-hero` | 多宫格牌阵越级放大：从一排或九宫格卡片里把第 i 张（从 1 数；i=0 收回）沿 Z 轴高高托起居中放大，其余卡片退后柔化托底。参数 i、s（默认 1.65）、dur |
+| `carousel-next` | 台面拍立得连切轮播：写在 data-make="carousel3d" 上，主展卡左滑退场、右侧倾斜预告卡扶正入主位，底部手牌同步微动。参数 i（切到第几张，从 1 数）或 steps（连切几张）、dur |
+| `card-storm` | 3D 卡片螺旋风暴：容器内多张卡片在三维空间沿螺旋轨道高速飞舞，前景卡片带景深虚化掠过镜头（适合「信息爆炸 / 海量素材」）。参数 dur（默认 2.6）、r（半径，默认 320） |
+| `box-drop` | 立体盒重力落桌：六面体 box3d 从高处带微倾砸落白底桌面，落地微弹稳住、接触投影压实。配 each: 可错峰落下。参数 drop（默认 220）、dur（默认 0.68） |
+| `slab-shatter` | 3D 厚石碑多米诺撞碎：写在 data-make="slabs3d" 上，厚板依次向右侧多米诺倾倒撞击，随后炸裂成数十块 3D 厚碎片飞散。参数 dur（默认 1.35） |
+| `coin-drop` | 3D 立体筹码/金币抛洒弹跳：写在 data-make="coins3d" 上，带圆边厚度的金币从空中翻滚落下弹跳，接触影同步收紧。参数 dur（默认 0.78） |
+| `polaroid-eject` | 拍立得相纸吐出 + 进度条读满：card3d 相纸从上方卡槽滑出微倾落位，底部进度条同步推进到 100%。参数 dur（默认 0.9） |
+| `layer-explode` | 三维爆炸展开：写在 data-make="layers3d" 上，原本压合的多层透视平板沿垂直轴拉开间距，四角虚线辅助线与左侧水平引线同步生长。参数 dur（默认 0.9） |
+| `layer-focus` | 分层点亮聚焦：写在 data-make="layers3d" 上，抬高并点亮第 i 层（从底往上 1..N；i=0 全部恢复），其余层柔和退让。参数 i、dur |
+| `board-lay` | 面板后仰变 3D 时间轴：写在 data-make="timeline3d" 上，正对镜头的面板向后仰倒 56° 铺成桌面轨道，内部视频卡片同步立起并滑过红色剪辑指针。参数 dur（默认 1.2） |
+| `stack-print` | 白纸复印叠厚 + 衰减条联动：写在 data-make="paperstack" 上，一张张白纸连续飞入叠高，底部新鲜感/注意力进度条同步跌落到 to%。参数 to（默认 62）、dur（默认 1.4） |
+| `lock-callouts` | 四角取景框锁定 + 多分支引线展开：写在 data-make="callouts3d" 上，橙色取景角标收缩锁死主体，左侧多条水平引线与卖点词依次打出。参数 dur（默认 0.7） |
+| `pin-move` | 全片路标游标推进：写在 data-make="youarehere" 上，红色 YOU ARE HERE 游标从 from 滑到 to（0–1 百分比小数），经过的分段色块同步点亮。参数 from、to、dur |
+| `wall-pull` | 立体卡片墙拉远/推进：写在 data-make="wall3d" 上，从单张正对特写平滑拉远并倾斜俯视整面 3D 悬浮卡片墙（dir=in 则反向推进）。参数 dur（默认 1.25）、zoom（默认 2.3） |
+| `rig-focus` | 多样机立体移焦：写在放了多台样机/多栏盲测的容器上，讲到第 i 件（1..N；i=0 恢复同台全景）时它朝镜头转正并前推放大，其余侧转退后。参数 i、s（默认 1.06）、dur |
+| `phone-split` | 真机居中特写分身双栏：容器内第 1 件（3D 手机）先在画面中央侧转大特写，到点后横移归位并展开旁边的横屏副卡。参数 dur（默认 0.78） |
+| `screen-pop` | 屏幕内局部切片剥离放大：把手机或截图旁的取证行（.fx-pop-slice 或 to=#选择器）沿 Z 轴剥离浮出屏幕外放大，带深层悬空投影。参数 to、s（默认 1.18）、dur |
+| `phone-wave` | 多色竖屏真机阵列波浪排开：写在放了一排 phone3d 的容器上，多台手机像多米诺波浪一样依次立起转角陈列。参数 dur（默认 0.65）、stagger（默认 0.08） |
+| `float-pop` | 白底悬浮弹出：评语胶囊（.fx-float-pill）或打分卡（.fx-score-card）从贴地微缩状态沿 Z 轴弹起悬浮，撑开柔和影棚空气阴影。参数 dur（默认 0.46） |
+| `flap-to` | 机械翻牌跳字：写在 data-make="flap3d" 上，把每位翻牌格机械折页翻到 to（千分位逗号在参数里可写下划线如 10_000+）指定的新文本。参数 to、dur（默认 0.36）、stagger（默认 0.06） |
+| `cal-flip` | 30 天日历翻牌矩阵 + 数字狂飙：写在 data-make="calgrid3d" 上，全部小蓝牌按天依次翻成红头黑底日历格，顶部指标同步从 0 滚到 to。参数 to（默认 18862）、dur（默认 1.6） |
+| `bubble-pop3d` | 手机聊天气泡破框悬浮弹出：多条对话气泡（.fx-pop-bub）从倾斜的手机屏幕里逐层跃出到半空 Z 轴，带独立深投影。配 each: 可逐条蹦出。参数 dur（默认 0.5） |
+| `cta-click` | 白底交互胶囊光标点击 + 爆彩带：写在 data-make="ctabar" 上，鼠标飞入按下按钮（点赞变已关注 / 点击发送）并炸出庆祝彩片。参数 dur（默认 0.9） |
+| `desk-invert` | 白格桌面 ⇄ 暗黑金格反相：在讲反面痛点（如资本垄断）时把白格桌面瞬间切换为深色暗金网格，mode=reset 恢复白格桌面。参数 mode=dark/reset |
+
 ### 空间（21）
 
 世界画布、相机和图片组动效，需要额外加载 `fx-world.js`。根元素写上 `data-world`，所有分镜就变成同一块大画布上的机位，换分镜 = 镜头走过去。镜头类动效需要 `data-world`；焦点类和图片组类在任何页面都能用。
@@ -1097,7 +1153,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `check` | 清单打勾：配 .fx-check 组件，勾画出来、文字变实 |
 | `toggle` | 拨动开关：配 data-make="switches"，把第 i 个开关（支持 2/3/5 批量）拨到开(on=1)或关(on=0)。参数 i、on=0/1、stagger |
 
-### 转场（23）
+### 转场（24）
 
 写在**后一个**场景上：`<section class="scene" data-in="blur-cross(dur=0.5)">`。
 
@@ -1126,4 +1182,5 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `cam-to` | 世界画布专用（默认）：镜头斜着推到下一个机位，先往后拉一点再推进，先慢再快再慢。参数 dur（0.6–0.9）、arc（路上多绕几度，默认 8）、pull（回拉幅度，默认 0.07） |
 | `cam-jump` | 世界画布专用：镜头直接跳到下一个机位（硬切），只在换大章节时用 |
 | `mosaic` | 马赛克换场：纸色方块从上往下随机盖满，再随机揭开新场景；方块在演员和常驻层下面，主持人不会被盖住（换章节、换场景背景时用）。参数 cols（一行几块，默认 24）、color、dur、seed |
+| `card-wipe` | 3D 巨卡贴脸擦镜转场（普通模式与世界画布通用）：一张超大双面厚边扑克从镜头极近处翻滚掠过遮满全屏，移开时无缝带出下一幕。参数 dur（默认 0.78）、emblem（牌背字母，默认 A）、color |
 <!-- CATALOG:END -->

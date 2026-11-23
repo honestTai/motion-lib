@@ -79,19 +79,27 @@
     // 机位一旦摆进 3D 空间，量出来的位置就不对了：先把所有元素的自然位置量好
     ctx.seq.forEach(function (s) { Array.prototype.forEach.call(s.el.querySelectorAll('*'), function (el) { FX.rect(el); }); });
 
-    var view = mk('div', 'fx-world-view'), bg = mk('div', 'fx-world-bg'), world = mk('div', 'fx-world');
+    var view = mk('div', 'fx-world-view'), bg = mk('div', 'fx-world-bg'), world = mk('div', 'fx-world'), gridEl = null;
     stage.insertBefore(view, ctx.seq[0].el);
     view.appendChild(bg); view.appendChild(world);
+    if (stage.classList.contains('desk') || stage.hasAttribute('data-grid')) {
+      gridEl = mk('div', 'fx-world-grid');
+      bg.appendChild(gridEl);
+    }
     var wall = stage.getAttribute('data-wall');
     if (wall) {
       var h = '';
       for (var r = 0; r < 9; r++) { h += '<p' + (r % 2 ? ' class="odd"' : '') + '>'; for (var k = 0; k < 9; k++) h += '<span>' + wall + '</span>'; h += '</p>'; }
-      bg.innerHTML = '<div class="fx-world-wall">' + h + '</div>';
+      var wallEl = mk('div', 'fx-world-wall');
+      wallEl.innerHTML = h;
+      bg.appendChild(wallEl);
     }
 
     var gap = num(attr(stage, 'gap'), 1.16), cols = Math.max(1, num(attr(stage, 'cols'), 3));
     var tilt = String(attr(stage, 'tilt', '8,4')).split(',').map(Number), rnd = FX.rand(num(attr(stage, 'seed'), 7));
-    W = { mode: mode, w: SW, h: SH, el: world, bg: bg, wall: bg.firstChild, px: SW * gap, py: SH * gap, dz: num(attr(stage, 'depth'), 1500),
+    var cls = stage.className || '', lightBg = /theme-(white3d|paper|pixel)/.test(cls) || (/theme-violet/.test(cls) && !/is-dark/.test(cls));
+    W = { mode: mode, w: SW, h: SH, el: world, bg: bg, wall: bg.querySelector('.fx-world-wall'), grid: gridEl, light: lightBg,
+          px: SW * gap, py: SH * gap, dz: num(attr(stage, 'depth'), 1500),
           view: num(attr(stage, 'view'), 1), travel: num(attr(stage, 'travel'), 0.8), drift: num(attr(stage, 'drift'), 0.5) / 100,
           moves: [], dirty: true, cache: [], total: ctx.total, start: null };
     W.st = ctx.seq.map(function (s, i) {
@@ -116,8 +124,9 @@
     W.st.forEach(function (st, i) {
       if (!i) return;
       var spec = ctx.parseFx(st.el.getAttribute('data-in') || '')[0] || { name: 'cam-to', opts: {} };
-      var o = spec.opts || {}, jump = spec.name === 'cam-jump';
-      if (spec.name !== 'cam-to' && !jump) console.warn('FX：世界画布里换分镜只用 cam-to / cam-jump，已把', spec.name, '换成 cam-to');
+      var o = spec.opts || {}, wipe = spec.name === 'card-wipe', jump = spec.name === 'cam-jump' || wipe;
+      if (spec.name !== 'cam-to' && !jump) console.warn('FX：世界画布里换分镜只用 cam-to / cam-jump / card-wipe，已把', spec.name, '换成 cam-to');
+      if (wipe && FX.trans['card-wipe']) FX.trans['card-wipe'](ctx.tl, st.s.t, null, st.el, o);
       var dur = jump ? 0.001 : num(o.dur, W.travel), lead = jump ? 0 : Math.min(0.25, dur * 0.3), prev = W.st[i - 1];
       var side = st.x !== prev.x ? (st.x > prev.x ? 1 : -1) : (i % 2 ? 1 : -1);
       W.moves.push({ t0: st.s.t + lead - dur, t1: st.s.t + lead, to: stationPose(st), st: i, arc: jump ? 0 : num(o.arc, 8) * side, pull: jump ? 0 : num(o.pull, 0.07) });
@@ -166,6 +175,7 @@
     W.el.style.transform = 'scale3d(' + c.zoom.toFixed(5) + ',' + c.zoom.toFixed(5) + ',' + c.zoom.toFixed(5) + ') rotateX(' + (-c.rx).toFixed(3) + 'deg) rotateY(' + (-c.ry).toFixed(3) + 'deg) translate3d(' +
       (-c.x).toFixed(2) + 'px,' + (-c.y).toFixed(2) + 'px,' + (-c.z).toFixed(2) + 'px)';
     if (W.wall) W.wall.style.transform = 'translate3d(' + (-c.x * 0.05 - time * 5).toFixed(2) + 'px,' + (-c.y * 0.05).toFixed(2) + 'px,0) scale(' + (1 + (c.zoom - 1) * 0.15).toFixed(4) + ')';
+    if (W.grid) W.grid.style.transform = 'translate3d(' + Math.round(-((c.x * 0.22) % 240)) + 'px,' + Math.round(-((c.y * 0.22) % 240)) + 'px,0)';
     var halfW = W.w / c.zoom / 2 + W.w * 0.8, halfH = W.h / c.zoom / 2 + W.h * 0.8;
     W.st.forEach(function (st, i) {
       // f：这个机位有多「在焦点上」。1 = 清晰，0 = 远处的背景
@@ -179,6 +189,7 @@
         if (rz > 1) op = Math.min(op, clamp(1 - rz / (W.dz * 0.5), 0, 1));
       } else {
         vis = Math.abs(st.x - c.x) < halfW && Math.abs(st.y - c.y) < halfH;
+        if (W.light && f < 0.995) op = lerp(0.26, 1, f);
       }
       var key = !vis ? 'h' : (f > 0.995 ? '1' : f.toFixed(3)) + '|' + op.toFixed(3);
       if (W.cache[i] === key) return;
@@ -186,7 +197,8 @@
       if (!vis) { st.el.style.visibility = 'hidden'; return; }
       st.el.style.visibility = 'visible';
       st.el.style.opacity = op > 0.995 ? '' : op.toFixed(3);
-      st.el.style.filter = f > 0.995 ? '' : 'blur(' + ((1 - f) * (depth ? 9 : 5)).toFixed(2) + 'px) brightness(' + (1 - (1 - f) * 0.4).toFixed(3) + ')';
+      st.el.style.filter = f > 0.995 ? '' : (W.light ? 'blur(' + ((1 - f) * (depth ? 9 : 6)).toFixed(2) + 'px)'
+        : 'blur(' + ((1 - f) * (depth ? 9 : 5)).toFixed(2) + 'px) brightness(' + (1 - (1 - f) * 0.4).toFixed(3) + ')');
     });
   }
 

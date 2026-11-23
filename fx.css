@@ -752,3 +752,544 @@ html, body { width: var(--fx-w); height: var(--fx-h); overflow: hidden; backgrou
 .theme-gold .fx-rank > div.top { border-color: rgba(242, 196, 109, .9); box-shadow: 0 0 40px rgba(242, 196, 109, .25), 0 24px 60px rgba(0, 0, 0, .5); }
 .theme-gold .fx-shape { filter: drop-shadow(0 0 24px rgba(242, 196, 109, .3)); }
 .theme-gold .fx-ink-label { font-family: var(--fx-font-serif); font-weight: 700; color: #f2c46d; }
+
+/* ═════════════ 皮肤 7：white3d（白底立体：纯白无影棚 + 白格立体桌面，配 fx-desk3d.js） ═════════════ */
+.theme-white3d {
+  --fx-bg: #fbfbfd;
+  --fx-ink: #0f1117;
+  --fx-sub: #6b7280;
+  --fx-dim: #9ca3af;
+  --fx-line: rgba(15, 23, 42, .08);
+  --fx-card: #ffffff;
+  --fx-card-ink: #0f1117;
+  --fx-card-r: 22px;
+  --fx-card-shadow: 0 28px 64px -14px rgba(15, 23, 42, .14), 0 10px 24px -6px rgba(15, 23, 42, .07), 0 0 0 1px rgba(15, 23, 42, .05);
+  --fx-accent: #2563eb;
+  --fx-accent-2: #dbeafe;
+  --fx-marker: rgba(37, 99, 235, .2);
+  --fx-good: #16a34a;
+  --fx-bad: #ef4444;
+  --fx-font-title: "PingFang SC", "HarmonyOS Sans SC", "Helvetica Neue", sans-serif;
+  --fx-sub-size: 44px;
+  --fx-sub-bottom: 34px;
+}
+.theme-white3d .scene, .theme-white3d .fx-world-bg {
+  background-color: var(--fx-bg);
+  background-image: radial-gradient(115% 90% at 50% 16%, #ffffff 0%, #f6f7fb 62%, #eaedf5 100%);
+}
+/* 子模式：白格立体牌桌（阿杜Next 款建筑方格纸台面，根元素或单场加 .desk） */
+.theme-white3d.desk, .scene.desk {
+  --fx-bg: #f4f3ee;
+  --fx-card-shadow: 0 26px 56px -12px rgba(24, 24, 28, .16), 0 8px 18px -4px rgba(24, 24, 28, .08), 0 0 0 1px rgba(24, 24, 28, .06);
+}
+.theme-white3d.desk .scene, .scene.desk, .theme-white3d.desk .fx-world-bg {
+  background-color: #f4f3ee;
+  background-image:
+    linear-gradient(to right, rgba(24, 26, 32, .09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(24, 26, 32, .09) 1px, transparent 1px),
+    linear-gradient(to right, rgba(24, 26, 32, .048) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(24, 26, 32, .048) 1px, transparent 1px),
+    radial-gradient(120% 95% at 50% 24%, rgba(255, 255, 255, .75) 0%, rgba(235, 232, 222, .6) 100%);
+  background-size: 240px 240px, 240px 240px, 48px 48px, 48px 48px, 100% 100%;
+}
+/* 世界画布开启时，机位透明落在白底/白格大桌面上，网格随镜头视差平移 */
+.theme-white3d .fx-world > .scene.fx-station,
+.theme-white3d.desk .fx-world > .scene.fx-station { background: none; }
+.fx-world-grid {
+  position: absolute; left: -240px; top: -240px; right: -240px; bottom: -240px; pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(24, 26, 32, .085) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(24, 26, 32, .085) 1px, transparent 1px),
+    linear-gradient(to right, rgba(24, 26, 32, .042) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(24, 26, 32, .042) 1px, transparent 1px);
+  background-size: 240px 240px, 240px 240px, 48px 48px, 48px 48px;
+}
+.theme-white3d.desk .fx-world-bg {
+  background-image: radial-gradient(120% 95% at 50% 24%, #faf9f5 0%, #ebe8df 100%);
+}
+.theme-white3d .scene.overlay, .theme-white3d .scene.clear { background: none !important; }
+.theme-white3d .t-hero, .theme-white3d .t-title, .theme-white3d .t-h2, .theme-white3d .t-h3 { font-weight: 900; letter-spacing: -.01em; }
+.theme-white3d .fx-head i { background: var(--fx-ink); color: #fff; border-radius: 999px; padding: 8px 24px; font-size: 34px; box-shadow: 0 10px 24px rgba(15, 23, 42, .16); }
+.theme-white3d .fx-subs[data-style="pill"] .fx-sub span,
+.theme-white3d .fx-subs[data-style="studio"] .fx-sub span {
+  background: #0b0d12; color: #fff; border-radius: 22px; padding: 14px 30px 16px;
+  font-family: var(--fx-font-sub); font-size: var(--fx-sub-size); font-weight: 700;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, .22);
+}
+.theme-white3d .fx-subs .fx-sub em { color: #93c5fd; font-style: normal; }
+
+/* 白底立体通用 UI 零件：悬浮评语胶囊、立体打分卡、桌面红章、工程坐标栏 */
+.fx-float-pill {
+  display: inline-flex; align-items: center; gap: 16px; padding: 16px 32px; border-radius: 999px;
+  background: #ffffff; color: #0f1117; font-size: 38px; font-weight: 800; white-space: nowrap;
+  box-shadow: 0 22px 48px -8px rgba(15, 23, 42, .16), 0 6px 14px rgba(15, 23, 42, .07), 0 0 0 1px rgba(15, 23, 42, .05);
+}
+.fx-float-pill i {
+  font-style: normal; width: 46px; height: 46px; border-radius: 50%; display: inline-grid; place-items: center;
+  background: var(--fx-good); color: #fff; font-size: 32px; font-weight: 900; flex: none;
+}
+.fx-float-pill.bad i { background: var(--fx-bad); }
+.fx-float-pill.dark { background: #111318; color: #fff; }
+.fx-score-card {
+  display: inline-flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 20px 30px 22px;
+  border-radius: 24px; background: #ffffff; color: #0f1117;
+  box-shadow: 0 26px 56px -10px rgba(15, 23, 42, .2), 0 8px 20px rgba(15, 23, 42, .08), 0 0 0 1px rgba(15, 23, 42, .05);
+}
+.fx-score-card b { font-family: var(--fx-font-num); font-size: 92px; line-height: .95; font-weight: 800; color: var(--fx-accent); }
+.fx-score-card b small { font-family: var(--fx-font-body); font-size: 36px; font-weight: 900; margin-left: 4px; color: #0f1117; }
+.fx-score-card span { font-size: 32px; font-weight: 700; color: var(--fx-sub); }
+.fx-score-card.mid b { color: #0f1117; }
+.fx-score-card.low b { color: var(--fx-bad); }
+.fx-stamp {
+  display: inline-flex; flex-direction: column; align-items: center; padding: 10px 26px 12px;
+  border: 5px solid #e12d29; border-radius: 14px; color: #e12d29; background: rgba(255, 255, 255, .92);
+  box-shadow: 0 0 0 2px rgba(225, 45, 41, .22) inset, 0 14px 28px rgba(225, 45, 41, .16);
+  font-weight: 900; font-size: 48px; line-height: 1.08; letter-spacing: .04em; transform: rotate(-6deg); white-space: nowrap;
+}
+.fx-stamp small { font-size: 20px; letter-spacing: .16em; font-family: var(--fx-font-mono); font-weight: 800; margin-top: 4px; }
+.fx-coord-bar {
+  position: absolute; left: 56px; right: 56px; top: 36px; z-index: 760; display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--fx-font-mono); font-size: 22px; color: rgba(15, 23, 42, .48); pointer-events: none; letter-spacing: .06em;
+}
+.fx-coord-bar b { color: #0f1117; font-family: var(--fx-font-body); font-weight: 900; font-size: 26px; letter-spacing: .01em; }
+
+/* ───────── 白底立体组件模块（fx-desk3d.js） ───────── */
+.fx-3d-stage { perspective: 1800px; perspective-origin: 50% 50%; transform-style: preserve-3d; }
+.fx-3d-shadow {
+  position: absolute; inset: 4% 5%; border-radius: inherit; pointer-events: none;
+  background: rgba(15, 23, 42, .22); filter: blur(28px);
+  transform: translate3d(18px, 34px, -40px) scale(.96); will-change: transform, opacity, filter;
+}
+
+/* 1. phone3d：真厚度 3D 智能手机样机 */
+.fx-phone3d { position: relative; width: 380px; height: 780px; perspective: 1800px; }
+.fx-phone3d-rig { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
+.fx-phone3d-slice {
+  position: absolute; inset: 0; border-radius: 54px; pointer-events: none;
+  background: linear-gradient(135deg, #525866 0%, #262932 38%, #14161c 72%, #3d424f 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14);
+}
+.fx-phone3d[data-color="silver"] .fx-phone3d-slice {
+  background: linear-gradient(135deg, #ffffff 0%, #cfd5e0 40%, #98a1b0 74%, #e5e9f0 100%);
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .12);
+}
+.fx-phone3d[data-color="blue"] .fx-phone3d-slice {
+  background: linear-gradient(135deg, #60a5fa 0%, #2563eb 42%, #1e3a8a 76%, #3b82f6 100%);
+}
+.fx-phone3d-face {
+  position: absolute; inset: 0; border-radius: 54px; padding: 13px; background: #12141a;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .18), 0 1px 2px rgba(0, 0, 0, .3);
+  transform: translateZ(1px); overflow: hidden;
+}
+.fx-phone3d-screen {
+  position: relative; width: 100%; height: 100%; border-radius: 42px; overflow: hidden; background: #0c0e14; color: #f8fafc;
+}
+.fx-phone3d-screen > img, .fx-phone3d-screen > video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fx-phone3d-island {
+  position: absolute; left: 50%; top: 14px; width: 29%; height: 26px; transform: translateX(-50%);
+  border-radius: 999px; background: #050608; z-index: 12; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07);
+}
+.fx-phone3d-glare {
+  position: absolute; inset: 0; z-index: 11; pointer-events: none;
+  background: linear-gradient(116deg, rgba(255, 255, 255, .17) 0%, rgba(255, 255, 255, .04) 28%, transparent 40%);
+}
+
+/* 2. card3d：双面厚边扑克 / 拍立得模板卡 */
+.fx-card3d { position: relative; width: 420px; height: 560px; perspective: 1800px; }
+.fx-card3d-rig { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
+.fx-card3d-edge {
+  position: absolute; inset: 0; border-radius: 24px; background: #dedbd2;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .08); pointer-events: none;
+}
+.fx-card3d-front, .fx-card3d-back {
+  position: absolute; inset: 0; border-radius: 24px; overflow: hidden; background: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .08);
+}
+.fx-card3d-front { transform: translateZ(2px); }
+.fx-card3d-back {
+  transform: rotateY(180deg) translateZ(10px); padding: 16px; background: #ffffff;
+  display: flex; align-items: stretch; justify-content: stretch;
+}
+.fx-card3d-back-in {
+  flex: 1; border-radius: 16px; background: var(--card-back, var(--fx-accent));
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, .08) 0 2px, transparent 2px 14px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, .08) 0 2px, transparent 2px 14px);
+  border: 3px solid rgba(255, 255, 255, .86); box-shadow: inset 0 0 0 8px var(--card-back, var(--fx-accent)), inset 0 0 0 10px rgba(255, 255, 255, .45);
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 24px 18px; color: #fff;
+}
+.fx-card3d-emblem {
+  width: 96px; height: 96px; border: 3px solid rgba(255, 255, 255, .92); transform: rotate(45deg);
+  display: grid; place-items: center; background: rgba(255, 255, 255, .1);
+}
+.fx-card3d-emblem b { transform: rotate(-45deg); font-family: var(--fx-font-title); font-size: 46px; font-weight: 900; color: #fff; }
+.fx-card3d-meta { font-family: var(--fx-font-mono); font-size: 16px; letter-spacing: .22em; opacity: .88; text-transform: uppercase; }
+.fx-polaroid {
+  width: 100%; height: 100%; padding: 22px 22px 26px; display: flex; flex-direction: column; gap: 18px; background: #ffffff;
+}
+.fx-polaroid-view { flex: 1; min-height: 0; border-radius: 14px; overflow: hidden; background: #f1f3f8; position: relative; }
+.fx-polaroid-view > img, .fx-polaroid-view > video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fx-polaroid-foot {
+  display: flex; align-items: baseline; gap: 16px; padding-top: 12px; border-top: 3px solid var(--fx-accent);
+}
+.fx-polaroid-foot b { font-family: var(--fx-font-num); font-size: 52px; font-weight: 800; color: var(--fx-accent); line-height: 1; }
+.fx-polaroid-foot strong { font-size: 46px; font-weight: 900; color: #0f1117; line-height: 1.1; }
+.fx-polaroid-foot span { font-size: 36px; font-weight: 600; color: var(--fx-sub); margin-left: 6px; }
+
+/* 3. box3d：真六面体立体包装盒 / 积木块 */
+.fx-box3d { position: relative; width: 380px; height: 460px; perspective: 1800px; }
+.fx-box3d-rig { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
+.fx-box3d-top {
+  position: absolute; inset: 0; border-radius: 12px; padding: 28px 32px; overflow: hidden;
+  background: var(--box-bg, #2563eb); color: var(--box-ink, #ffffff);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .22);
+}
+.fx-box3d-lip {
+  position: absolute; left: 0; width: 100%; transform-origin: 50% 0;
+  background: var(--box-front, #1d4ed8); color: var(--box-ink, #ffffff);
+  display: flex; align-items: center; padding: 0 24px; font-family: var(--fx-font-mono); font-size: 20px; font-weight: 800; letter-spacing: .1em;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), inset 0 -1px 0 rgba(0, 0, 0, .2);
+}
+.fx-box3d-wall-r, .fx-box3d-wall-l {
+  position: absolute; top: 0; height: 100%; transform-origin: 0 50%; pointer-events: none;
+  background: var(--box-side, #1e40af);
+}
+
+/* 4. layers3d：三维爆炸分层架构台 */
+.fx-layers3d { position: relative; width: 1360px; height: 740px; }
+.fx-layers3d-stage { position: absolute; right: 40px; top: 40px; width: 760px; height: 660px; perspective: 1600px; }
+.fx-layers3d-guide { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
+.fx-layers3d-plate {
+  position: absolute; left: 50%; top: 58%; width: 520px; height: 380px; margin: -190px 0 0 -260px;
+  border-radius: 24px; padding: 26px 32px; transform-style: preserve-3d;
+  background: rgba(37, 99, 235, .14); border: 3px solid var(--layer-c, #2563eb);
+  box-shadow: 0 28px 50px rgba(15, 23, 42, .14), inset 0 0 0 2px rgba(255, 255, 255, .6);
+  display: flex; align-items: flex-end; justify-content: flex-end;
+}
+.fx-layers3d-plate.solid { background: var(--layer-c, #2563eb); color: #fff; }
+.fx-layers3d-plate.card-top {
+  background: #ffffff; border: 4px solid #ffffff; padding: 14px;
+  box-shadow: 0 32px 64px rgba(15, 23, 42, .22), 0 0 0 1px rgba(15, 23, 42, .08);
+}
+.fx-layers3d-tag { font-size: 34px; font-weight: 900; color: var(--layer-c, #2563eb); }
+.fx-layers3d-plate.solid .fx-layers3d-tag { color: #fff; }
+.fx-layers3d-callouts {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 640px; display: flex; flex-direction: column; justify-content: center; gap: 58px; z-index: 6; pointer-events: none;
+}
+.fx-layers3d-row { display: flex; align-items: center; gap: 20px; }
+.fx-layers3d-txt { min-width: 250px; text-align: right; }
+.fx-layers3d-txt strong { display: block; font-size: 46px; font-weight: 900; line-height: 1.12; color: var(--layer-c, #0f1117); }
+.fx-layers3d-txt small { display: block; margin-top: 4px; font-family: var(--fx-font-mono); font-size: 22px; font-weight: 700; letter-spacing: .12em; color: var(--fx-sub); }
+.fx-layers3d-line { flex: 1; height: 3px; background: var(--layer-c, #0f1117); position: relative; transform-origin: 100% 50%; }
+.fx-layers3d-line::after {
+  content: ""; position: absolute; right: -7px; top: -6px; width: 15px; height: 15px; border-radius: 50%; background: var(--layer-c, #0f1117);
+}
+
+/* 5. deck3d：桌面厚牌堆与马蹄弧牌道 */
+.fx-deck3d { position: relative; width: 960px; height: 680px; perspective: 1600px; }
+.fx-deck3d-plane { position: absolute; inset: 0; transform-style: preserve-3d; }
+.fx-deck3d-card {
+  position: absolute; left: 50%; top: 50%; width: 210px; height: 136px; margin: -68px 0 0 -105px;
+  border-radius: 14px; background: #ffffff; padding: 8px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .16), 0 2px 0 #dedbd2, 0 4px 0 #d2cfc5;
+}
+.fx-deck3d-card-in {
+  width: 100%; height: 100%; border-radius: 9px; background: var(--deck-c, var(--fx-accent));
+  border: 2px solid rgba(255, 255, 255, .85); display: grid; place-items: center; color: #fff; font-weight: 900; font-size: 36px;
+}
+
+/* 6. wall3d：白底 3D 倾斜悬浮卡片矩阵 */
+.fx-wall3d { position: relative; width: 100%; height: 100%; perspective: 1800px; overflow: hidden; }
+.fx-wall3d-rig {
+  position: absolute; left: 50%; top: 50%; display: grid; gap: 28px;
+  transform-style: preserve-3d; will-change: transform;
+}
+.fx-wall3d-item {
+  border-radius: 20px; overflow: hidden; background: #ffffff; padding: 8px;
+  box-shadow: 0 28px 60px -12px rgba(15, 23, 42, .2), 0 8px 20px rgba(15, 23, 42, .08), 0 0 0 1px rgba(15, 23, 42, .06);
+}
+.fx-wall3d-item > img, .fx-wall3d-item > video { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; display: block; }
+
+/* 7. flap3d：立体机械翻牌计数器 */
+.fx-flap3d { display: inline-flex; align-items: center; gap: 14px; }
+.fx-flap3d-tile {
+  position: relative; min-width: 118px; height: 156px; padding: 0 18px; border-radius: 18px;
+  background: linear-gradient(180deg, #2b2e37 0%, #1c1e24 49%, #111318 50%, #23262f 100%);
+  color: #ffffff; font-family: var(--fx-font-num); font-size: 118px; font-weight: 800; line-height: 156px; text-align: center;
+  box-shadow: 0 10px 0 #0d0f14, 0 24px 44px rgba(15, 23, 42, .24), inset 0 2px 0 rgba(255, 255, 255, .14);
+}
+.fx-flap3d-tile::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1.5px; background: rgba(0, 0, 0, .72);
+}
+.fx-flap3d-sep {
+  font-family: var(--fx-font-num); font-size: 108px; font-weight: 900; color: var(--fx-bad); padding: 0 4px; line-height: 1;
+}
+.fx-flap3d-sep.comma { color: #0f1117; align-self: flex-end; font-size: 88px; line-height: .6; padding-bottom: 18px; }
+
+/* 8. letterdeck：单字扑克牌阵排标题（阿杜 00:00 款） */
+.fx-letterdeck { display: flex; flex-direction: column; gap: 20px; perspective: 1400px; }
+.fx-letterdeck-row { display: flex; gap: 14px; }
+.fx-letter-card {
+  position: relative; width: 118px; height: 158px; border-radius: 14px; background: #ffffff; color: #16181f;
+  display: grid; place-items: center; font-size: 74px; font-weight: 900;
+  box-shadow: 0 4px 0 #e3e0d7, 0 14px 28px rgba(15, 23, 42, .12), 0 0 0 1px rgba(15, 23, 42, .06);
+  transform-style: preserve-3d;
+}
+.fx-letter-card .no { position: absolute; left: 10px; top: 8px; font-family: var(--fx-font-mono); font-size: 14px; color: #9ca3af; font-weight: 700; }
+.fx-letter-card .suit { position: absolute; right: 10px; top: 7px; font-size: 16px; color: var(--fx-accent); line-height: 1; }
+.fx-letter-card.is-hot { color: #ef4444; }
+.fx-letter-card.is-hot .suit { color: #ef4444; }
+
+/* 9. sleeve3d：牌盒套开口滑出整摞厚牌 */
+.fx-sleeve3d { position: relative; width: 680px; height: 480px; perspective: 1600px; }
+.fx-sleeve3d-deck {
+  position: absolute; left: 160px; top: 64px; width: 290px; height: 360px; transform-style: preserve-3d; z-index: 2;
+}
+.fx-sleeve3d-sheet {
+  position: absolute; inset: 0; border-radius: 18px; background: #ffffff; padding: 12px;
+  box-shadow: 0 3px 0 #dcd9d0, 0 16px 34px rgba(15, 23, 42, .18), 0 0 0 1px rgba(15, 23, 42, .08);
+}
+.fx-sleeve3d-sheet-in {
+  width: 100%; height: 100%; border-radius: 12px; background: var(--sleeve-c, #181920); color: #fff;
+  border: 2px solid rgba(255, 255, 255, .6); display: grid; place-items: center; font-size: 56px; font-weight: 900;
+}
+.fx-sleeve3d-box {
+  position: absolute; left: 90px; top: 36px; width: 330px; height: 416px; border-radius: 16px; padding: 28px;
+  background: linear-gradient(145deg, #23252f 0%, #121318 100%); color: #ffffff; z-index: 5;
+  box-shadow: -10px 0 0 #0b0c10, 0 28px 56px rgba(15, 23, 42, .32), inset 0 0 0 2px rgba(255, 255, 255, .16);
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.fx-sleeve3d-box b { font-family: var(--fx-font-num); font-size: 120px; line-height: .88; }
+.fx-sleeve3d-box strong { font-size: 44px; font-weight: 900; display: block; }
+.fx-sleeve3d-box span { font-size: 32px; color: #fbbf24; font-weight: 800; }
+
+/* 10. carousel3d：底部扇形手牌托底 + 台面拍立得连切轮播 */
+.fx-carousel3d { position: relative; width: 1680px; height: 820px; perspective: 1800px; }
+.fx-carousel3d-stage { position: absolute; left: 0; right: 0; top: 0; height: 640px; transform-style: preserve-3d; }
+.fx-carousel3d-card {
+  position: absolute; left: 180px; top: 30px; width: 920px; height: 590px; border-radius: 26px; background: #ffffff;
+  padding: 22px 24px 26px; display: flex; flex-direction: column; gap: 16px;
+  box-shadow: 0 30px 64px -12px rgba(15, 23, 42, .18), 0 8px 20px rgba(15, 23, 42, .08), 0 0 0 1px rgba(15, 23, 42, .06);
+}
+.fx-carousel3d-view { flex: 1; min-height: 0; border-radius: 16px; overflow: hidden; background: #eef1f7; }
+.fx-carousel3d-view > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fx-carousel3d-foot { display: flex; align-items: baseline; gap: 16px; padding-top: 10px; border-top: 3px solid var(--fx-accent); }
+.fx-carousel3d-foot b { font-family: var(--fx-font-num); font-size: 50px; color: var(--fx-accent); line-height: 1; }
+.fx-carousel3d-foot strong { font-size: 44px; font-weight: 900; color: #0f1117; }
+.fx-carousel3d-foot span { font-size: 34px; color: var(--fx-sub); font-weight: 600; }
+.fx-carousel3d-hand {
+  position: absolute; left: 360px; bottom: -70px; width: 620px; height: 220px; pointer-events: none; z-index: 8;
+}
+.fx-carousel3d-mini {
+  position: absolute; left: 50%; top: 30px; width: 150px; height: 210px; margin-left: -75px; border-radius: 14px;
+  background: #ffffff; padding: 7px; box-shadow: 0 12px 28px rgba(15, 23, 42, .2); transform-origin: 50% 120%;
+}
+.fx-carousel3d-mini i {
+  display: block; width: 100%; height: 100%; border-radius: 9px; background: var(--fx-accent);
+  border: 2px solid rgba(255, 255, 255, .85);
+}
+
+/* 11. slabs3d：3D 厚石碑多米诺撞击与立体碎裂 */
+.fx-slabs3d { position: relative; width: 1180px; height: 600px; perspective: 1600px; }
+.fx-slab3d {
+  position: absolute; top: 90px; width: 290px; height: 410px; transform-style: preserve-3d; transform-origin: 50% 100%;
+}
+.fx-slab3d-body {
+  position: absolute; inset: 0; border-radius: 16px; background: linear-gradient(160deg, #2a2d37, #171920);
+  border: 2px solid rgba(245, 194, 91, .55); color: #f6d379; display: grid; place-items: center;
+  font-size: 56px; font-weight: 900; box-shadow: 12px 14px 0 #0d0e12, 0 28px 50px rgba(0, 0, 0, .4);
+}
+.fx-slab3d-shard {
+  position: absolute; inset: 0; border-radius: 8px; background: linear-gradient(145deg, #323642, #181a22);
+  border: 1.5px solid rgba(245, 194, 91, .6); box-shadow: 6px 6px 0 #0b0c10; visibility: hidden; pointer-events: none;
+}
+
+/* 12. coins3d：3D 立体筹码 / 金币组 */
+.fx-coins3d { position: relative; width: 520px; height: 480px; perspective: 1400px; }
+.fx-coin3d {
+  position: absolute; width: 136px; height: 136px; border-radius: 50%; transform-style: preserve-3d;
+}
+.fx-coin3d-rim {
+  position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, #d97706, #92400e);
+}
+.fx-coin3d-face {
+  position: absolute; inset: 0; border-radius: 50%; transform: translateZ(8px);
+  background: radial-gradient(circle at 32% 28%, #fef08a 0%, #facc15 42%, #eab308 78%, #ca8a04 100%);
+  box-shadow: inset 0 0 0 6px #fde047, inset 0 0 0 10px rgba(161, 98, 7, .45);
+  display: grid; place-items: center; font-family: var(--fx-font-num); font-size: 68px; font-weight: 900; color: #854d0e;
+}
+.fx-coin3d-shadow {
+  position: absolute; width: 130px; height: 42px; border-radius: 50%; background: rgba(15, 23, 42, .2); filter: blur(14px);
+}
+
+/* 13. timeline3d：立面面板后仰躺倒变 3D 时间轴轨道 */
+.fx-timeline3d { position: relative; width: 1120px; height: 620px; perspective: 1600px; }
+.fx-timeline3d-board {
+  position: absolute; inset: 30px 40px; border-radius: 28px; padding: 34px 40px;
+  background: linear-gradient(160deg, #3b82f6 0%, #2563eb 100%); color: #ffffff;
+  box-shadow: 0 16px 0 #1d4ed8, 0 36px 70px rgba(37, 99, 235, .28), inset 0 0 0 3px rgba(255, 255, 255, .65);
+  transform-style: preserve-3d; transform-origin: 50% 82%;
+}
+.fx-timeline3d-head strong { font-size: 50px; font-weight: 900; display: block; }
+.fx-timeline3d-head span { font-size: 32px; opacity: .88; font-weight: 700; }
+.fx-timeline3d-ruler {
+  position: absolute; left: 44px; right: 44px; bottom: 56px; height: 96px; border-radius: 16px;
+  background: rgba(255, 255, 255, .16); background-image: repeating-linear-gradient(90deg, rgba(255,255,255,.55) 0 2px, transparent 2px 32px);
+  background-size: 100% 18px; background-repeat: no-repeat;
+}
+.fx-timeline3d-clips {
+  position: absolute; left: 56px; right: 56px; bottom: 72px; display: flex; align-items: flex-end; gap: 26px; transform-style: preserve-3d;
+}
+.fx-timeline3d-clip {
+  width: 220px; height: 140px; border-radius: 14px; background: #ffffff; padding: 6px;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, .28); transform-origin: 50% 100%; overflow: hidden;
+}
+.fx-timeline3d-clip > img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block; }
+.fx-timeline3d-head-pin {
+  position: absolute; left: 160px; bottom: 38px; width: 4px; height: 220px; background: #ef4444; z-index: 20;
+  transform-origin: 50% 100%; box-shadow: 0 0 14px rgba(239, 68, 68, .6);
+}
+.fx-timeline3d-badge {
+  position: absolute; left: 50%; top: -54px; transform: translateX(-50%); padding: 8px 22px; border-radius: 999px;
+  background: #0f1117; color: #fff; font-size: 32px; font-weight: 800; white-space: nowrap;
+}
+
+/* 14. paperstack：白纸复印叠厚 + 衰减进度条 */
+.fx-paperstack { position: relative; width: 1020px; height: 580px; }
+.fx-paperstack-pile { position: relative; width: 380px; height: 420px; margin: 20px 0 0 40px; perspective: 1200px; }
+.fx-paper-sheet {
+  position: absolute; left: 50px; top: 40px; width: 250px; height: 320px; border-radius: 12px; background: #ffffff;
+  padding: 24px; box-shadow: 0 10px 24px rgba(15, 23, 42, .12), 0 0 0 1px rgba(15, 23, 42, .08);
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.fx-paper-sheet::before {
+  content: ""; height: 96px; border-radius: 8px;
+  background: repeating-linear-gradient(180deg, #e5e7eb 0 12px, transparent 12px 24px);
+}
+.fx-paper-sheet b { font-size: 34px; font-weight: 800; color: #6b7280; }
+.fx-paperstack-meter {
+  position: absolute; left: 40px; right: 40px; bottom: 24px; padding: 22px 30px; border-radius: 20px; background: #ffffff;
+  box-shadow: var(--fx-card-shadow); display: flex; align-items: center; gap: 24px;
+}
+.fx-paperstack-meter strong { font-size: 36px; font-weight: 900; white-space: nowrap; }
+.fx-paperstack-bar { flex: 1; height: 20px; border-radius: 999px; background: #e5e7eb; overflow: hidden; }
+.fx-paperstack-fill { height: 100%; width: 100%; border-radius: 999px; background: var(--fx-accent); transform-origin: 0 50%; }
+.fx-paperstack-val { font-family: var(--fx-font-num); font-size: 48px; font-weight: 800; color: var(--fx-accent); min-width: 110px; text-align: right; }
+
+/* 15. callouts3d：四角取景框锁定 + 多分支水平引线组 */
+.fx-callouts3d { position: relative; display: flex; align-items: center; gap: 0; }
+.fx-callouts3d-list { display: flex; flex-direction: column; gap: 42px; width: 480px; z-index: 5; }
+.fx-callouts3d-item { display: flex; align-items: center; gap: 16px; }
+.fx-callouts3d-item strong { font-size: 42px; font-weight: 900; white-space: nowrap; min-width: 200px; text-align: right; }
+.fx-callouts3d-line { flex: 1; height: 3px; background: #0f1117; position: relative; transform-origin: 100% 50%; }
+.fx-callouts3d-line::after { content: ""; position: absolute; right: -6px; top: -5px; width: 13px; height: 13px; border-radius: 50%; background: var(--fx-accent); }
+.fx-callouts3d-box {
+  position: relative; border-radius: 26px; padding: 14px; background: #ffffff; box-shadow: var(--fx-card-shadow);
+}
+.fx-callouts3d-corners {
+  position: absolute; inset: -14px; border-radius: 32px; pointer-events: none;
+  background:
+    linear-gradient(#f59e0b, #f59e0b) 0 0 / 38px 5px, linear-gradient(#f59e0b, #f59e0b) 0 0 / 5px 38px,
+    linear-gradient(#f59e0b, #f59e0b) 100% 0 / 38px 5px, linear-gradient(#f59e0b, #f59e0b) 100% 0 / 5px 38px,
+    linear-gradient(#f59e0b, #f59e0b) 0 100% / 38px 5px, linear-gradient(#f59e0b, #f59e0b) 0 100% / 5px 38px,
+    linear-gradient(#f59e0b, #f59e0b) 100% 100% / 38px 5px, linear-gradient(#f59e0b, #f59e0b) 100% 100% / 5px 38px;
+  background-repeat: no-repeat;
+}
+
+/* 16. youarehere：全片分段路标游标卡 */
+.fx-youarehere {
+  position: relative; width: 920px; padding: 34px 42px 48px; border-radius: 26px; background: #ffffff;
+  box-shadow: var(--fx-card-shadow);
+}
+.fx-yah-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 28px; }
+.fx-yah-top strong { font-size: 42px; font-weight: 900; }
+.fx-yah-top span { font-family: var(--fx-font-mono); font-size: 34px; font-weight: 700; color: var(--fx-sub); }
+.fx-yah-track { position: relative; display: flex; gap: 12px; height: 42px; }
+.fx-yah-seg { flex: 1; border-radius: 10px; background: #dbeafe; }
+.fx-yah-seg.on { background: var(--fx-accent); }
+.fx-yah-pin {
+  position: absolute; top: -12px; bottom: -26px; width: 4px; background: #ef4444; left: 20%;
+}
+.fx-yah-pin b {
+  position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 4px;
+  font-family: var(--fx-font-mono); font-size: 16px; font-weight: 800; color: #ef4444; white-space: nowrap; letter-spacing: .08em;
+}
+
+/* 17. calgrid3d：30 天日历翻牌矩阵 + 顶部涨粉卡 */
+.fx-calgrid3d { display: flex; flex-direction: column; gap: 22px; width: 660px; perspective: 1400px; }
+.fx-calgrid3d-kpi {
+  padding: 22px 32px; border-radius: 24px; background: #ffffff; box-shadow: var(--fx-card-shadow);
+  transform: rotate(-1.2deg);
+}
+.fx-calgrid3d-kpi span { font-size: 34px; font-weight: 700; color: var(--fx-sub); display: block; }
+.fx-calgrid3d-kpi b { font-family: var(--fx-font-num); font-size: 96px; font-weight: 900; line-height: 1.02; color: #0f1117; }
+.fx-calgrid3d-cells { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.fx-cal-cell {
+  position: relative; height: 66px; border-radius: 10px; transform-style: preserve-3d;
+}
+.fx-cal-front, .fx-cal-back {
+  position: absolute; inset: 0; border-radius: 10px; display: grid; place-items: center;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, .14);
+}
+.fx-cal-back { background: var(--fx-accent); border: 3px solid #ffffff; color: #fff; font-weight: 900; font-size: 22px; }
+.fx-cal-front {
+  background: #23252e; color: #ffffff; font-family: var(--fx-font-num); font-size: 36px; font-weight: 800; padding-top: 12px;
+  border-top: 14px solid #ef4444; visibility: hidden;
+}
+
+/* 18. ctabar：白底高浮起交互胶囊（扣字发送 / 点赞变已关注爆彩带） */
+.fx-ctabar { position: relative; display: inline-flex; align-items: center; gap: 22px; padding: 18px 24px 18px 36px; border-radius: 999px; background: #ffffff; box-shadow: var(--fx-card-shadow); }
+.fx-ctabar-txt { font-size: 40px; font-weight: 800; color: #0f1117; min-width: 280px; }
+.fx-ctabar-txt small { font-size: 34px; color: var(--fx-sub); margin-right: 14px; font-weight: 700; }
+.fx-ctabar-btn {
+  padding: 14px 36px; border-radius: 999px; background: var(--fx-accent); color: #ffffff; font-size: 36px; font-weight: 900; white-space: nowrap;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, .3);
+}
+.fx-ctabar-btn.like { background: #ef4444; box-shadow: 0 10px 24px rgba(239, 68, 68, .3); }
+.fx-ctabar-btn.done { background: #16a34a; box-shadow: 0 10px 24px rgba(22, 163, 74, .3); }
+
+/* 屏幕局部剥离块 & 3D 破框气泡 & 拍立得上传条 & 巨卡擦镜转场 & 桌面暗黑反相 */
+.fx-pop-slice {
+  border-radius: 14px; background: #ffffff; color: #0f1117; padding: 14px 22px; font-size: 34px; font-weight: 800;
+  box-shadow: 0 28px 60px rgba(0, 0, 0, .38), 0 0 0 3px var(--fx-accent);
+}
+.fx-pop-bub {
+  padding: 16px 26px; border-radius: 20px; background: #22c55e; color: #0f1117; font-size: 34px; font-weight: 800;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, .24), 0 0 0 3px #ffffff; white-space: nowrap;
+}
+.fx-pop-bub.dark { background: #181a22; color: #ffffff; }
+.fx-polaroid-prog { height: 10px; border-radius: 999px; background: #e5e7eb; overflow: hidden; margin-top: 8px; }
+.fx-polaroid-prog > i { display: block; height: 100%; width: 0%; background: var(--fx-accent); border-radius: 999px; }
+
+.fx-card-wipe {
+  position: absolute; inset: 0; z-index: 920; pointer-events: none; perspective: 1400px; overflow: hidden;
+}
+.fx-card-wipe-body {
+  position: absolute; left: 50%; top: 50%; width: 1120px; height: 1520px; margin: -760px 0 0 -560px;
+  border-radius: 48px; background: #ffffff; padding: 34px;
+  box-shadow: 0 60px 140px rgba(0, 0, 0, .45), 0 10px 0 #dcd9d0; transform-style: preserve-3d;
+}
+.fx-card-wipe-in {
+  width: 100%; height: 100%; border-radius: 32px; background: var(--wipe-c, #2563eb);
+  border: 6px solid rgba(255, 255, 255, .9); display: grid; place-items: center; color: #ffffff;
+  font-family: var(--fx-font-title); font-size: 140px; font-weight: 900;
+  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.08) 0 4px, transparent 4px 24px);
+}
+
+.scene.is-inverted, .fx-world-bg.is-inverted {
+  background-color: #101217 !important;
+  background-image:
+    linear-gradient(to right, rgba(245, 194, 91, .12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(245, 194, 91, .12) 1px, transparent 1px),
+    linear-gradient(to right, rgba(255, 255, 255, .045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, .045) 1px, transparent 1px) !important;
+  background-size: 240px 240px, 240px 240px, 48px 48px, 48px 48px !important;
+  color: #f8fafc !important;
+}
+.is-inverted-stage .fx-head h2, .is-inverted-stage .fx-coord-bar, .is-inverted-stage .fx-coord-bar b { color: #f8fafc !important; }
+.is-inverted-stage .fx-head i { background: #f6d379; color: #111318; }
+
+.abs.fx-phone3d, .abs.fx-card3d, .abs.fx-box3d, .abs.fx-layers3d, .abs.fx-deck3d, .abs.fx-wall3d, .abs.fx-flap3d,
+.abs.fx-letterdeck, .abs.fx-sleeve3d, .abs.fx-carousel3d, .abs.fx-slabs3d, .abs.fx-coins3d, .abs.fx-timeline3d,
+.abs.fx-paperstack, .abs.fx-callouts3d, .abs.fx-youarehere, .abs.fx-calgrid3d, .abs.fx-ctabar,
+.abs.fx-float-pill, .abs.fx-score-card, .abs.fx-stamp, .abs.fx-pop-slice, .abs.fx-pop-bub { position: absolute; }

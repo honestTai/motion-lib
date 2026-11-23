@@ -46,10 +46,10 @@
 <!-- STATS:START -->
 | | 数 |
 |---|---|
-| エフェクト | **217** 種（入場 26 · 退場 10 · 強調 41 · テキスト 9 · データ 7 · カメラ 14 · キャラクター 25 · 切り紙 10 · パーティクル 8 · 3D 12 · 空間 21 · ステージ 10 · 手描き 5 · チャットとコード 8 · 図解 3 · 図形 3 · サウンド 1 · コンポーネント 4） |
-| トランジション | **23** 種 |
-| コンポーネントジェネレーター | **40** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape`） |
-| スキン | **6** テーマ（ホワイトバイオレット · ブラックゴールド · レトロピクセル · 切り絵コラージュ · ディープスペース · スタジオ） |
+| エフェクト | **247** 種（入場 26 · 退場 10 · 強調 41 · テキスト 9 · データ 7 · カメラ 14 · キャラクター 25 · 切り紙 10 · パーティクル 8 · 3D 12 · ホワイト立体 30 · 空間 21 · ステージ 10 · 手描き 5 · チャットとコード 8 · 図解 3 · 図形 3 · サウンド 1 · コンポーネント 4） |
+| トランジション | **24** 種 |
+| コンポーネントジェネレーター | **58** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape` `phone3d` `card3d` `box3d` `layers3d` `deck3d` `wall3d` `flap3d` `letterdeck` `sleeve3d` `carousel3d` `slabs3d` `coins3d` `timeline3d` `paperstack` `callouts3d` `youarehere` `calgrid3d` `ctabar`） |
+| スキン | **7** テーマ（ホワイトバイオレット · ブラックゴールド · レトロピクセル · 切り絵コラージュ · ディープスペース · スタジオ · ホワイト立体） |
 <!-- STATS:END -->
 
 <details open>
@@ -334,7 +334,7 @@ AI を扱う動画で何度も出てくる画面を、本物のソフトと同�
 ---
 
 <!-- CATALOG:START -->
-## エフェクトカタログ（エフェクト 217 種 + トランジション 23 種）
+## エフェクトカタログ（エフェクト 247 種 + トランジション 24 種）
 
 > このセクションは `node gen-readme.mjs` が `fx.js` から自動生成します。手で編集しないでください。
 > すべてのエフェクトで共通パラメーター `dur`（長さ）、`ease`（イージング）、`stagger`（時間差）が使えます。下の表には各エフェクト固有のパラメーターのみを載せています。
@@ -571,6 +571,43 @@ AI を扱う動画で何度も出てくる画面を、本物のソフトと同�
 | `cam3d` | カメラ移動：今の位置から新しい位置へ飛びながら、視線も新しい目標へ向けます。パラメーター：x / y / z=飛んでいく先、lx / ly / lz=見る先、fov=画角、dur、ease（dur=0 ならその場で切り替え）。書かなかったパラメーターは変わりません |
 | `orbit3d` | 周回カメラ：カメラが目標のまわりを回ります。同時に近づいたり上昇したりもできます。パラメーター：turn=回る角度（負の値で逆回り）、from=開始角度（省略すると今の位置から）、r=終了時の目標からの距離、h=終了時の高さ、lx / ly / lz=回る中心、dur、ease |
 
+### ホワイト立体 (30)
+
+白背景スタジオ＆方眼デスク向けの立体モックアップ演出。追加で `fx-desk3d.js` を読み込みます（`theme-white3d` または `theme-white3d desk` と併用）。厚みのある 3D スマホ（`phone3d`）、両面カード（`card3d`）、六面体ボックス（`box3d`）、分解レイヤー図（`layers3d`）、弧状カード山（`deck3d`）、傾斜カードウォール（`wall3d`）、反転フラップ数字（`flap3d`）を備え、Z 高さに連動して床の影が変化します。
+
+| 名前 | 動作 / パラメーター |
+|---|---|
+| `pose-3d` | 3D ポーズ遷移：`phone3d` / `card3d` / `box3d` やカードを指定の 3D 角度・Z 高さへ動かし、床の投影を連動して変化させる。パラメータ：ry / rx / rz、z、s、x / y、dur |
+| `flip-3d` | 空中 3D 反転：`card3d`（または `.front`/`.back` バッジ）を Z 軸へ持ち上げて 180° 反転し、白デスクに着地させる。パラメータ：lift（既定 110）、dur（既定 0.72） |
+| `deal-arc` | 弧状ディール：`data-make="deck3d"` でカードの山から 3D の馬蹄弧または扇形へ 1 枚ずつ配る。パラメータ：dur（既定 1.1） |
+| `deck-gather` | カードの山へ回収：`data-make="deck3d"` で広げた弧状カードを整った厚い束に戻す。パラメータ：dur（既定 0.85） |
+| `letter-shuffle` | 文字ポーカーカードのシャッフル：`data-make="letterdeck"` の `{強調}` カードを跳ね上げて赤く反転させる。パラメータ：dur（既定 0.55） |
+| `sleeve-draw` | スリーブ箱からカード束を引き出す：`data-make="sleeve3d"` の外箱を横にずらし中の厚いカード束を引き出す。パラメータ：dur（既定 0.9） |
+| `grid-hero` | グリッドから主役カードを Z 軸拡大：i 枚目（1..N、0 で復帰）を手前中央へ持ち上げて拡大する。パラメータ：i、s（既定 1.65）、dur |
+| `carousel-next` | ポラロイド連切カルーセル：`data-make="carousel3d"` を i 枚目（または `steps` 枚先）へ送り、下の手札も揺らす。パラメータ：i、steps、dur |
+| `card-storm` | 3D カード渦巻きストーム：複数のカードを 3D 螺旋軌道で高速回転させ、手前は被写界深度でぼかす。パラメータ：dur（既定 2.6）、r（既定 320） |
+| `box-drop` | 立体ボックス落下：六面体 `box3d` が上から白デスクへ弾んで着地し、接地影が締まる。パラメータ：drop（既定 220）、dur（既定 0.68） |
+| `slab-shatter` | 3D 石板ドミノ倒し＆粉砕：`data-make="slabs3d"` の厚板が連鎖して倒れ、立体破片となって飛び散る。パラメータ：dur（既定 1.35） |
+| `coin-drop` | 3D コイン／チップ落下バウンド：`data-make="coins3d"` の厚み付きコインが回転しながら落ちて弾む。パラメータ：dur（既定 0.78） |
+| `polaroid-eject` | ポラロイド排出＋進捗バー：`card3d` が上から滑り出て下部の進捗バーが 100% まで進む。パラメータ：dur（既定 0.9） |
+| `layer-explode` | 3D レイヤー分解：`data-make="layers3d"` で重なったプレートを上下に広げ、破線ガイドと引き出し線を描く。パラメータ：dur（既定 0.9） |
+| `layer-focus` | レイヤー強調：`data-make="layers3d"` の下から i 層目（1..N、0 で全復帰）を持ち上げて点灯させる。パラメータ：i、dur |
+| `board-lay` | パネル後傾→3D タイムライン：`data-make="timeline3d"` が 56° 倒れてデスク軌道になり、クリップが立ち上がって再生針が進む。パラメータ：dur（既定 1.2） |
+| `stack-print` | 用紙スタック増加＋減衰バー：`data-make="paperstack"` に白い紙が次々重なり、新鮮度バーが `to%` まで下がる。パラメータ：to（既定 62）、dur（既定 1.4） |
+| `lock-callouts` | 四隅フレームロック＋引き出し線展開：`data-make="callouts3d"` の角枠がロックし、横引き出し線が順に伸びる。パラメータ：dur（既定 0.7） |
+| `pin-move` | 現在地ピン移動：`data-make="youarehere"` の赤い `YOU ARE HERE` ピンを `from` から `to`（0〜1）へ動かす。パラメータ：from、to、dur |
+| `wall-pull` | 3D カードウォールの引き / 寄り：`data-make="wall3d"` で中央カードの寄りから傾斜 3D カードウォール全体へ引く（`dir=in` で寄る）。パラメータ：dur（既定 1.25）、zoom（既定 2.3） |
+| `rig-focus` | 複数モックアップのフォーカス移動：i 番目（1..N、0 で全体復帰）を正面に向けて手前へ出し、他を斜め後ろへ下げる。パラメータ：i、s（既定 1.06）、dur |
+| `phone-split` | 3D スマホ中央寄り→2 カラム展開：最初は中央で大きく見せ、横へスライドして相方のカードを出す。パラメータ：dur（既定 0.78） |
+| `screen-pop` | 画面内スライス浮き出し：注目行（`.fx-pop-slice` または `to=#id`）を画面から +Z 方向へ浮かせて拡大する。パラメータ：to、s（既定 1.12）、dur |
+| `phone-wave` | 複数 3D スマホのウェーブ整列：並んだ `phone3d` が波のように順番に起き上がる。パラメータ：dur（既定 0.65）、stagger（既定 0.08） |
+| `float-pop` | 白スタジオ浮き出し：ピル（`.fx-float-pill`）やスコアカード（`.fx-score-card`）が Z 軸手前へ弾み出る。パラメータ：dur（既定 0.46） |
+| `flap-to` | パタパタ数字送り：`data-make="flap3d"` の各桁を機械式フラップで `to`（カンマは `_` で記述可、例 `10_000+`）へめくる。パラメータ：to、dur（既定 0.36）、stagger（既定 0.06） |
+| `cal-flip` | 30 日カレンダーめくり＋数値急伸：`data-make="calgrid3d"` の 30 枚が順にめくれ、上部の数値が `to` まで駆け上がる。パラメータ：to（既定 18862）、dur（既定 1.6） |
+| `bubble-pop3d` | スマホ吹き出しの 3D 飛び出し：`.fx-pop-bub` が傾いたスマホ画面から Z 空間へ層になって飛び出す。パラメータ：dur（既定 0.5） |
+| `cta-click` | 白ピルのカーソルクリック＋紙吹雪：`data-make="ctabar"` のボタンをクリックして完了状態に変え、紙吹雪を散らす。パラメータ：dur（既定 0.9） |
+| `desk-invert` | 白方眼デスク ⇄ 暗黒ゴールド方眼反転：デスク背景をダークモードに反転する（`mode=reset` で白に戻す）。パラメータ：mode=dark/reset |
+
 ### 空間 (21)
 
 ワールドキャンバス・カメラ・画像セットの動き。追加で `fx-world.js` を読み込みます。ルート要素に `data-world` を書くと、すべてのシーンが 1 枚の大きなキャンバス上のカメラ位置になり、シーンの切り替えはカメラの移動になります。カメラ系エフェクトは `data-world` が必要ですが、フォーカス系と画像セット系はどのページでも使えます。
@@ -682,7 +719,7 @@ AI の動画でよく出てくる画面。`fx-chat.js` を追加で読み込み�
 | `check` | チェックリストのチェック：.fx-check コンポーネントと併用します。チェックマークが描かれ、文字がくっきりします |
 | `toggle` | スイッチ切り替え：data-make="switches" と組み合わせ、i 番目（2/3/5 の一括指定可）を ON(on=1) / OFF(on=0) に切り替えます。パラメーター：i、on=0/1、stagger |
 
-### トランジション (23)
+### トランジション (24)
 
 **後ろ側の**シーンに書きます：`<section class="scene" data-in="blur-cross(dur=0.5)">`。
 
@@ -711,4 +748,5 @@ AI の動画でよく出てくる画面。`fx-chat.js` を追加で読み込み�
 | `cam-to` | ワールドキャンバス専用（既定）：カメラが次のカメラ位置へ斜めに移動する。少し引いてから寄り、ゆっくり→速く→ゆっくり。パラメータ：dur（0.6–0.9）、arc（途中で余分に振る角度。既定 8）、pull（引きの量。既定 0.07） |
 | `cam-jump` | ワールドキャンバス専用：カメラが次のカメラ位置へ直接飛ぶ（ハードカット）。大きな章の切り替えにだけ使う |
 | `mosaic` | モザイク場面転換：紙色のブロックがおおよそ上から順にランダムに画面を覆い、ランダムに外れて新しい場面を見せる。ブロックはアクターと常駐レイヤーの下にあるので、プレゼンターは隠れない（章や背景の切り替えに使う）。パラメータ：cols（1 行のブロック数。既定 24）、color、dur、seed |
+| `card-wipe` | 3D 巨大カードワイプ（通常モード・`data-world` 両対応）：特大の立体トランプがレンズ手前を横切って次のシーンへ切り替える。パラメータ：dur（既定 0.78）、emblem（既定 A）、color |
 <!-- CATALOG:END -->

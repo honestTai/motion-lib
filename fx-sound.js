@@ -184,29 +184,30 @@
   /* ───────────────────────── 动效 → 声音 对照表 ───────────────────────── */
   function table(o) { var m = {}; Object.keys(o).forEach(function (kind) { o[kind].split(' ').forEach(function (name) { m[name] = kind; }); }); return m; }
   var MAP = table({
-    pop: 'pop-in scale-in pixel-in jack-in stick-on stop-in ping callout check toggle bring-front tada',
-    thump: 'drop-bounce stamp-in fall-out drop-gather bignum squash',
-    swish: 'drop-in rise-in slide-in blur-rise-in wipe-in mask-rise flip-in tilt-in swing-in grow-x grow-y fan-in light-speed-in rise-out drop-out slide-out wipe-out scale-out hinge scatter-out swap flip-swap rotate-words morph stroke-in peel-in layer-rise cut-in paper-unfold lift pick slice-to helix-spin zoom-settle surround-in shape-morph reorder',
-    whoosh: 'zoom-to cam-look cam-wide zoom-here fly cutaway dive push-into path-move',
-    tick: 'marker underline strike box border-beam scan circuit beam screen-to road-walk code-focus',
+    pop: 'pop-in scale-in pixel-in jack-in stick-on stop-in ping callout check toggle bring-front tada float-pop layer-focus screen-pop bubble-pop3d',
+    thump: 'drop-bounce stamp-in fall-out drop-gather bignum squash box-drop coin-drop',
+    swish: 'drop-in rise-in slide-in blur-rise-in wipe-in mask-rise flip-in tilt-in swing-in grow-x grow-y fan-in light-speed-in rise-out drop-out slide-out wipe-out scale-out hinge scatter-out swap flip-swap rotate-words morph stroke-in peel-in layer-rise cut-in paper-unfold lift pick slice-to helix-spin zoom-settle surround-in shape-morph reorder pose-3d rig-focus layer-explode grid-hero polaroid-eject phone-split phone-wave pin-move desk-invert',
+    whoosh: 'zoom-to cam-look cam-wide zoom-here fly cutaway dive push-into path-move wall-pull card-storm board-lay',
+    tick: 'marker underline strike box border-beam scan circuit beam screen-to road-walk code-focus lock-callouts stack-print',
     click: 'click agent-go',
     type: 'type retype scramble stream-in prompt run',
-    roll: 'count roll clock',
+    roll: 'count roll clock cal-flip',
     rumble: 'shake cam-shake head-shake wobble overload overwhelm wiggle',
     snap: 'closeup',
+    hit: 'slab-shatter',
     shimmer: 'glow sheen spot spotlight light-sweep',
-    sparkle: 'confetti sparkle burst burst3d',
+    sparkle: 'confetti sparkle burst burst3d cta-click',
     glitch: 'glitch dither-in',
     blip: 'choose pulse heartbeat',
     step: 'walk mini-walk',
-    card: 'deal-in msg diff',
-    flap: 'flip-to split-flap',
+    card: 'deal-in msg diff flip-3d deal-arc deck-gather letter-shuffle sleeve-draw carousel-next',
+    flap: 'flip-to split-flap flap-to',
     swellup: 'fill ring light-leak',
     paper: 'ink-circle ink-underline ink-box ink-arrow ink-mark',
     dots: 'typing',
     rise: 'hub-node'
   });
-  var TRANS = { 'blur-cross': 'swish', 'zoom-through': 'whoosh', push: 'whoosh', wipe: 'swish', iris: 'swish', flash: 'hit', pixelate: 'glitch', 'paper-slide': 'paper', tear: 'paper', 'glitch-cut': 'glitch', open: 'swish', shatter: 'glitch', 'diagonal-split': 'swish', blinds: 'flap', 'crt-off': 'zap', 'portal-spin': 'whoosh', halftone: 'swish', 'cam-to': 'whoosh', 'cam-jump': 'swish', mosaic: 'glitch' };
+  var TRANS = { 'blur-cross': 'swish', 'zoom-through': 'whoosh', push: 'whoosh', wipe: 'swish', iris: 'swish', flash: 'hit', pixelate: 'glitch', 'paper-slide': 'paper', tear: 'paper', 'glitch-cut': 'glitch', open: 'swish', shatter: 'glitch', 'diagonal-split': 'swish', blinds: 'flap', 'crt-off': 'zap', 'portal-spin': 'whoosh', halftone: 'swish', 'cam-to': 'whoosh', 'cam-jump': 'swish', mosaic: 'glitch', 'card-wipe': 'whoosh' };
   var EMOTE = { question: 'rise', exclaim: 'snap', sweat: 'fall', anger: 'buzz', sparkle: 'sparkle', idea: 'ding', heart: 'chime', zap: 'zap', dots: 'dots' };
   /* 声音该落在动作的哪一刻（秒）：落地类的「咚」要等东西掉下来，转场的「哗」要早一点起 */
   var LAG = { 'drop-gather': 0.22, bignum: 0.12, cutaway: -0.06, dive: -0.04 };

@@ -1996,8 +1996,8 @@
     opt = opt || {};
     var tl = FX.timeline, SW = STAGE.offsetWidth, SH = STAGE.offsetHeight;
     var minFont = num(opt.minFont, 32), minCover = num(opt.minCover, 0.1), subTop = SH - num(opt.subBand, 170), GX = 64, GY = 36;
-    var SKIP = '.fx-subs, script, style, [data-lint="off"], .t-en, .fx-segments-count, .fx-bignum-txt em, .fx-skel';   // 纯装饰的小字不查
-    var DEEP = '.fx-tunnel, .fx-road, .fx-helix, .fx-flipboard';   // 3D 组件里远处的东西本来就小，只查离镜头最近的
+    var SKIP = '.fx-subs, script, style, [data-lint="off"], .t-en, .fx-segments-count, .fx-bignum-txt em, .fx-skel, .fx-coord-bar, .fx-card3d-meta, .fx-box3d-lip, .fx-layers3d-txt small, .fx-stamp small, .fx-float-pill i, .fx-letter-card .no, .fx-letter-card .suit, .fx-yah-pin b, .fx-cal-back, .fx-cal-front';   // 纯装饰的小字不查
+    var DEEP = '.fx-tunnel, .fx-road, .fx-helix, .fx-flipboard, .fx-wall3d, .fx-deck3d, .fx-box3d, .fx-phone3d, .fx-carousel3d, .fx-slabs3d, .fx-timeline3d';   // 3D 组件里远处的东西本来就小，只查离镜头最近的
     var EMOJI = /[\u{1F000}-\u{1FAFF}\u{2705}\u{274C}\u{2728}\u{2753}\u{2757}\u{26A1}\u{2B50}\u{2764}]/u;
     var seq = FX.scenes.filter(function (s) { return !s.el.classList.contains('overlay'); });
     var overlays = FX.scenes.filter(function (s) { return s.el.classList.contains('overlay'); });
@@ -2113,7 +2113,7 @@
         if (S === B) {
           var isBoundedBox = function (el) {
             if (!el || el === STAGE || el === s.el || el.classList.contains('scene') || el.classList.contains('layer')) return false;
-            if (el.matches('span,b,i,em,svg,path,img,canvas,.fx-surround,.fx-hub,[data-lint="overflow-ok"]')) return false;
+            if (el.matches('span,b,i,em,svg,path,img,canvas,.fx-surround,.fx-hub,[data-lint="overflow-ok"]') || el.closest('.fx-phone3d,.fx-card3d,.fx-box3d,.fx-layers3d,.fx-deck3d,.fx-wall3d,.fx-letterdeck,.fx-sleeve3d,.fx-carousel3d,.fx-slabs3d,.fx-coins3d,.fx-timeline3d,.fx-paperstack,.fx-callouts3d,.fx-youarehere,.fx-calgrid3d,.fx-ctabar')) return false;
             var cs = getComputedStyle(el), bw = parseFloat(cs.borderTopWidth) > 0.5 || parseFloat(cs.borderLeftWidth) > 0.5;
             var bg = cs.backgroundColor, hasBg = (cs.backgroundImage && cs.backgroundImage !== 'none') || (bg && bg !== 'transparent' && !/,\s*0\)$/.test(bg));
             if (!bw && !hasBg) return false;
