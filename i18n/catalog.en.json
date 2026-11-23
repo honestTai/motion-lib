@@ -373,6 +373,7 @@
     "立体/step-focus": "White-studio step pipeline focus: advances `data-make=\"steplist3d\"` to step i (1..N; 0 lights all), marking earlier steps done and dimming later ones. Params: i, dur (default 0.42)",
     "立体/blueprint-scan": "Takeaway blueprint crop-mark lock: snaps 4 corner viewfinder brackets onto `data-make=\"blueprint3d\"` and illuminates step rows sequentially. Param: dur (default 0.65)",
     "立体/check-fix": "Lint error auto-fix flip: flips a `.fx-check-row.is-bad` row around X into `.is-good` passed state and updates its message. Params: badge, after, dur (default 0.52)",
+    "立体/pop-3d": "3D spring pop-out: launches cards or `phone3d`/`card3d` mockups forward out of Z-depth onto the white studio desk with tactile overshoot (supports `each:` stagger). Params: dur (default 0.44), stagger (default 0.14), fromY",
     "转场/card-wipe": "3D giant poker-card lens wipe (works in both normal scenes and `data-world`): sweeps an oversized double-sided 3D card right across the camera to reveal the next scene. Params: dur (default 0.78), emblem (default A), color"
   }
 }

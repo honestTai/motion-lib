@@ -46,7 +46,7 @@
 <!-- STATS:START -->
 | | 数 |
 |---|---|
-| エフェクト | **250** 種（入場 26 · 退場 10 · 強調 41 · テキスト 9 · データ 7 · カメラ 14 · キャラクター 25 · 切り紙 10 · パーティクル 8 · 3D 12 · ホワイト立体 33 · 空間 21 · ステージ 10 · 手描き 5 · チャットとコード 8 · 図解 3 · 図形 3 · サウンド 1 · コンポーネント 4） |
+| エフェクト | **251** 種（入場 26 · 退場 10 · 強調 41 · テキスト 9 · データ 7 · カメラ 14 · キャラクター 25 · 切り紙 10 · パーティクル 8 · 3D 12 · ホワイト立体 34 · 空間 21 · ステージ 10 · 手描き 5 · チャットとコード 8 · 図解 3 · 図形 3 · サウンド 1 · コンポーネント 4） |
 | トランジション | **24** 種 |
 | コンポーネントジェネレーター | **60** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape` `phone3d` `card3d` `box3d` `layers3d` `deck3d` `wall3d` `flap3d` `letterdeck` `sleeve3d` `carousel3d` `slabs3d` `coins3d` `timeline3d` `paperstack` `callouts3d` `youarehere` `calgrid3d` `ctabar` `steplist3d` `blueprint3d`） |
 | スキン | **7** テーマ（ホワイトバイオレット · ブラックゴールド · レトロピクセル · 切り絵コラージュ · ディープスペース · スタジオ · ホワイト立体） |
@@ -334,7 +334,7 @@ AI を扱う動画で何度も出てくる画面を、本物のソフトと同�
 ---
 
 <!-- CATALOG:START -->
-## エフェクトカタログ（エフェクト 250 種 + トランジション 24 種）
+## エフェクトカタログ（エフェクト 251 種 + トランジション 24 種）
 
 > このセクションは `node gen-readme.mjs` が `fx.js` から自動生成します。手で編集しないでください。
 > すべてのエフェクトで共通パラメーター `dur`（長さ）、`ease`（イージング）、`stagger`（時間差）が使えます。下の表には各エフェクト固有のパラメーターのみを載せています。
@@ -571,7 +571,7 @@ AI を扱う動画で何度も出てくる画面を、本物のソフトと同�
 | `cam3d` | カメラ移動：今の位置から新しい位置へ飛びながら、視線も新しい目標へ向けます。パラメーター：x / y / z=飛んでいく先、lx / ly / lz=見る先、fov=画角、dur、ease（dur=0 ならその場で切り替え）。書かなかったパラメーターは変わりません |
 | `orbit3d` | 周回カメラ：カメラが目標のまわりを回ります。同時に近づいたり上昇したりもできます。パラメーター：turn=回る角度（負の値で逆回り）、from=開始角度（省略すると今の位置から）、r=終了時の目標からの距離、h=終了時の高さ、lx / ly / lz=回る中心、dur、ease |
 
-### ホワイト立体 (33)
+### ホワイト立体 (34)
 
 白背景スタジオ＆方眼デスク向けの立体モックアップ演出。追加で `fx-desk3d.js` を読み込みます（`theme-white3d` または `theme-white3d desk` と併用）。厚みのある 3D スマホ（`phone3d`）、両面カード（`card3d`）、六面体ボックス（`box3d`）、分解レイヤー図（`layers3d`）、弧状カード山（`deck3d`）、傾斜カードウォール（`wall3d`）、反転フラップ数字（`flap3d`）を備え、Z 高さに連動して床の影が変化します。
 
@@ -610,6 +610,7 @@ AI を扱う動画で何度も出てくる画面を、本物のソフトと同�
 | `step-focus` | 白スタジオ・ステップ進行フォーカス：`data-make="steplist3d"` の i 番目（1..N、0 で全点灯）を手前へ浮かせ、完了ステップにチェックを付ける。パラメータ：i、dur（既定 0.42） |
 | `blueprint-scan` | ブループリント四隅ロック：`data-make="blueprint3d"` の四隅クロップ枠をロックし、手順行を順に点灯させる。パラメータ：dur（既定 0.65） |
 | `check-fix` | 検査エラー自動修正フリップ：`.fx-check-row.is-bad` を X 軸反転で `.is-good` 合格状態へ切り替え文言を更新する。パラメータ：badge、after、dur（既定 0.52） |
+| `pop-3d` | 3D スプリング飛び出し：カードや 3D モックアップが奥行きから傾きを伴って白デスク上へ勢いよく飛び出す（`each:` 連続対応）。パラメータ：dur（既定 0.44）、stagger（既定 0.14）、fromY |
 
 ### 空間 (21)
 

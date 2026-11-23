@@ -184,7 +184,7 @@
   /* ───────────────────────── 动效 → 声音 对照表 ───────────────────────── */
   function table(o) { var m = {}; Object.keys(o).forEach(function (kind) { o[kind].split(' ').forEach(function (name) { m[name] = kind; }); }); return m; }
   var MAP = table({
-    pop: 'pop-in scale-in pixel-in jack-in stick-on stop-in ping callout check toggle bring-front tada float-pop layer-focus screen-pop bubble-pop3d',
+    pop: 'pop-in scale-in pixel-in jack-in stick-on stop-in ping callout check toggle bring-front tada float-pop layer-focus screen-pop bubble-pop3d pop-3d',
     thump: 'drop-bounce stamp-in fall-out drop-gather bignum squash box-drop coin-drop',
     swish: 'drop-in rise-in slide-in blur-rise-in wipe-in mask-rise flip-in tilt-in swing-in grow-x grow-y fan-in light-speed-in rise-out drop-out slide-out wipe-out scale-out hinge scatter-out swap flip-swap rotate-words morph stroke-in peel-in layer-rise cut-in paper-unfold lift pick slice-to helix-spin zoom-settle surround-in shape-morph reorder pose-3d rig-focus layer-explode grid-hero polaroid-eject phone-split phone-wave pin-move desk-invert',
     whoosh: 'zoom-to cam-look cam-wide zoom-here fly cutaway dive push-into path-move wall-pull card-storm board-lay',

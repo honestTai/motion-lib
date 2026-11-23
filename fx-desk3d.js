@@ -900,9 +900,9 @@
       var t0 = c.t + idx * sg, obj = el.__d3d;
       if (obj) {
         var b = obj.base, p = { u: 0 };
-        c.tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.14, ease: 'none', immediateRender: c.t <= 0.05 }, t0);
+        c.tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.14, ease: 'none', immediateRender: true }, t0);
         c.tl.fromTo(p, { u: 0 }, {
-          u: 1, duration: dur, ease: 'back.out(1.45)', immediateRender: c.t <= 0.05,
+          u: 1, duration: dur, ease: 'back.out(1.45)', immediateRender: true,
           onUpdate: function () {
             var u = p.u;
             obj.state.z = b.z + (1 - u) * drop; obj.state.y = (1 - u) * -90;
@@ -1139,7 +1139,7 @@
     if (!target) return;
     c.tl.fromTo(target,
       { opacity: 0, scale: 0.72, y: 34, z: -20, rotationX: 18, transformPerspective: 1200 },
-      { opacity: 1, scale: num(c.o.s, 1.12), y: 0, z: 90, rotationX: 0, transformPerspective: 1200, duration: num(c.o.dur, 0.55), ease: 'back.out(1.8)', immediateRender: c.t <= 0.05 },
+      { opacity: 1, scale: num(c.o.s, 1.12), y: 0, z: 90, rotationX: 0, transformPerspective: 1200, duration: num(c.o.dur, 0.55), ease: 'back.out(1.8)', immediateRender: true },
       c.t);
   });
 
@@ -1230,7 +1230,7 @@
       var zTarget = 50 + i * 35;
       c.tl.fromTo(el,
         { opacity: 0, scale: 0.62, x: -70, y: 24, z: -10, rotationY: -18, transformPerspective: 1200 },
-        { opacity: 1, scale: 1, x: 0, y: 0, z: zTarget, rotationY: -4, transformPerspective: 1200, duration: dur, ease: 'back.out(1.85)', immediateRender: c.t <= 0.05 },
+        { opacity: 1, scale: 1, x: 0, y: 0, z: zTarget, rotationY: -4, transformPerspective: 1200, duration: dur, ease: 'back.out(1.85)', immediateRender: true },
         c.t + i * sg);
     });
   });
@@ -1333,6 +1333,36 @@
           el.style.transform = 'perspective(1100px) rotateX(' + ang.toFixed(1) + 'deg) scale(' + (1 + 0.04 * Math.sin(Math.PI * u)).toFixed(3) + ')';
         }
       }, c.t + idx * sg);
+    });
+  });
+
+  /* 34. pop-3d */
+  def('pop-3d', CAT, '白底立体弹射跳出：卡片、组件或 3D 样机从桌面深处带俯仰倾角「唰」一下弹射跃起到位（支持 each: 错峰连续跳出），带回弹落定与接触影联动。参数 dur（默认 0.44）、stagger（默认 0.14）、fromY（默认 64）', function (c) {
+    var dur = num(c.o.dur, 0.44), sg = num(c.o.stagger, 0.14), fy = num(c.o.fromY, 64);
+    c.els.forEach(function (el, idx) {
+      var t0 = c.t + idx * sg, obj = el.__d3d, dir = idx % 2 ? -1 : 1;
+      if (obj) {
+        var b = obj.plan || obj.base, p = { u: 0 };
+        c.tl.set(el, { autoAlpha: 0 }, 0);
+        c.tl.to(el, { autoAlpha: 1, duration: 0.12, ease: 'power1.out' }, t0);
+        c.tl.fromTo(p, { u: 0 }, {
+          u: 1, duration: dur, ease: 'back.out(2.1)', immediateRender: t0 <= 0.05,
+          onUpdate: function () {
+            var u = p.u;
+            obj.state.y = lerp(b.y + fy, b.y, u);
+            obj.state.z = lerp(b.z - 110, b.z, u);
+            obj.state.rx = lerp(b.rx - 22, b.rx, u);
+            obj.state.ry = lerp(b.ry + dir * 14, b.ry, u);
+            obj.state.sc = lerp(0.58, b.sc, u);
+            paintRig(obj);
+          }
+        }, t0);
+      } else {
+        c.tl.fromTo(el,
+          { autoAlpha: 0, y: fy, z: -120, scale: 0.56, rotationX: -26, rotationY: dir * 11, transformPerspective: 1300 },
+          { autoAlpha: 1, y: 0, z: 0, scale: 1, rotationX: 0, rotationY: 0, transformPerspective: 1300, duration: dur, ease: 'back.out(2.1)', immediateRender: true },
+          t0);
+      }
     });
   });
 
