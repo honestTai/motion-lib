@@ -2113,7 +2113,7 @@
         if (S === B) {
           var isBoundedBox = function (el) {
             if (!el || el === STAGE || el === s.el || el.classList.contains('scene') || el.classList.contains('layer')) return false;
-            if (el.matches('span,b,i,em,svg,path,img,canvas,.fx-surround,.fx-hub,[data-lint="overflow-ok"]') || el.closest('.fx-phone3d,.fx-card3d,.fx-box3d,.fx-layers3d,.fx-deck3d,.fx-wall3d,.fx-letterdeck,.fx-sleeve3d,.fx-carousel3d,.fx-slabs3d,.fx-coins3d,.fx-timeline3d,.fx-paperstack,.fx-callouts3d,.fx-youarehere,.fx-calgrid3d,.fx-ctabar')) return false;
+            if (el.matches('span,b,i,em,svg,path,img,canvas,.fx-surround,.fx-hub,[data-lint="overflow-ok"]') || el.closest('.fx-phone3d,.fx-card3d,.fx-box3d,.fx-layers3d,.fx-deck3d,.fx-wall3d,.fx-letterdeck,.fx-sleeve3d,.fx-carousel3d,.fx-slabs3d,.fx-coins3d,.fx-timeline3d,.fx-paperstack,.fx-callouts3d,.fx-youarehere,.fx-calgrid3d,.fx-ctabar,.fx-steplist3d,.fx-blueprint3d')) return false;
             var cs = getComputedStyle(el), bw = parseFloat(cs.borderTopWidth) > 0.5 || parseFloat(cs.borderLeftWidth) > 0.5;
             var bg = cs.backgroundColor, hasBg = (cs.backgroundImage && cs.backgroundImage !== 'none') || (bg && bg !== 'transparent' && !/,\s*0\)$/.test(bg));
             if (!bw && !hasBg) return false;

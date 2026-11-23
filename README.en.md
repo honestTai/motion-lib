@@ -46,9 +46,9 @@
 <!-- STATS:START -->
 | | Count |
 |---|---|
-| Effects | **247** (Enter 26 · Exit 10 · Emphasis 41 · Text 9 · Data 7 · Camera 14 · Character 25 · Papercut 10 · Particles 8 · 3D 12 · White 3D 30 · Space 21 · Stage 10 · Hand-drawn 5 · Chat & code 8 · Diagrams 3 · Shapes 3 · Sound 1 · Components 4) |
+| Effects | **250** (Enter 26 · Exit 10 · Emphasis 41 · Text 9 · Data 7 · Camera 14 · Character 25 · Papercut 10 · Particles 8 · 3D 12 · White 3D 33 · Space 21 · Stage 10 · Hand-drawn 5 · Chat & code 8 · Diagrams 3 · Shapes 3 · Sound 1 · Components 4) |
 | Transitions | **24** |
-| Component generators | **58** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape` `phone3d` `card3d` `box3d` `layers3d` `deck3d` `wall3d` `flap3d` `letterdeck` `sleeve3d` `carousel3d` `slabs3d` `coins3d` `timeline3d` `paperstack` `callouts3d` `youarehere` `calgrid3d` `ctabar`) |
+| Component generators | **60** (`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape` `phone3d` `card3d` `box3d` `layers3d` `deck3d` `wall3d` `flap3d` `letterdeck` `sleeve3d` `carousel3d` `slabs3d` `coins3d` `timeline3d` `paperstack` `callouts3d` `youarehere` `calgrid3d` `ctabar` `steplist3d` `blueprint3d`) |
 | Skins | **7** themes (violet tech · black-gold cinema · retro pixel · papercut collage · deep-space particles · studio · white 3D) |
 <!-- STATS:END -->
 
@@ -638,7 +638,7 @@ For flat rounded 2D SVG characters, [`fx-rig.js`](fx-rig.js) provides 2D two-bon
 ---
 
 <!-- CATALOG:START -->
-## Effect catalog (247 effects + 24 transitions)
+## Effect catalog (250 effects + 24 transitions)
 
 > This section is generated from `fx.js` by `node gen-readme.mjs`. Do not edit it by hand.
 > All effects accept the common parameters `dur` (duration), `ease` (easing) and `stagger`; the tables below list only each effect's own parameters.
@@ -875,7 +875,7 @@ Real 3D scenes (three.js); requires loading the extra `vendor/three-fx.min.js` a
 | `cam3d` | Move the camera: fly from the current position to a new one while turning the view toward a new target. Params: x / y / z=where to fly to, lx / ly / lz=where to look, fov=field of view, dur, ease (dur=0 cuts straight there). Any parameter you omit stays unchanged |
 | `orbit3d` | Orbit camera: the camera circles a target, optionally moving in or rising at the same time. Params: turn=degrees to turn (negative goes the other way), from=start angle (omit to start from the current position), r=distance from the target at the end, h=height at the end, lx / ly / lz=what to circle around, dur, ease |
 
-### White 3D (30)
+### White 3D (33)
 
 Tactile 3D white-studio & grid-desk motion, loaded from `fx-desk3d.js` (paired with `theme-white3d` or `theme-white3d desk`). Provides extruded 3D phones (`phone3d`), thick double-sided cards (`card3d`), 6-face boxes (`box3d`), exploded isometric layer stacks (`layers3d`), curved card decks (`deck3d`), tilted floating card walls (`wall3d`) and mechanical split-flap counters (`flap3d`), with floor shadows linked to Z-height.
 
@@ -911,6 +911,9 @@ Tactile 3D white-studio & grid-desk motion, loaded from `fx-desk3d.js` (paired w
 | `bubble-pop3d` | 3D off-screen chat bubble pop: launches `.fx-pop-bub` bubbles out of a tilted phone screen into layered Z-space. Param: dur (default 0.5) |
 | `cta-click` | White-pill cursor click + confetti: flies cursor onto `data-make="ctabar"`, clicks button to completed state and bursts confetti. Param: dur (default 0.9) |
 | `desk-invert` | White desk ⇄ dark gold grid invert: flips the desk surface to dark charcoal-gold grid (`mode=reset` restores white desk). Param: mode=dark/reset |
+| `step-focus` | White-studio step pipeline focus: advances `data-make="steplist3d"` to step i (1..N; 0 lights all), marking earlier steps done and dimming later ones. Params: i, dur (default 0.42) |
+| `blueprint-scan` | Takeaway blueprint crop-mark lock: snaps 4 corner viewfinder brackets onto `data-make="blueprint3d"` and illuminates step rows sequentially. Param: dur (default 0.65) |
+| `check-fix` | Lint error auto-fix flip: flips a `.fx-check-row.is-bad` row around X into `.is-good` passed state and updates its message. Params: badge, after, dur (default 0.52) |
 
 ### Space (21)
 

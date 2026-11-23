@@ -46,9 +46,9 @@
 <!-- STATS:START -->
 | | 数量 |
 |---|---|
-| 动效 | **247** 种（入场 26 · 退场 10 · 强调 41 · 文字 9 · 数据 7 · 镜头 14 · 角色 25 · 剪纸 10 · 粒子 8 · 3D 12 · 立体 30 · 空间 21 · 舞台 10 · 手绘 5 · 对话 8 · 图解 3 · 形状 3 · 声音 1 · 组件 4） |
+| 动效 | **250** 种（入场 26 · 退场 10 · 强调 41 · 文字 9 · 数据 7 · 镜头 14 · 角色 25 · 剪纸 10 · 粒子 8 · 3D 12 · 立体 33 · 空间 21 · 舞台 10 · 手绘 5 · 对话 8 · 图解 3 · 形状 3 · 声音 1 · 组件 4） |
 | 转场 | **24** 种 |
-| 组件生成器 | **58** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape` `phone3d` `card3d` `box3d` `layers3d` `deck3d` `wall3d` `flap3d` `letterdeck` `sleeve3d` `carousel3d` `slabs3d` `coins3d` `timeline3d` `paperstack` `callouts3d` `youarehere` `calgrid3d` `ctabar`） |
+| 组件生成器 | **60** 个（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape` `phone3d` `card3d` `box3d` `layers3d` `deck3d` `wall3d` `flap3d` `letterdeck` `sleeve3d` `carousel3d` `slabs3d` `coins3d` `timeline3d` `paperstack` `callouts3d` `youarehere` `calgrid3d` `ctabar` `steplist3d` `blueprint3d`） |
 | 皮肤 | **7** 套（白紫科技 · 黑金电影 · 像素复古 · 剪纸拼贴 · 深空粒子 · 演播室 · 白底立体） |
 <!-- STATS:END -->
 
@@ -768,7 +768,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 ---
 
 <!-- CATALOG:START -->
-## 动效目录（247 种动效 + 24 种转场）
+## 动效目录（250 种动效 + 24 种转场）
 
 > 这一节由 `node gen-readme.mjs` 从 `fx.js` 自动生成，不要手改。
 > 所有动效都支持通用参数 `dur`（时长）、`ease`（缓动）、`stagger`（错峰）；下表只列各自特有的参数。
@@ -1005,7 +1005,7 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `cam3d` | 移动摄像机：从当前位置飞到新位置，同时把视线转向新目标。参数 x / y / z=飞到哪、lx / ly / lz=看向哪、fov=视角、dur、ease（dur=0 就是直接切过去）。没写的参数保持不变 |
 | `orbit3d` | 环绕镜头：摄像机绕着目标转圈，可以同时拉近 / 升高。参数 turn=转多少度（负数反向）、from=起始角度（不写就从当前位置开始）、r=结束时离目标多远、h=结束时的高度、lx / ly / lz=绕着哪里转、dur、ease |
 
-### 立体（30）
+### 立体（33）
 
 白底立体影棚与白格牌桌动效，需要额外加载 `fx-desk3d.js`（配 `theme-white3d` 纯白无影棚或 `theme-white3d desk` 白格立体桌面）。提供真厚度 3D 手机（`phone3d`）、双面厚边扑克/拍立得卡（`card3d`）、六面体包装盒（`box3d`）、三维爆炸分层（`layers3d`）、马蹄弧厚牌堆（`deck3d`）、倾斜悬浮卡片墙（`wall3d`）和机械翻牌格（`flap3d`），所有姿态与台面投影随 Z 轴高度实时联动。
 
@@ -1041,6 +1041,9 @@ FX.register('spin-in', '入场', '旋转入场', c => {
 | `bubble-pop3d` | 手机聊天气泡破框悬浮弹出：多条对话气泡（.fx-pop-bub）从倾斜的手机屏幕里逐层跃出到半空 Z 轴，带独立深投影。配 each: 可逐条蹦出。参数 dur（默认 0.5） |
 | `cta-click` | 白底交互胶囊光标点击 + 爆彩带：写在 data-make="ctabar" 上，鼠标飞入按下按钮（点赞变已关注 / 点击发送）并炸出庆祝彩片。参数 dur（默认 0.9） |
 | `desk-invert` | 白格桌面 ⇄ 暗黑金格反相：在讲反面痛点（如资本垄断）时把白格桌面瞬间切换为深色暗金网格，mode=reset 恢复白格桌面。参数 mode=dark/reset |
+| `step-focus` | 白底步进流水线移焦：写在 data-make="steplist3d" 上，推进并高浮起点亮第 i 步（1..N；i=0 全亮汇总），已完成步骤打勾、未开始步骤柔和退让。参数 i、dur（默认 0.42） |
+| `blueprint-scan` | 抄作业蓝图卡取景框锁定：写在 data-make="blueprint3d" 上，四角裁切角标从外向内卡位锁死，内部步骤条目依次点亮。参数 dur（默认 0.65） |
+| `check-fix` | 质检报错当场翻转自修：把报错状态行（.fx-check-row.is-bad）沿 X 轴立体翻转成绿勾通过状态（.is-good），同步更新文案。参数 badge（默认 ✓ 已修复）、after（修复后说明）、dur（默认 0.52） |
 
 ### 空间（21）
 

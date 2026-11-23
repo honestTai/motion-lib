@@ -370,6 +370,9 @@
     "立体/bubble-pop3d": "3D off-screen chat bubble pop: launches `.fx-pop-bub` bubbles out of a tilted phone screen into layered Z-space. Param: dur (default 0.5)",
     "立体/cta-click": "White-pill cursor click + confetti: flies cursor onto `data-make=\"ctabar\"`, clicks button to completed state and bursts confetti. Param: dur (default 0.9)",
     "立体/desk-invert": "White desk ⇄ dark gold grid invert: flips the desk surface to dark charcoal-gold grid (`mode=reset` restores white desk). Param: mode=dark|reset",
+    "立体/step-focus": "White-studio step pipeline focus: advances `data-make=\"steplist3d\"` to step i (1..N; 0 lights all), marking earlier steps done and dimming later ones. Params: i, dur (default 0.42)",
+    "立体/blueprint-scan": "Takeaway blueprint crop-mark lock: snaps 4 corner viewfinder brackets onto `data-make=\"blueprint3d\"` and illuminates step rows sequentially. Param: dur (default 0.65)",
+    "立体/check-fix": "Lint error auto-fix flip: flips a `.fx-check-row.is-bad` row around X into `.is-good` passed state and updates its message. Params: badge, after, dur (default 0.52)",
     "转场/card-wipe": "3D giant poker-card lens wipe (works in both normal scenes and `data-world`): sweeps an oversized double-sided 3D card right across the camera to reveal the next scene. Params: dur (default 0.78), emblem (default A), color"
   }
 }

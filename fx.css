@@ -1289,7 +1289,87 @@ html, body { width: var(--fx-w); height: var(--fx-h); overflow: hidden; backgrou
 .is-inverted-stage .fx-head h2, .is-inverted-stage .fx-coord-bar, .is-inverted-stage .fx-coord-bar b { color: #f8fafc !important; }
 .is-inverted-stage .fx-head i { background: #f6d379; color: #111318; }
 
+/* 19. steplist3d：纯白影棚步进聚焦流水线 */
+.fx-steplist3d { display: flex; flex-direction: column; gap: 16px; width: 680px; perspective: 1400px; }
+.fx-steplist3d-row {
+  display: flex; align-items: center; gap: 22px; padding: 18px 28px; border-radius: 22px;
+  background: rgba(255, 255, 255, .66); border: 1.5px solid rgba(15, 23, 42, .06);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, .04); transform-style: preserve-3d;
+}
+.fx-steplist3d-no {
+  flex-shrink: 0; width: 60px; height: 60px; border-radius: 16px; display: grid; place-items: center;
+  font-family: var(--fx-font-mono); font-size: 34px; font-weight: 900; background: #e2e8f0; color: #475569;
+}
+.fx-steplist3d-txt { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.fx-steplist3d-txt strong { font-size: 42px; font-weight: 900; line-height: 1.15; color: #1e293b; white-space: nowrap; }
+.fx-steplist3d-txt span { font-size: 32px; font-weight: 700; color: #64748b; white-space: nowrap; }
+.fx-steplist3d-row.is-active {
+  background: #ffffff; border-color: rgba(37, 99, 235, .28);
+  box-shadow: 0 26px 54px -12px rgba(37, 99, 235, .20), 0 8px 20px rgba(15, 23, 42, .08);
+}
+.fx-steplist3d-row.is-active .fx-steplist3d-no { background: var(--fx-accent); color: #ffffff; }
+.fx-steplist3d-row.is-active .fx-steplist3d-txt strong { color: #0f1117; }
+.fx-steplist3d-row.is-active .fx-steplist3d-txt span { color: var(--fx-accent); }
+.fx-steplist3d-row.is-done .fx-steplist3d-no { background: #dcfce7; color: #15803d; }
+.fx-steplist3d-row.is-dim { opacity: .42; }
+
+/* 20. blueprint3d：四角取景裁切线「截图这一页」抄作业蓝图卡 */
+.fx-blueprint3d { position: relative; width: 1280px; }
+.fx-blueprint3d-corners {
+  position: absolute; inset: -18px; pointer-events: none; z-index: 6;
+  background:
+    linear-gradient(#0f1117, #0f1117) 0 0 / 42px 5px, linear-gradient(#0f1117, #0f1117) 0 0 / 5px 42px,
+    linear-gradient(#0f1117, #0f1117) 100% 0 / 42px 5px, linear-gradient(#0f1117, #0f1117) 100% 0 / 5px 42px,
+    linear-gradient(#0f1117, #0f1117) 0 100% / 42px 5px, linear-gradient(#0f1117, #0f1117) 0 100% / 5px 42px,
+    linear-gradient(#0f1117, #0f1117) 100% 100% / 42px 5px, linear-gradient(#0f1117, #0f1117) 100% 100% / 5px 42px;
+  background-repeat: no-repeat;
+}
+.fx-blueprint3d-card {
+  border-radius: 28px; background: #ffffff; padding: 34px 42px;
+  box-shadow: 0 10px 0 #e2e8f0, 0 34px 72px -12px rgba(15, 23, 42, .18), 0 0 0 1.5px rgba(15, 23, 42, .08);
+  display: flex; flex-direction: column; gap: 22px;
+}
+.fx-blueprint3d-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.fx-blueprint3d-head strong { font-size: 48px; font-weight: 900; color: #0f1117; }
+.fx-blueprint3d-badge {
+  display: inline-flex; align-items: center; gap: 10px; padding: 10px 24px; border-radius: 999px;
+  background: #fef2f2; border: 2px solid #fecaca; color: #dc2626; font-size: 34px; font-weight: 900; white-space: nowrap;
+}
+.fx-blueprint3d-badge > i { width: 14px; height: 14px; border-radius: 50%; background: #ef4444; display: inline-block; }
+.fx-blueprint3d-repo {
+  padding: 16px 26px; border-radius: 16px; background: #eff6ff; border: 2px solid #bfdbfe;
+  font-family: var(--fx-font-mono); font-size: 34px; font-weight: 800; color: #1d4ed8; white-space: nowrap; overflow: hidden;
+}
+.fx-blueprint3d-list { display: flex; flex-direction: column; gap: 16px; }
+.fx-blueprint3d-item {
+  display: flex; align-items: center; gap: 22px; padding: 16px 22px; border-radius: 18px;
+  background: #f8fafc; border: 1.5px solid #e2e8f0;
+}
+.fx-blueprint3d-item > b {
+  flex-shrink: 0; width: 58px; height: 58px; border-radius: 14px; display: grid; place-items: center;
+  background: #0f1117; color: #ffffff; font-family: var(--fx-font-mono); font-size: 34px; font-weight: 900;
+}
+.fx-blueprint3d-itxt { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; }
+.fx-blueprint3d-itxt strong { font-size: 40px; font-weight: 900; color: #0f1117; white-space: nowrap; }
+.fx-blueprint3d-itxt span { font-size: 34px; font-weight: 700; color: #475569; white-space: nowrap; }
+
+/* check-fix 质检自修状态行 */
+.fx-check-row {
+  display: flex; align-items: center; gap: 20px; padding: 20px 28px; border-radius: 20px;
+  background: #ffffff; box-shadow: var(--fx-card-shadow); border: 2.5px solid #e2e8f0;
+}
+.fx-check-row .badge {
+  flex-shrink: 0; padding: 8px 20px; border-radius: 999px; font-style: normal; font-size: 34px; font-weight: 900; white-space: nowrap;
+}
+.fx-check-row .msg { font-size: 38px; font-weight: 900; color: #0f1117; white-space: nowrap; }
+.fx-check-row.is-bad { background: #fff1f2; border-color: #fda4af; }
+.fx-check-row.is-bad .badge { background: #ef4444; color: #ffffff; }
+.fx-check-row.is-bad .msg { color: #be123c; }
+.fx-check-row.is-good { background: #f0fdf4; border-color: #86efac; }
+.fx-check-row.is-good .badge { background: #16a34a; color: #ffffff; }
+.fx-check-row.is-good .msg { color: #14532d; }
+
 .abs.fx-phone3d, .abs.fx-card3d, .abs.fx-box3d, .abs.fx-layers3d, .abs.fx-deck3d, .abs.fx-wall3d, .abs.fx-flap3d,
 .abs.fx-letterdeck, .abs.fx-sleeve3d, .abs.fx-carousel3d, .abs.fx-slabs3d, .abs.fx-coins3d, .abs.fx-timeline3d,
-.abs.fx-paperstack, .abs.fx-callouts3d, .abs.fx-youarehere, .abs.fx-calgrid3d, .abs.fx-ctabar,
-.abs.fx-float-pill, .abs.fx-score-card, .abs.fx-stamp, .abs.fx-pop-slice, .abs.fx-pop-bub { position: absolute; }
+.abs.fx-paperstack, .abs.fx-callouts3d, .abs.fx-youarehere, .abs.fx-calgrid3d, .abs.fx-ctabar, .abs.fx-steplist3d, .abs.fx-blueprint3d,
+.abs.fx-float-pill, .abs.fx-score-card, .abs.fx-stamp, .abs.fx-pop-slice, .abs.fx-pop-bub, .abs.fx-check-row { position: absolute; }

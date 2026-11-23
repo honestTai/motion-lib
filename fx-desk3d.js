@@ -55,8 +55,8 @@
     }
     if (obj.front && obj.back) {
       var frontUp = Math.cos(rad(s.ry)) * Math.cos(rad(s.rx)) >= 0;
-      obj.front.style.visibility = frontUp ? 'visible' : 'hidden';
-      obj.back.style.visibility = frontUp ? 'hidden' : 'visible';
+      obj.front.style.visibility = frontUp ? '' : 'hidden';
+      obj.back.style.visibility = frontUp ? 'hidden' : '';
     }
   }
 
@@ -650,6 +650,69 @@
     el.__cta = { btn: btn, cur: cur, kind: kind, before: btn.textContent, after: attr(el, 'after', kind === 'follow' ? '✓ 已关注' : '已发送 ✓') };
   };
 
+  /* 19. steplist3d：纯白影棚步进聚焦流水线（FredTalk 流程拆解款） */
+  function paintSteps3d(el, activeIdx) {
+    var S = el.__steps; if (!S) return;
+    S.rows.forEach(function (r, idx) {
+      var k = idx + 1, isAct = activeIdx === k, isDone = activeIdx > k, allOn = activeIdx === 0;
+      r.el.classList.toggle('is-active', isAct);
+      r.el.classList.toggle('is-done', isDone);
+      r.el.classList.toggle('is-dim', !allOn && activeIdx > 0 && k > activeIdx);
+      r.no.textContent = isDone ? '✓' : (k < 10 ? '0' + k : '' + k);
+      r.el.style.transform = isAct ? 'translate3d(18px,0,34px) scale(1.03)' : 'translate3d(0,0,0) scale(1)';
+    });
+  }
+  FX.make.steplist3d = function (el) {
+    var raw = kidsOf(el), initAct = num(attr(el, 'active'), 1);
+    el.classList.add('fx-steplist3d');
+    el.setAttribute('data-lint', 'overflow-ok');
+    var rows = raw.map(function (ch, idx) {
+      var title = attr(ch, 'title', ch.textContent.trim() || ('步骤 ' + (idx + 1)));
+      var sub = attr(ch, 'sub', '');
+      var row = mk('div', 'fx-steplist3d-row'), no = mk('b', 'fx-steplist3d-no'), txt = mk('div', 'fx-steplist3d-txt');
+      txt.innerHTML = '<strong>' + title + '</strong>' + (sub ? '<span>' + sub + '</span>' : '');
+      row.appendChild(no); row.appendChild(txt);
+      return { el: row, no: no, title: title };
+    });
+    el.innerHTML = '';
+    rows.forEach(function (r) { el.appendChild(r.el); });
+    el.__steps = { rows: rows, cur: initAct, plan: initAct };
+    paintSteps3d(el, initAct);
+  };
+
+  /* 20. blueprint3d：四角取景裁切线「截图这一页」抄作业蓝图卡（阿杜片尾利他交付款） */
+  FX.make.blueprint3d = function (el) {
+    var raw = kidsOf(el);
+    var badge = attr(el, 'badge', '建议截图保存'), title = attr(el, 'title', '截图这一页，交给你的 AI 助手');
+    var repo = attr(el, 'repo', '');
+    el.classList.add('fx-blueprint3d');
+    el.setAttribute('data-lint', 'overflow-ok');
+    var corners = mk('div', 'fx-blueprint3d-corners'), card = mk('div', 'fx-blueprint3d-card');
+    var head = mk('div', 'fx-blueprint3d-head');
+    head.innerHTML = '<strong>' + title + '</strong><span class="fx-blueprint3d-badge"><i></i>' + badge + '</span>';
+    card.appendChild(head);
+    if (repo) {
+      var repoBox = mk('div', 'fx-blueprint3d-repo');
+      repoBox.textContent = repo;
+      card.appendChild(repoBox);
+    }
+    var list = mk('div', 'fx-blueprint3d-list'), stepEls = [];
+    raw.forEach(function (ch, idx) {
+      var st = attr(ch, 'step', (idx + 1 < 10 ? '0' : '') + (idx + 1));
+      var hd = attr(ch, 'head', ch.textContent.trim());
+      var ds = attr(ch, 'desc', '');
+      var item = mk('div', 'fx-blueprint3d-item');
+      item.innerHTML = '<b>' + st + '</b><div class="fx-blueprint3d-itxt"><strong>' + hd + '</strong>' + (ds ? '<span>' + ds + '</span>' : '') + '</div>';
+      list.appendChild(item);
+      stepEls.push(item);
+    });
+    card.appendChild(list);
+    el.innerHTML = '';
+    el.appendChild(corners);
+    el.appendChild(card);
+    el.__bp = { corners: corners, card: card, rows: stepEls };
+  };
+
   /* ═════════════════════════ 30 个白底立体声明式动效（data-fx） ═════════════════════════ */
 
   /* 1. pose-3d */
@@ -1226,6 +1289,51 @@
         else { target.classList.remove('is-inverted'); if (st) st.classList.remove('is-inverted-stage'); }
       }
     }, c.t);
+  });
+
+  /* 31. step-focus */
+  def('step-focus', CAT, '白底步进流水线移焦：写在 data-make="steplist3d" 上，推进并高浮起点亮第 i 步（1..N；i=0 全亮汇总），已完成步骤打勾、未开始步骤柔和退让。参数 i、dur（默认 0.42）', function (c) {
+    var S = c.el.__steps; if (!S) { console.warn('FX：step-focus 要写在 data-make="steplist3d" 上'); return; }
+    var toIdx = clamp(num(c.o.i, 1), 0, S.rows.length), fromIdx = S.plan !== undefined ? S.plan : S.cur;
+    S.plan = toIdx;
+    var p = { u: 0 };
+    c.tl.fromTo(p, { u: 0 }, {
+      u: 1, duration: num(c.o.dur, 0.42), ease: 'power2.out', immediateRender: false,
+      onUpdate: function () { paintSteps3d(c.el, p.u >= 0.35 ? toIdx : fromIdx); }
+    }, c.t);
+  });
+
+  /* 32. blueprint-scan */
+  def('blueprint-scan', CAT, '抄作业蓝图卡取景框锁定：写在 data-make="blueprint3d" 上，四角裁切角标从外向内卡位锁死，内部步骤条目依次点亮。参数 dur（默认 0.65）', function (c) {
+    var B = c.el.__bp; if (!B) { console.warn('FX：blueprint-scan 要写在 data-make="blueprint3d" 上'); return; }
+    var dur = num(c.o.dur, 0.65);
+    c.tl.fromTo(B.corners, { scale: 1.07, opacity: 0 }, { scale: 1, opacity: 1, duration: dur * 0.65, ease: 'back.out(2.1)', immediateRender: c.t <= 0.08 }, c.t);
+    B.rows.forEach(function (r, idx) {
+      c.tl.fromTo(r, { x: 18, opacity: 0.35 }, { x: 0, opacity: 1, duration: 0.38, ease: 'power2.out', immediateRender: false }, c.t + 0.14 + idx * 0.14);
+    });
+  });
+
+  /* 33. check-fix */
+  def('check-fix', CAT, '质检报错当场翻转自修：把报错状态行（.fx-check-row.is-bad）沿 X 轴立体翻转成绿勾通过状态（.is-good），同步更新文案。参数 badge（默认 ✓ 已修复）、after（修复后说明）、dur（默认 0.52）', function (c) {
+    var dur = num(c.o.dur, 0.52), sg = num(c.o.stagger, 0.16);
+    c.els.forEach(function (el, idx) {
+      var bEl = el.querySelector('.badge'), mEl = el.querySelector('.msg');
+      var b0 = bEl ? bEl.textContent : '', m0 = mEl ? mEl.textContent : '';
+      var b1 = c.o.badge || '✓ 已修复', m1 = c.o.after || m0;
+      var p = { u: 0 };
+      c.tl.fromTo(p, { u: 0 }, {
+        u: 1, duration: dur, ease: 'back.out(1.7)', immediateRender: false,
+        onUpdate: function () {
+          var u = p.u, fixed = u >= 0.48;
+          var ang = u < 0.48 ? (u / 0.48) * 88 : -(1 - (u - 0.48) / 0.52) * 88;
+          el.classList.toggle('is-bad', !fixed);
+          el.classList.toggle('is-good', fixed);
+          if (bEl) bEl.textContent = fixed ? b1 : b0;
+          if (mEl && c.o.after) mEl.textContent = fixed ? m1 : m0;
+          el.style.transform = 'perspective(1100px) rotateX(' + ang.toFixed(1) + 'deg) scale(' + (1 + 0.04 * Math.sin(Math.PI * u)).toFixed(3) + ')';
+        }
+      }, c.t + idx * sg);
+    });
   });
 
   /* ═════════════════════ 专属转场：card-wipe（3D 巨卡贴脸擦镜转场） ═════════════════════ */

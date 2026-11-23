@@ -46,9 +46,9 @@
 <!-- STATS:START -->
 | | 數量 |
 |---|---|
-| 動效 | **247** 種（入場 26 · 退場 10 · 強調 41 · 文字 9 · 資料 7 · 鏡頭 14 · 角色 25 · 剪紙 10 · 粒子 8 · 3D 12 · 立體 30 · 空間 21 · 舞台 10 · 手繪 5 · 對話 8 · 圖解 3 · 形狀 3 · 聲音 1 · 元件 4） |
+| 動效 | **250** 種（入場 26 · 退場 10 · 強調 41 · 文字 9 · 資料 7 · 鏡頭 14 · 角色 25 · 剪紙 10 · 粒子 8 · 3D 12 · 立體 33 · 空間 21 · 舞台 10 · 手繪 5 · 對話 8 · 圖解 3 · 形狀 3 · 聲音 1 · 元件 4） |
 | 轉場 | **24** 種 |
-| 元件產生器 | **58** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape` `phone3d` `card3d` `box3d` `layers3d` `deck3d` `wall3d` `flap3d` `letterdeck` `sleeve3d` `carousel3d` `slabs3d` `coins3d` `timeline3d` `paperstack` `callouts3d` `youarehere` `calgrid3d` `ctabar`） |
+| 元件產生器 | **60** 個（`bars` `wave` `steps` `chapters` `ring` `wall` `dust` `line` `pixels` `circle-text` `retro-grid` `papercut` `hills` `torn` `switches` `space` `stage3d` `tunnel` `helix` `flipboard` `fan` `slices` `road` `bignum` `segments` `actor` `puppet` `backdrop` `device` `menu` `mini` `house` `letterbox` `chat` `terminal` `code` `agent` `surround` `hub` `shape` `phone3d` `card3d` `box3d` `layers3d` `deck3d` `wall3d` `flap3d` `letterdeck` `sleeve3d` `carousel3d` `slabs3d` `coins3d` `timeline3d` `paperstack` `callouts3d` `youarehere` `calgrid3d` `ctabar` `steplist3d` `blueprint3d`） |
 | 外觀主題 | **7** 套（白紫科技 · 黑金電影 · 像素復古 · 剪紙拼貼 · 深空粒子 · 演播室 · 白底立體） |
 <!-- STATS:END -->
 
@@ -350,7 +350,7 @@ node sfx.mjs --audition out/               # 每套音色匯出一條試聽檔
 ---
 
 <!-- CATALOG:START -->
-## 動效目錄（247 種動效 + 24 種轉場）
+## 動效目錄（250 種動效 + 24 種轉場）
 
 > 本節由 `node gen-readme.mjs` 從 `fx.js` 自動產生，請勿手動修改。
 > 所有動效都支援通用參數 `dur`（時長）、`ease`（緩動）、`stagger`（錯峰）；下表只列出各自特有的參數。
@@ -587,7 +587,7 @@ node sfx.mjs --audition out/               # 每套音色匯出一條試聽檔
 | `cam3d` | 移動攝影機：從目前位置飛到新位置，同時把視線轉向新目標。參數 x / y / z=飛到哪、lx / ly / lz=看向哪、fov=視角、dur、ease（dur=0 就是直接切過去）。沒寫的參數維持不變 |
 | `orbit3d` | 環繞鏡頭：攝影機繞著目標轉圈，可以同時拉近 / 升高。參數 turn=轉多少度（負數反向）、from=起始角度（不寫就從目前位置開始）、r=結束時離目標多遠、h=結束時的高度、lx / ly / lz=繞著哪裡轉、dur、ease |
 
-### 立體 (30)
+### 立體 (33)
 
 白底立體影棚與白格牌桌動效，需要額外載入 `fx-desk3d.js`（搭配 `theme-white3d` 純白無影棚或 `theme-white3d desk` 白格立體桌面）。提供真厚度 3D 手機（`phone3d`）、雙面厚邊撲克/拍立得卡（`card3d`）、六面體包裝盒（`box3d`）、三維爆炸分層（`layers3d`）、馬蹄弧厚牌堆（`deck3d`）、傾斜懸浮卡片牆（`wall3d`）與機械翻牌格（`flap3d`），所有姿態與檯面投影隨 Z 軸高度即時聯動。
 
@@ -623,6 +623,9 @@ node sfx.mjs --audition out/               # 每套音色匯出一條試聽檔
 | `bubble-pop3d` | 手機聊天氣泡破框懸浮彈出：對話氣泡（`.fx-pop-bub`）從傾斜手機螢幕逐層躍出到半空 Z 軸。參數 dur（預設 0.5） |
 | `cta-click` | 白底互動膠囊游標點擊 + 爆彩帶：寫在 `data-make="ctabar"` 上，滑鼠飛入點擊切換為已關注/已發送並炸出彩片。參數 dur（預設 0.9） |
 | `desk-invert` | 白格桌面 ⇄ 暗黑金格反相：瞬間切換為深色暗金網格桌面，`mode=reset` 恢復白格桌面。參數 mode=dark/reset |
+| `step-focus` | 白底步進流水線移焦：寫在 `data-make="steplist3d"` 上，推進並高浮起點亮第 i 步（1..N；i=0 全亮彙總），已完成步驟打勾、未開始步驟柔和退讓。參數 i、dur（預設 0.42） |
+| `blueprint-scan` | 抄作業藍圖卡取景框鎖定：寫在 `data-make="blueprint3d"` 上，四角裁切角標從外向內卡位鎖死，內部步驟條目依次點亮。參數 dur（預設 0.65） |
+| `check-fix` | 質檢報錯當場翻轉自修：把報錯狀態行（`.fx-check-row.is-bad`）沿 X 軸立體翻轉成綠勾通過狀態（`.is-good`），同步更新文案。參數 badge、after、dur（預設 0.52） |
 
 ### 空間 (21)
 
