@@ -30,6 +30,10 @@
     return [num(p[0], defArr[0]), num(p[1], defArr[1]), num(p[2], defArr[2])];
   };
   var fmtComma = function (n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); };
+  var localT = function (c) { return c.t - (c.scene ? c.scene.t : 0); };
+  var has3dRig = function (el) {
+    return !!(el && (el.__d3d || (el.querySelector && el.querySelector('.fx-phone3d,.fx-card3d,.fx-box3d,.fx-wall3d,.fx-layers3d,.fx-deck3d,.fx-coins3d,.fx-sleeve3d'))));
+  };
   var def = FX.register;
   var CAT = '立体';
 
@@ -730,7 +734,7 @@
         var p = { u: 0 }, first = !obj.plan;
         obj.plan = B;
         c.tl.fromTo(p, { u: 0 }, {
-          u: 1, duration: dur, ease: ease, immediateRender: first && c.t <= 0.05,
+          u: 1, duration: dur, ease: ease, immediateRender: first && localT(c) <= 0.05,
           onUpdate: function () {
             var u = p.u;
             obj.state = {
@@ -878,7 +882,7 @@
     });
     var p = { u: 0 };
     c.tl.fromTo(p, { u: 0 }, {
-      u: 1, duration: dur, ease: 'power1.inOut', immediateRender: c.t <= 0.05,
+      u: 1, duration: dur, ease: 'power1.inOut', immediateRender: localT(c) <= 0.05,
       onUpdate: function () {
         var u = p.u;
         orbits.forEach(function (o) {
@@ -899,19 +903,26 @@
     c.els.forEach(function (el, idx) {
       var t0 = c.t + idx * sg, obj = el.__d3d;
       if (obj) {
-        var b = obj.base, p = { u: 0 };
-        c.tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.14, ease: 'none', immediateRender: true }, t0);
+        var b = obj.plan || obj.base, p = { u: 0 };
+        var applyDrop = function (u) {
+          if (u <= 0.001) { obj.state.sc = 0; paintRig(obj); return; }
+          obj.state.z = b.z + (1 - u) * drop;
+          obj.state.y = b.y + (1 - u) * -120;
+          obj.state.rx = b.rx + (1 - u) * 14;
+          obj.state.ry = b.ry - (1 - u) * 12;
+          obj.state.sc = b.sc * clamp(u * 3.8, 0, 1);
+          paintRig(obj);
+        };
+        applyDrop(0);
         c.tl.fromTo(p, { u: 0 }, {
           u: 1, duration: dur, ease: 'back.out(1.45)', immediateRender: true,
-          onUpdate: function () {
-            var u = p.u;
-            obj.state.z = b.z + (1 - u) * drop; obj.state.y = (1 - u) * -90;
-            obj.state.rx = b.rx + (1 - u) * 14; obj.state.ry = b.ry - (1 - u) * 12;
-            paintRig(obj);
-          }
+          onUpdate: function () { applyDrop(p.u); }
         }, t0);
       } else {
-        c.tl.from(el, { y: -drop, opacity: 0, scale: 1.08, duration: dur, ease: 'back.out(1.5)' }, t0);
+        c.tl.fromTo(el,
+          { y: -drop, autoAlpha: 0, scale: 1.08 },
+          { y: 0, autoAlpha: 1, scale: 1, duration: dur, ease: 'back.out(1.5)', immediateRender: true },
+          t0);
       }
     });
   });
@@ -946,26 +957,46 @@
     var dur = num(c.o.dur, 0.78);
     C.forEach(function (cn, i) {
       var t0 = c.t + i * 0.09, p = { u: 0 };
+      var applyCoin = function (u) {
+        if (u <= 0.001) { cn.el.style.transform = 'scale3d(0,0,0)'; cn.sh.style.opacity = '0'; return; }
+        var h = (1 - u) * 320, sc = clamp(u * 4, 0, 1);
+        cn.el.style.transform = 'translate3d(0,' + (-h).toFixed(1) + 'px,' + (h * 0.4).toFixed(1) + 'px) rotateX(' + (cn.rx + (1 - u) * 360).toFixed(1) + 'deg) rotateY(' + (cn.ry + (1 - u) * 180).toFixed(1) + 'deg) rotateZ(' + cn.rz.toFixed(1) + 'deg) scale3d(' + sc.toFixed(3) + ',' + sc.toFixed(3) + ',' + sc.toFixed(3) + ')';
+        cn.sh.style.transform = 'scale(' + lerp(0.45, 1, u).toFixed(3) + ')';
+        cn.sh.style.opacity = lerp(0.05, 0.24, u).toFixed(3);
+      };
+      applyCoin(0);
       c.tl.fromTo(p, { u: 0 }, {
-        u: 1, duration: dur, ease: 'bounce.out', immediateRender: c.t <= 0.05,
-        onUpdate: function () {
-          var u = p.u, h = (1 - u) * 320;
-          cn.el.style.transform = 'translate3d(0,' + (-h).toFixed(1) + 'px,' + (h * 0.4).toFixed(1) + 'px) rotateX(' + (cn.rx + (1 - u) * 360).toFixed(1) + 'deg) rotateY(' + (cn.ry + (1 - u) * 180).toFixed(1) + 'deg) rotateZ(' + cn.rz.toFixed(1) + 'deg)';
-          cn.sh.style.transform = 'scale(' + lerp(0.45, 1, u).toFixed(3) + ')';
-          cn.sh.style.opacity = lerp(0.05, 0.24, u).toFixed(3);
-        }
+        u: 1, duration: dur, ease: 'bounce.out', immediateRender: true,
+        onUpdate: function () { applyCoin(p.u); }
       }, t0);
     });
   });
 
   /* 13. polaroid-eject */
   def('polaroid-eject', CAT, '拍立得相纸吐出 + 进度条读满：card3d 相纸从上方卡槽滑出微倾落位，底部进度条同步推进到 100%。参数 dur（默认 0.9）', function (c) {
-    var dur = num(c.o.dur, 0.9);
+    var dur = num(c.o.dur, 0.9), atStart = localT(c) <= 0.05;
     c.els.forEach(function (el, i) {
-      var t0 = c.t + i * 0.14, obj = el.__d3d;
-      c.tl.fromTo(el, { y: -180, opacity: 0, rotationZ: -8 }, { y: 0, opacity: 1, rotationZ: num(c.o.rz, -3), duration: dur * 0.65, ease: 'power3.out', immediateRender: c.t <= 0.05 }, t0);
+      var t0 = c.t + i * 0.14, obj = el.__d3d, rzEnd = num(c.o.rz, obj ? obj.base.rz : -3);
+      if (obj) {
+        var b = obj.plan || obj.base, p = { u: 0 };
+        obj.plan = { x: b.x, y: b.y, z: b.z, ry: b.ry, rx: b.rx, rz: rzEnd, sc: b.sc };
+        var applyEject = function (u) {
+          if (!atStart && u <= 0.001) { obj.state.sc = 0; paintRig(obj); return; }
+          obj.state.y = lerp(b.y - (atStart ? 110 : 180), b.y, u);
+          obj.state.rz = lerp(rzEnd - 6, rzEnd, u);
+          obj.state.sc = atStart ? b.sc : b.sc * clamp(u * 3.6, 0, 1);
+          paintRig(obj);
+        };
+        applyEject(0);
+        c.tl.fromTo(p, { u: 0 }, {
+          u: 1, duration: dur * 0.65, ease: 'power3.out', immediateRender: true,
+          onUpdate: function () { applyEject(p.u); }
+        }, t0);
+      } else {
+        c.tl.fromTo(el, { y: -180, autoAlpha: 0, rotationZ: -8 }, { y: 0, autoAlpha: 1, rotationZ: rzEnd, duration: dur * 0.65, ease: 'power3.out', immediateRender: true }, t0);
+      }
       if (obj && obj.prog) {
-        c.tl.fromTo(obj.prog, { width: '4%' }, { width: '100%', duration: dur, ease: 'power2.out', immediateRender: false }, t0 + 0.15);
+        c.tl.fromTo(obj.prog, { width: '4%' }, { width: '100%', duration: dur, ease: 'power2.out', immediateRender: true }, t0 + 0.15);
       }
     });
   });
@@ -1058,7 +1089,7 @@
     var Y = c.el.__yah; if (!Y) { console.warn('FX：pin-move 要写在 data-make="youarehere" 上'); return; }
     var a = num(c.o.from, 0.25), b = num(c.o.to, Y.at), p = { v: a };
     c.tl.fromTo(p, { v: a }, {
-      v: b, duration: num(c.o.dur, 0.9), ease: 'power3.out', immediateRender: c.t <= 0.05,
+      v: b, duration: num(c.o.dur, 0.9), ease: 'power3.out', immediateRender: localT(c) <= 0.05,
       onUpdate: function () {
         Y.pin.style.left = (p.v * 100).toFixed(1) + '%';
         Y.segs.forEach(function (sg, i) {
@@ -1075,10 +1106,10 @@
     var close = { x: 0, y: 0, z: 40, ry: 0, rx: 0, rz: 0, sc: zm };
     var A = into ? B : close, T = into ? close : B;
     var pr = { x: A.x, y: A.y, z: A.z, ry: A.ry, rx: A.rx, rz: A.rz, sc: A.sc };
-    paintWall3d(c.el, A);
+    if (localT(c) <= 0.05) paintWall3d(c.el, A);
     c.tl.fromTo(pr, { x: A.x, y: A.y, z: A.z, ry: A.ry, rx: A.rx, rz: A.rz, sc: A.sc }, {
       x: T.x, y: T.y, z: T.z, ry: T.ry, rx: T.rx, rz: T.rz, sc: T.sc,
-      duration: dur, ease: 'power3.inOut', immediateRender: c.t <= 0.05,
+      duration: dur, ease: 'power3.inOut', immediateRender: localT(c) <= 0.05,
       onUpdate: function () { paintWall3d(c.el, pr); }
     }, c.t);
     var rest = Math.max(0, c.sceneDur - (c.t - (c.scene ? c.scene.t : 0)) - dur);
@@ -1105,7 +1136,7 @@
         var B = {
           ry: sel < 0 ? b.ry : (idx === sel ? focusRy : (idx < sel ? 22 : -22)),
           z: sel < 0 ? b.z : (idx === sel ? b.z + 64 : b.z - 36),
-          sc: sel < 0 ? b.sc : (idx === sel ? boost : 0.95)
+          sc: sel < 0 ? b.sc : (idx === sel ? boost : 0.94)
         };
         d3.plan = { x: cur.x, y: cur.y, z: B.z, ry: B.ry, rx: cur.rx, rz: cur.rz, sc: B.sc };
         var pr = { u: 0 };
@@ -1113,13 +1144,20 @@
           u: 1, duration: dur, ease: 'power3.inOut', immediateRender: false,
           onUpdate: function () { d3.state.ry = lerp(A.ry, B.ry, pr.u); d3.state.z = lerp(A.z, B.z, pr.u); d3.state.sc = lerp(A.sc, B.sc, pr.u); paintRig(d3); }
         }, c.t);
-        c.tl.to(k, { opacity: active ? 1 : 0.72, filter: active ? 'blur(0px)' : 'blur(2px)', duration: dur, ease: 'power2.out' }, c.t);
+      } else if (has3dRig(k)) {
+        // 容器内含真 3D 样机时绝不设父级 opacity < 1 或 filter，避免浏览器把 preserve-3d 瞬间压平屏闪
+        var dir3 = idx < sel ? 12 : -12;
+        c.tl.to(k, {
+          scale: sel < 0 ? 1 : (active ? boost : 0.94), rotationY: sel < 0 ? 0 : (active ? 0 : dir3),
+          z: sel < 0 ? 0 : (active ? 38 : -34), y: sel < 0 ? 0 : (active ? -6 : 6),
+          transformPerspective: 1600, duration: dur, ease: 'power3.inOut'
+        }, c.t);
       } else {
         var dir = idx < sel ? 14 : -14;
         c.tl.to(k, {
           scale: sel < 0 ? 1 : (active ? boost : 0.95), rotationY: sel < 0 ? 0 : (active ? 0 : dir),
           z: sel < 0 ? 0 : (active ? 40 : -36), opacity: active ? 1 : 0.82,
-          filter: active ? 'blur(0px)' : 'blur(2px)', transformPerspective: 1600, duration: dur, ease: 'power3.inOut'
+          transformPerspective: 1600, duration: dur, ease: 'power3.inOut'
         }, c.t);
       }
     });
@@ -1130,7 +1168,11 @@
     var kids = kidsOf(c.el); if (kids.length < 2) return;
     var phone = kids[0], mate = kids[1], dur = num(c.o.dur, 0.78), shift = num(c.o.shift, 380);
     c.tl.fromTo(phone, { x: shift, scale: 1.12 }, { x: 0, scale: 1, duration: dur, ease: 'power3.inOut', immediateRender: true }, c.t);
-    c.tl.fromTo(mate, { x: -90, opacity: 0, scale: 0.92 }, { x: 0, opacity: 1, scale: 1, duration: dur * 0.85, ease: 'power3.out', immediateRender: true }, c.t + 0.12);
+    if (has3dRig(mate)) {
+      c.tl.fromTo(mate, { x: -90, scale: 0 }, { x: 0, scale: 1, duration: dur * 0.85, ease: 'back.out(1.6)', immediateRender: true }, c.t + 0.12);
+    } else {
+      c.tl.fromTo(mate, { x: -90, autoAlpha: 0, scale: 0.92 }, { x: 0, autoAlpha: 1, scale: 1, duration: dur * 0.85, ease: 'power3.out', immediateRender: true }, c.t + 0.12);
+    }
   });
 
   /* 23. screen-pop */
@@ -1138,28 +1180,36 @@
     var target = c.o.to ? $(c.o.to) : (c.el.querySelector('.fx-pop-slice') || c.el);
     if (!target) return;
     c.tl.fromTo(target,
-      { opacity: 0, scale: 0.72, y: 34, z: -20, rotationX: 18, transformPerspective: 1200 },
-      { opacity: 1, scale: num(c.o.s, 1.12), y: 0, z: 90, rotationX: 0, transformPerspective: 1200, duration: num(c.o.dur, 0.55), ease: 'back.out(1.8)', immediateRender: true },
+      { autoAlpha: 0, scale: 0.72, y: 34, z: -20, rotationX: 18, transformPerspective: 1200 },
+      { autoAlpha: 1, scale: num(c.o.s, 1.12), y: 0, z: 90, rotationX: 0, transformPerspective: 1200, duration: num(c.o.dur, 0.55), ease: 'back.out(1.8)', immediateRender: true },
       c.t);
   });
 
   /* 24. phone-wave */
   def('phone-wave', CAT, '多色竖屏真机阵列波浪排开：写在放了一排 phone3d 的容器上，多台手机像多米诺波浪一样依次立起转角陈列。参数 dur（默认 0.65）、stagger（默认 0.08）', function (c) {
-    var kids = kidsOf(c.el), dur = num(c.o.dur, 0.65), sg = num(c.o.stagger, 0.08);
+    var kids = kidsOf(c.el), dur = num(c.o.dur, 0.65), sg = num(c.o.stagger, 0.08), atStart = localT(c) <= 0.05;
     kids.forEach(function (k, i) {
       var t0 = c.t + i * sg, d3 = k.__d3d;
       if (d3) {
         var b = d3.base, p = { u: 0 };
+        var applyWave = function (u) {
+          if (!atStart && u <= 0.001) { d3.state.sc = 0; paintRig(d3); return; }
+          d3.state.y = (1 - u) * (atStart ? 96 : 140);
+          d3.state.ry = b.ry + (1 - u) * -32;
+          d3.state.rx = b.rx + (1 - u) * 16;
+          d3.state.sc = atStart ? b.sc : b.sc * clamp(u * 3.5, 0, 1);
+          paintRig(d3);
+        };
+        applyWave(0);
         c.tl.fromTo(p, { u: 0 }, {
-          u: 1, duration: dur, ease: 'back.out(1.6)', immediateRender: c.t <= 0.05,
-          onUpdate: function () {
-            var u = p.u;
-            d3.state.y = (1 - u) * 140; d3.state.ry = b.ry + (1 - u) * -38; d3.state.rx = b.rx + (1 - u) * 20;
-            paintRig(d3);
-          }
+          u: 1, duration: dur, ease: 'back.out(1.6)', immediateRender: true,
+          onUpdate: function () { applyWave(p.u); }
         }, t0);
       } else {
-        c.tl.from(k, { y: 120, rotationY: -32, opacity: 0, duration: dur, ease: 'back.out(1.6)' }, t0);
+        c.tl.fromTo(k,
+          { y: 120, rotationY: -32, autoAlpha: 0 },
+          { y: 0, rotationY: 0, autoAlpha: 1, duration: dur, ease: 'back.out(1.6)', immediateRender: true },
+          t0);
       }
     });
   });
@@ -1307,9 +1357,9 @@
   def('blueprint-scan', CAT, '抄作业蓝图卡取景框锁定：写在 data-make="blueprint3d" 上，四角裁切角标从外向内卡位锁死，内部步骤条目依次点亮。参数 dur（默认 0.65）', function (c) {
     var B = c.el.__bp; if (!B) { console.warn('FX：blueprint-scan 要写在 data-make="blueprint3d" 上'); return; }
     var dur = num(c.o.dur, 0.65);
-    c.tl.fromTo(B.corners, { scale: 1.07, opacity: 0 }, { scale: 1, opacity: 1, duration: dur * 0.65, ease: 'back.out(2.1)', immediateRender: c.t <= 0.08 }, c.t);
+    c.tl.fromTo(B.corners, { scale: 1.07, opacity: 0 }, { scale: 1, opacity: 1, duration: dur * 0.65, ease: 'back.out(2.1)', immediateRender: true }, c.t);
     B.rows.forEach(function (r, idx) {
-      c.tl.fromTo(r, { x: 18, opacity: 0.35 }, { x: 0, opacity: 1, duration: 0.38, ease: 'power2.out', immediateRender: false }, c.t + 0.14 + idx * 0.14);
+      c.tl.fromTo(r, { x: 18, opacity: 0.35 }, { x: 0, opacity: 1, duration: 0.38, ease: 'power2.out', immediateRender: true }, c.t + 0.14 + idx * 0.14);
     });
   });
 
@@ -1343,20 +1393,25 @@
       var t0 = c.t + idx * sg, obj = el.__d3d, dir = idx % 2 ? -1 : 1;
       if (obj) {
         var b = obj.plan || obj.base, p = { u: 0 };
-        c.tl.set(el, { autoAlpha: 0 }, 0);
-        c.tl.to(el, { autoAlpha: 1, duration: 0.12, ease: 'power1.out' }, t0);
+        var applyPop = function (u) {
+          if (u <= 0.001) { obj.state.sc = 0; paintRig(obj); return; }
+          obj.state.y = lerp(b.y + fy, b.y, u);
+          obj.state.z = lerp(b.z - 110, b.z, u);
+          obj.state.rx = lerp(b.rx - 22, b.rx, u);
+          obj.state.ry = lerp(b.ry + dir * 14, b.ry, u);
+          obj.state.sc = b.sc * u;
+          paintRig(obj);
+        };
+        applyPop(0);
         c.tl.fromTo(p, { u: 0 }, {
-          u: 1, duration: dur, ease: 'back.out(2.1)', immediateRender: t0 <= 0.05,
-          onUpdate: function () {
-            var u = p.u;
-            obj.state.y = lerp(b.y + fy, b.y, u);
-            obj.state.z = lerp(b.z - 110, b.z, u);
-            obj.state.rx = lerp(b.rx - 22, b.rx, u);
-            obj.state.ry = lerp(b.ry + dir * 14, b.ry, u);
-            obj.state.sc = lerp(0.58, b.sc, u);
-            paintRig(obj);
-          }
+          u: 1, duration: dur, ease: 'back.out(1.9)', immediateRender: true,
+          onUpdate: function () { applyPop(p.u); }
         }, t0);
+      } else if (has3dRig(el)) {
+        c.tl.fromTo(el,
+          { y: fy, scale: 0, rotationX: -20, rotationY: dir * 10, transformPerspective: 1300 },
+          { y: 0, scale: 1, rotationX: 0, rotationY: 0, transformPerspective: 1300, duration: dur, ease: 'back.out(1.9)', immediateRender: true },
+          t0);
       } else {
         c.tl.fromTo(el,
           { autoAlpha: 0, y: fy, z: -120, scale: 0.56, rotationX: -26, rotationY: dir * 11, transformPerspective: 1300 },

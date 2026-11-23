@@ -97,8 +97,9 @@
 
     var gap = num(attr(stage, 'gap'), 1.16), cols = Math.max(1, num(attr(stage, 'cols'), 3));
     var tilt = String(attr(stage, 'tilt', '8,4')).split(',').map(Number), rnd = FX.rand(num(attr(stage, 'seed'), 7));
-    var cls = stage.className || '', lightBg = /theme-(white3d|paper|pixel)/.test(cls) || (/theme-violet/.test(cls) && !/is-dark/.test(cls));
-    W = { mode: mode, w: SW, h: SH, el: world, bg: bg, wall: bg.querySelector('.fx-world-wall'), grid: gridEl, light: lightBg,
+    var cls = stage.className || '', white3d = /theme-white3d/.test(cls);
+    var lightBg = white3d || /theme-(paper|pixel)/.test(cls) || (/theme-violet/.test(cls) && !/is-dark/.test(cls));
+    W = { mode: mode, w: SW, h: SH, el: world, bg: bg, wall: bg.querySelector('.fx-world-wall'), grid: gridEl, light: lightBg, white3d: white3d,
           px: SW * gap, py: SH * gap, dz: num(attr(stage, 'depth'), 1500),
           view: num(attr(stage, 'view'), 1), travel: num(attr(stage, 'travel'), 0.8), drift: num(attr(stage, 'drift'), 0.5) / 100,
           moves: [], dirty: true, cache: [], total: ctx.total, start: null };
@@ -112,7 +113,8 @@
       var a = (i % 2 ? -1 : 1) * (0.55 + 0.45 * rnd()) * (tilt[0] || 0), b = (rnd() < 0.5 ? -1 : 1) * (0.5 + 0.5 * rnd()) * (tilt[1] || 0);
       var ct = s.el.getAttribute('data-tilt');
       if (ct !== null) { var q = ct.split(',').map(Number); a = q[0] || 0; b = q[1] || 0; }
-      var st = { s: s, el: s.el, i: i, x: p[0] * W.px, y: p[1] * W.py, z: (p[2] || 0) * W.dz, a: a, b: b };
+      var has3d = white3d || !!s.el.querySelector('.fx-phone3d,.fx-card3d,.fx-box3d,.fx-wall3d,.fx-layers3d,.fx-deck3d,.fx-coins3d,.fx-sleeve3d');
+      var st = { s: s, el: s.el, i: i, x: p[0] * W.px, y: p[1] * W.py, z: (p[2] || 0) * W.dz, a: a, b: b, has3d: has3d };
       world.appendChild(s.el);
       s.el.classList.add('fx-station');
       s.el.style.transform = 'translate3d(' + st.x.toFixed(1) + 'px,' + st.y.toFixed(1) + 'px,' + st.z.toFixed(1) + 'px) rotateY(' + a.toFixed(2) + 'deg) rotateX(' + b.toFixed(2) + 'deg)';
@@ -179,8 +181,10 @@
     var halfW = W.w / c.zoom / 2 + W.w * 0.8, halfH = W.h / c.zoom / 2 + W.h * 0.8;
     W.st.forEach(function (st, i) {
       // f：这个机位有多「在焦点上」。1 = 清晰，0 = 远处的背景
+      // 注意：CSS 规范规定父元素一旦设了 opacity < 1 或 filter != none，子级 preserve-3d 会瞬间坍缩为平面导致 1 帧屏闪；
+      // 因此含有真 3D 样机的机位在常规平面推镜时不挂父级 filter / 半透明（机位间距 1.16 倍画幅互不重叠，靠视锥剪裁显隐）。
       var fa = c.a < 0 ? 1 : (i === c.a ? 1 : 0), fb = c.b < 0 ? 1 : (i === c.b ? 1 : 0), f = lerp(fa, fb, c.p);
-      var rz = st.z - c.z, vis, op = 1;
+      var rz = st.z - c.z, vis, op = 1, keep3d = st.has3d && !depth && c.a >= 0 && c.b >= 0;
       if (depth && c.b >= 0 && c.a >= 0) {
         // 纵深：前面的机位隐约可见，穿过去的放大变虚后消失
         vis = rz > -W.dz * 3.2 && rz < W.dz * 0.55;
@@ -189,16 +193,17 @@
         if (rz > 1) op = Math.min(op, clamp(1 - rz / (W.dz * 0.5), 0, 1));
       } else {
         vis = Math.abs(st.x - c.x) < halfW && Math.abs(st.y - c.y) < halfH;
-        if (W.light && f < 0.995) op = lerp(0.26, 1, f);
+        if (W.light && !keep3d && f < 0.995) op = lerp(0.26, 1, f);
       }
-      var key = !vis ? 'h' : (f > 0.995 ? '1' : f.toFixed(3)) + '|' + op.toFixed(3);
+      var effF = keep3d ? 1 : f;
+      var key = !vis ? 'h' : (effF > 0.995 ? '1' : effF.toFixed(3)) + '|' + op.toFixed(3);
       if (W.cache[i] === key) return;
       W.cache[i] = key;
       if (!vis) { st.el.style.visibility = 'hidden'; return; }
       st.el.style.visibility = 'visible';
       st.el.style.opacity = op > 0.995 ? '' : op.toFixed(3);
-      st.el.style.filter = f > 0.995 ? '' : (W.light ? 'blur(' + ((1 - f) * (depth ? 9 : 6)).toFixed(2) + 'px)'
-        : 'blur(' + ((1 - f) * (depth ? 9 : 5)).toFixed(2) + 'px) brightness(' + (1 - (1 - f) * 0.4).toFixed(3) + ')');
+      st.el.style.filter = effF > 0.995 ? '' : (W.light ? 'blur(' + ((1 - effF) * (depth ? 9 : 6)).toFixed(2) + 'px)'
+        : 'blur(' + ((1 - effF) * (depth ? 9 : 5)).toFixed(2) + 'px) brightness(' + (1 - (1 - effF) * 0.4).toFixed(3) + ')');
     });
   }
 
