@@ -26,7 +26,7 @@
   </a>
 </div>
 
-> ⚡ **公式コンピュートパートナー [HRouter](https://hrouter.net/)**：**1 つの API キーで Claude / GPT / Gemini / Grok に直結**。従量課金・即時チャージ反映・リクエスト単位の利用明細に対応し、**[Claude Code](https://hrouter.net/docs/claude-code/)**・**[Codex](https://hrouter.net/docs/codex/)**・**[Gemini CLI](https://hrouter.net/docs/gemini-cli/)** から `motion-lib` の動画 HTML を一括自動生成できます！ 👉 **[公式サイト hrouter.net](https://hrouter.net/)** · **[モデルと料金](https://hrouter.net/models/)** · **[導入ガイド](https://hrouter.net/docs/index/)**
+> ⚡ **公式コンピュートパートナー [HRouter](https://hrouter.net/)**：**1 つの API キーで Claude / GPT / Gemini / Grok に直結**。従量課金・即時チャージ反映・リクエスト単位の利用明細に対応し、**[Claude Code](https://hrouter.net/docs/claude-code/)**・**[Codex](https://hrouter.net/docs/codex/)**・**[Gemini CLI](https://hrouter.net/docs/gemini-cli/)**, **[DeepSeek](https://hrouter.net/docs/deepseek/)** から `motion-lib` の動画 HTML を一括自動生成できます！ 👉 **[公式サイト hrouter.net](https://hrouter.net/)** · **[モデルと料金](https://hrouter.net/models/)** · **[導入ガイド](https://hrouter.net/docs/index/)**
 
 ---
 
