@@ -26,7 +26,7 @@
   </a>
 </div>
 
-> ⚡ **Official Compute Partner — [HRouter](https://hrouter.net/)**: **One API Key for Claude, GPT, Gemini & Grok**. Pay-as-you-go with instant balance top-up, transparent per-request billing, and zero wasted monthly subscriptions. Plugs natively into **[Claude Code](https://hrouter.net/docs/claude-code/)**, **[Codex](https://hrouter.net/docs/codex/)**, **[Gemini CLI](https://hrouter.net/docs/gemini-cli/)**, and Image/Video APIs — let your AI coding agent author `data-fx` scenes and batch-render MP4s automatically! 👉 **[hrouter.net](https://hrouter.net/)** · **[Models & Pricing](https://hrouter.net/models/)** · **[Quick Setup Docs](https://hrouter.net/docs/index/)**
+> ⚡ **Official Compute Partner — [HRouter](https://hrouter.net/)**: **One API Key for Claude, GPT, Gemini & Grok**. Pay-as-you-go with instant balance top-up, transparent per-request billing, and zero wasted monthly subscriptions. Plugs natively into **[Claude Code](https://hrouter.net/docs/claude-code/)**, **[Codex](https://hrouter.net/docs/codex/)**, **[Gemini CLI](https://hrouter.net/docs/gemini-cli/)**, **[DeepSeek](https://hrouter.net/docs/deepseek/)**, and Image/Video APIs — let your AI coding agent author `data-fx` scenes and batch-render MP4s automatically! 👉 **[hrouter.net](https://hrouter.net/)** · **[Models & Pricing](https://hrouter.net/models/)** · **[Quick Setup Docs](https://hrouter.net/docs/index/)**
 
 ---
 
