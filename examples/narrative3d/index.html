@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>motion-lib · 口播黄金叙事 3D 动效组合（fx-narrative3d）</title>
+<link rel="stylesheet" href="lib/fx.css" />
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/vendor/three-fx.min.js"></script>
+<script src="lib/vendor/three-vrm.min.js"></script>
+<script src="lib/assets/narrative3d/models-b64.js"></script>
+<script src="lib/fx.js"></script>
+<script src="lib/fx-world.js"></script>
+<script src="lib/fx-narrative3d.js"></script>
+<script src="lib/fx-sound.js"></script>
+<style>
+  #root .fx-world-bg { background: #04070e; }
+  .scene.panel.nr-ocean   { background: radial-gradient(95% 88% at 50% 42%, #0c2d48 0%, #071629 52%, #030812 100%); }
+  .scene.panel.nr-ember   { background: radial-gradient(95% 88% at 52% 54%, #2c1810 0%, #110d14 54%, #05060b 100%); }
+  .scene.panel.nr-bronze  { background: radial-gradient(95% 88% at 52% 54%, #281f12 0%, #0f111c 54%, #05070e 100%); }
+  .scene.panel.nr-purple  { background: radial-gradient(95% 88% at 52% 54%, #1e163b 0%, #0b0e1f 54%, #04060d 100%); }
+  .scene.panel.nr-emerald { background: radial-gradient(95% 88% at 52% 54%, #0d2822 0%, #081317 54%, #04070b 100%); }
+  .scene.panel.nr-summit  { background: radial-gradient(95% 88% at 52% 50%, #272013 0%, #0d1220 54%, #04060d 100%); }
+
+  .nr-head {
+    position: absolute; left: 108px; top: 58px; z-index: 8; pointer-events: none;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .nr-kicker {
+    font-family: var(--fx-font-mono); font-size: 32px; font-weight: 700;
+    letter-spacing: .14em; color: var(--nr-ac, #38bdf8);
+  }
+  .nr-title {
+    margin: 0; font-family: var(--fx-font-title); font-size: 56px; font-weight: 900;
+    line-height: 1.15; letter-spacing: -.015em; color: #f8fafc;
+  }
+  .nr-spec {
+    position: absolute; right: 108px; top: 66px; z-index: 8; pointer-events: none;
+    padding: 10px 26px; border-radius: 999px;
+    font-family: var(--fx-font-mono); font-size: 32px; font-weight: 700;
+    color: #e2e8f0; background: rgba(15, 23, 42, .68);
+    border: 1px solid rgba(148, 163, 184, .26);
+  }
+</style>
+</head>
+<body>
+<div id="root" class="theme-studio" data-composition-id="main" data-width="1920" data-height="1080" data-fps="60" data-world="snake" data-cols="3">
+
+  <!-- S01 · 冰山深潜组合（iceberg3d：水上 10% 冰尖 -> 俯冲穿水揭露水下 90% 三层真相） -->
+  <section class="scene panel nr-ocean" data-scene="S01" data-d="4.4">
+    <div class="layer" data-make="iceberg3d"
+         data-accent="#38bdf8"
+         data-dist="10.8"
+         data-tip="表面现象 · 仅占 10%"
+         data-depths="隐性算力调度,私有数据护城河,工程化闭环 · 90%"
+         data-fx="ice-tip3d@0(dur=1.15) ice-dive3d@1.25(dur=1.85)"></div>
+    <div class="nr-head" style="--nr-ac:#38bdf8" data-fx="blur-rise-in@0(dur=0.45)">
+      <div class="nr-kicker">01 · ICEBERG</div>
+      <h2 class="nr-title">表象十成一 · 真相在水下</h2>
+    </div>
+    <div class="nr-spec" data-fx="fade-in@0.1(dur=0.4)">iceberg3d · 10/90</div>
+  </section>
+
+  <!-- S02 · 弧形多米诺连锁崩塌与护盾截停组合（domino3d：domino-fall3d + domino-shield3d） -->
+  <section class="scene panel nr-ember" data-scene="S02" data-d="4.4">
+    <div class="layer" data-make="domino3d"
+         data-accent="#fb923c"
+         data-dist="10.6"
+         data-tiles="选题自嗨,完播暴跌,推荐断崖,流量归零,长效资产"
+         data-shield="关键风控护盾 · 截停崩塌"
+         data-fx="domino-fall3d@0.2(dur=1.7) domino-shield3d@1.55(dur=1.15)"></div>
+    <div class="nr-head" style="--nr-ac:#fb923c" data-fx="blur-rise-in@0(dur=0.45)">
+      <div class="nr-kicker">02 · DOMINO</div>
+      <h2 class="nr-title">骨牌雪崩与护盾截停</h2>
+    </div>
+    <div class="nr-spec" data-fx="fade-in@0.1(dur=0.4)">domino3d · Shield</div>
+  </section>
+
+  <!-- S03 · 双盘天平四两拨千斤反杀组合（scale3d：scale-drop3d + scale-flip3d） -->
+  <section class="scene panel nr-bronze" data-scene="S03" data-d="4.4">
+    <div class="layer" data-make="scale3d"
+         data-accent="#fbbf24"
+         data-dist="11.2"
+         data-left="堆人力苦肝|低效内耗"
+         data-right="AI 杠杆支点|10× 降维反杀"
+         data-fx="scale-drop3d@0.2(dur=1.2) scale-flip3d@1.6(dur=1.45)"></div>
+    <div class="nr-head" style="--nr-ac:#fbbf24" data-fx="blur-rise-in@0(dur=0.45)">
+      <div class="nr-kicker">03 · LEVERAGE</div>
+      <h2 class="nr-title">四两拨千斤反杀对决</h2>
+    </div>
+    <div class="nr-spec" data-fx="fade-in@0.1(dur=0.4)">scale3d · Plumb</div>
+  </section>
+
+  <!-- S04 · 三层涡流漏斗残酷提纯组合（funnel3d：funnel-pour3d + funnel-distill3d） -->
+  <section class="scene panel nr-purple" data-scene="S04" data-d="4.4">
+    <div class="layer" data-make="funnel3d"
+         data-accent="#a78bfa"
+         data-dist="11.2"
+         data-stages="10,000 条公域噪点|300 个高潜样本|1 颗高复利金核"
+         data-fx="funnel-pour3d@0.15(dur=1.45) funnel-distill3d@1.7(dur=1.6)"></div>
+    <div class="nr-head" style="--nr-ac:#a78bfa" data-fx="blur-rise-in@0(dur=0.45)">
+      <div class="nr-kicker">04 · FUNNEL</div>
+      <h2 class="nr-title">三层涡流残酷提纯</h2>
+    </div>
+    <div class="nr-spec" data-fx="fade-in@0.1(dur=0.4)">funnel3d · 3-Stage</div>
+  </section>
+
+  <!-- S05 · 重型机械金库破译洞开组合（vault3d：vault-unlock3d + vault-open3d） -->
+  <section class="scene panel nr-emerald" data-scene="S05" data-d="4.4">
+    <div class="layer" data-make="vault3d"
+         data-accent="#34d399"
+         data-dist="10.4"
+         data-look-y="-0.08"
+         data-badge="CORE FORMULA · 压箱底牌"
+         data-secret="爆款底层公式|黄金 3 秒 × 情绪反差 × 结构留存"
+         data-fx="vault-unlock3d@0.2(dur=1.25) vault-open3d@1.5(dur=1.6)"></div>
+    <div class="nr-head" style="--nr-ac:#34d399" data-fx="blur-rise-in@0(dur=0.45)">
+      <div class="nr-kicker">05 · VAULT</div>
+      <h2 class="nr-title">重门破译揭秘核心底牌</h2>
+    </div>
+    <div class="nr-spec" data-fx="fade-in@0.1(dur=0.4)">vault3d · Hinge</div>
+  </section>
+
+  <!-- S06 · 四阶悬浮金字塔逐级登顶加冕组合（pyramid3d：pyramid-build3d + pyramid-crown3d） -->
+  <section class="scene panel nr-summit" data-scene="S06" data-d="4.4">
+    <div class="layer" data-make="pyramid3d"
+         data-accent="#fbbf24"
+         data-dist="11.8"
+         data-look-y="-0.16"
+         data-tiers="L1 · 低维体力重复|L2 · 单点工具提效|L3 · 自动流水线编排|TOP · 全局系统壁垒"
+         data-fx="pyramid-build3d@0.15(dur=1.55) pyramid-crown3d@1.8(dur=1.5)"></div>
+    <div class="nr-head" style="--nr-ac:#fbbf24" data-fx="blur-rise-in@0(dur=0.45)">
+      <div class="nr-kicker">06 · PYRAMID</div>
+      <h2 class="nr-title">四层认知段位登顶加冕</h2>
+    </div>
+    <div class="nr-spec" data-fx="fade-in@0.1(dur=0.4)">pyramid3d · 4-Tier</div>
+  </section>
+
+</div>
+<script>
+  FX.subtitles([
+    [0.25, 4.05, '你看到的只是水面上{10% 的表象}，真正的护城河全在水下'],
+    [4.75, 8.45, '一步错就会引发{连锁崩塌}，除非在关键节点立起防线'],
+    [9.15, 12.85, '盲目堆苦力只会内耗，找对{系统支点}瞬间完成反杀'],
+    [13.55, 17.25, '万千公域噪点倒进漏斗，三层过滤只留{一颗纯金结论}'],
+    [17.95, 21.65, '双棘轮咬合解锁重型金库，直接亮出压箱底的{爆款公式}'],
+    [22.35, 26.10, '从底层搬砖一路跃迁，站在{顶层生态}才能俯瞰全局']
+  ], { style: 'studio' });
+  FX.build();
+</script>
+</body>
+</html>

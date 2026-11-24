@@ -782,6 +782,33 @@ html, body { width: var(--fx-w); height: var(--fx-h); overflow: hidden; backgrou
   --fx-bg: #f4f3ee;
   --fx-card-shadow: 0 26px 56px -12px rgba(24, 24, 28, .16), 0 8px 18px -4px rgba(24, 24, 28, .08), 0 0 0 1px rgba(24, 24, 28, .06);
 }
+/* 子模式：暖白无影展厅（一只桌子款暖米白柔光棚 + 哑光地平线展台 + 朱橙点缀，根元素或单场加 .gallery） */
+.theme-white3d.gallery, .scene.gallery {
+  --fx-bg: #faf6ec;
+  --fx-ink: #232733;
+  --fx-sub: #6b7280;
+  --fx-dim: #9aa0ad;
+  --fx-accent: #ea580c;
+  --fx-accent-2: #ffedd5;
+  --fx-marker: rgba(234, 88, 12, .18);
+  --fx-card: #fcfbf8;
+  --fx-card-ink: #232733;
+  --fx-card-shadow: 0 28px 60px -14px rgba(35, 39, 51, .13), 0 8px 20px -6px rgba(35, 39, 51, .06), 0 0 0 1px rgba(35, 39, 51, .06);
+}
+.theme-white3d.gallery .scene, .scene.gallery, .theme-white3d.gallery .fx-world-bg {
+  background-color: #faf6ec;
+  background-image:
+    linear-gradient(180deg, #fdfaf2 0%, #faf5e8 54%, #ebeae5 59.5%, #e3e2dd 66%, #efeeea 86%, #f7f6f2 100%);
+}
+.theme-white3d.gallery .fx-subs[data-style="pill"] .fx-sub span,
+.theme-white3d.gallery .fx-subs[data-style="studio"] .fx-sub span {
+  background: rgba(255, 253, 248, .95);
+  color: #232733;
+  border-radius: 18px;
+  padding: 14px 34px 16px;
+  box-shadow: 0 14px 36px rgba(35, 39, 51, .10), 0 0 0 1px rgba(35, 39, 51, .05);
+}
+.theme-white3d.gallery .fx-subs .fx-sub em { color: #ea580c; font-style: normal; }
 .theme-white3d.desk .scene, .scene.desk, .theme-white3d.desk .fx-world-bg {
   background-color: #f4f3ee;
   background-image:
@@ -1372,4 +1399,82 @@ html, body { width: var(--fx-w); height: var(--fx-h); overflow: hidden; backgrou
 .abs.fx-phone3d, .abs.fx-card3d, .abs.fx-box3d, .abs.fx-layers3d, .abs.fx-deck3d, .abs.fx-wall3d, .abs.fx-flap3d,
 .abs.fx-letterdeck, .abs.fx-sleeve3d, .abs.fx-carousel3d, .abs.fx-slabs3d, .abs.fx-coins3d, .abs.fx-timeline3d,
 .abs.fx-paperstack, .abs.fx-callouts3d, .abs.fx-youarehere, .abs.fx-calgrid3d, .abs.fx-ctabar, .abs.fx-steplist3d, .abs.fx-blueprint3d,
-.abs.fx-float-pill, .abs.fx-score-card, .abs.fx-stamp, .abs.fx-pop-slice, .abs.fx-pop-bub, .abs.fx-check-row { position: absolute; }
+.abs.fx-gallery3d, .abs.fx-showcase3d, .abs.fx-float-pill, .abs.fx-score-card, .abs.fx-stamp, .abs.fx-pop-slice, .abs.fx-pop-bub, .abs.fx-check-row { position: absolute; }
+
+/* ═════════════ 工业级 3D 硬件拆解与光学展台（fx-showcase3d.js） ═════════════ */
+.fx-showcase3d {
+  position: relative; width: 100%; height: 100%; overflow: visible;
+}
+.layer.fx-showcase3d, .abs.fx-showcase3d { position: absolute; }
+.fx-showcase3d > canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none;
+}
+.fx-sc3d-overlay {
+  position: absolute; inset: 0; pointer-events: none; z-index: 4;
+}
+.fx-sc3d-svg {
+  position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none;
+}
+.fx-sc3d-tag {
+  position: absolute; transform: translateY(-50%);
+  padding: 8px 20px; border-radius: 999px;
+  font-family: var(--fx-font-body); font-size: 28px; font-weight: 700; white-space: nowrap;
+  background: rgba(15, 23, 42, .82); color: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, .28);
+  box-shadow: 0 12px 28px rgba(2, 6, 23, .34);
+  backdrop-filter: blur(10px);
+}
+.fx-sc3d-tag.is-light {
+  background: rgba(255, 255, 255, .92); color: #0f172a;
+  border: 1px solid rgba(15, 23, 42, .10);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, .12);
+}
+.fx-sc3d-tag i {
+  display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+  margin-right: 10px; vertical-align: middle; background: var(--sc-dot, #38bdf8);
+}
+
+/* ═════════════ 暖白无影展厅 3D 模块（fx-gallery3d.js） ═════════════ */
+.fx-gallery3d {
+  position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+}
+.fx-gallery3d > canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none;
+}
+.fx-gallery-hud {
+  position: absolute; left: 68px; right: 68px; top: 42px; z-index: 6;
+  display: flex; align-items: baseline; justify-content: space-between; pointer-events: none;
+  color: #525866; font-family: var(--fx-font-body);
+}
+.fx-gallery-hud-l { display: flex; align-items: baseline; gap: 26px; }
+.fx-gallery-hud-l b { font-size: 24px; font-weight: 700; letter-spacing: .08em; color: #434957; }
+.fx-gallery-hud-l span, .fx-gallery-hud-r {
+  font-family: var(--fx-font-mono); font-size: 19px; font-weight: 600; letter-spacing: .18em; color: #7c8291; text-transform: uppercase;
+}
+.fx-gallery-hero-copy {
+  position: absolute; left: 132px; top: 306px; z-index: 7; pointer-events: none;
+  display: flex; flex-direction: column; gap: 14px; max-width: 720px;
+}
+.fx-gallery-hero-copy .kicker {
+  font-family: var(--fx-font-mono); font-size: 22px; font-weight: 700; letter-spacing: .18em; color: #8a909e; text-transform: uppercase;
+}
+.fx-gallery-hero-copy h2 {
+  margin: 0; font-family: var(--fx-font-title); font-size: 86px; font-weight: 900; line-height: 1.14;
+  letter-spacing: -.02em; color: #2b3140;
+}
+.fx-gallery-hero-copy h2 em { color: #ea580c; font-style: normal; }
+.fx-gallery-hero-copy .rule {
+  width: 96px; height: 6px; border-radius: 999px; background: #ea580c; margin-top: 8px; transform-origin: 0 50%;
+}
+.fx-gallery-sec-head {
+  position: absolute; left: 132px; top: 150px; z-index: 7; pointer-events: none;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.fx-gallery-sec-head h3 {
+  margin: 0; font-family: var(--fx-font-title); font-size: 56px; font-weight: 800; line-height: 1.15;
+  letter-spacing: -.015em; color: #2b3140;
+}
+.fx-gallery-sec-head h3 em { color: #ea580c; font-style: normal; }
+.fx-gallery-sec-head span {
+  font-family: var(--fx-font-mono); font-size: 20px; font-weight: 600; letter-spacing: .18em; color: #8a909e; text-transform: uppercase;
+}

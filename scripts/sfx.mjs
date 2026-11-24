@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // 给一条片子生成音效轨：用本机 Chrome 打开页面，读出每个动效的触发时间，按对照表合成声音，写成一条和画面等长的 WAV。
 //
-//   node sfx.mjs <工程目录或 index.html> [--out audio/sfx.wav] [--palette soft|pixel|cinema|paper] [--gain 1] [--json]
-//   node sfx.mjs --audition <输出目录>      每套音色导出一条「所有声音挨个响一遍」的试听文件
+//   node scripts/sfx.mjs <工程目录或 index.html> [--out audio/sfx.wav] [--palette soft|pixel|cinema|paper] [--gain 1] [--json]
+//   node scripts/sfx.mjs --audition <输出目录>      每套音色导出一条「所有声音挨个响一遍」的试听文件
 //
 // 页面要加载 lib/fx-sound.js（它负责把动效换算成音效清单）。生成的 sfx.wav 垫在配音下面混音即可，比如：
 //   ffmpeg -i voice.wav -i audio/sfx.wav -filter_complex "amix=inputs=2:normalize=0" mix.wav
@@ -19,7 +19,12 @@ const flag = (k) => args.includes(k);
 const die = (m) => { console.error("✗ " + m); process.exit(1); };
 
 function loadSound(dir) {
-  const file = [dir && path.join(dir, "lib", "fx-sound.js"), dir && path.join(dir, "fx-sound.js"), path.join(here, "fx-sound.js")].find((f) => f && fs.existsSync(f));
+  const file = [
+    dir && path.join(dir, "lib", "fx-sound.js"),
+    dir && path.join(dir, "fx-sound.js"),
+    path.join(here, "fx-sound.js"),
+    path.join(here, "..", "src", "modules", "audio", "fx-sound.js"),
+  ].find((f) => f && fs.existsSync(f));
   if (!file) die("找不到 fx-sound.js");
   const win = {};
   new Function("window", fs.readFileSync(file, "utf8").replace("typeof window !== 'undefined' ? window : globalThis", "window"))(win);

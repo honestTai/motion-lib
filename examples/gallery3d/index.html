@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>motion-lib · 暖白无影展厅真 3D 片头组合示例（五连拍）</title>
+<link rel="stylesheet" href="lib/fx.css" />
+<script src="lib/vendor/gsap.min.js"></script>
+<script src="lib/vendor/three-fx.min.js"></script>
+<script src="lib/vendor/three-vrm.min.js"></script>
+<script src="lib/assets/gallery3d/models-b64.js"></script>
+<script src="lib/fx.js"></script>
+<script src="lib/fx-world.js"></script>
+<script src="lib/fx-gallery3d.js"></script>
+<script src="lib/fx-sound.js"></script>
+</head>
+<body>
+<div id="root" class="theme-white3d gallery" data-composition-id="main" data-width="1920" data-height="1080" data-fps="60" data-world="row" data-cols="1">
+
+  <!-- S01 · 一镜到底五连拍真 3D 暖白展厅片头（14.8s）：
+       1. corridor-fly    (0.0–3.8s)  3D 悬浮画框走廊高速穿梭 → 减速定焦中央英雄画框
+       2. hero-split3d    (3.8–5.5s)  英雄框右移侧旋 + 磨砂玻璃叠层 + CAD 选区线框 + 3D 进度轨 + 左题浮现
+       3. step-track3d    (5.5–9.3s)  5 张白瓷步骤竖卡横向滑轨跟拍 + 底部三维朱橙跳线球串联
+       4. step-overview3d (9.3–10.7s) 拉远全景陈列 5 张步骤卡与完整跳线链
+       5. monolith-rise3d (10.7–14.5s) 五卡上移归档 + 树状胶囊分支 + 3D 倒角白瓷巨碑翻起立定 -->
+  <section class="scene gallery" data-scene="S01" data-d="14.8">
+    <div class="layer" data-make="gallery3d"
+         data-brand="MOTION STUDIO|FROM IDEA TO FRAME"
+         data-ep="EPISODE 05"
+         data-kicker="EPISODE 05"
+         data-title="我是怎么用|AI 做视频的."
+         data-flow-title="完整的制作流程.|FROM IDEA TO FRAME"
+         data-open-title="开源了。|OPEN SOURCE"
+         data-tags="SOP,规则,经验"
+         data-sub-tags="使用方法,提示词"
+         data-repo-kicker="GitHub"
+         data-repo-title="motion-lib"
+         data-repo-sub="honestTai / motion-lib · fx-gallery3d"
+         data-repo-line="从想法，到成片。"
+         data-fx="corridor-fly@0(dur=3.8) hero-split3d@3.8(dur=1.7) step-track3d@5.5(dur=3.8) step-overview3d@9.3(dur=1.4) monolith-rise3d@10.7(dur=3.6)">
+      <div class="step-item" data-no="01" data-title="工具选择" data-sub="TOOLS" data-icon="terminal"></div>
+      <div class="step-item" data-no="02" data-title="画面设计" data-sub="DESIGN" data-icon="design"></div>
+      <div class="step-item" data-no="03" data-title="动画制作" data-sub="ANIMATION" data-src="assets/paper.jpg" data-icon="animation"></div>
+      <div class="step-item" data-no="04" data-title="声音" data-sub="AUDIO" data-icon="audio"></div>
+      <div class="step-item" data-no="05" data-title="封面" data-sub="COVER" data-src="assets/violet.jpg" data-icon="cover"></div>
+    </div>
+  </section>
+
+</div>
+<script>
+  FX.subtitles([
+    [0.25, 2.30, '用 AI 做了这么多视频'],
+    [2.35, 5.45, '我就把自己实际在用的{制作流程}完整拆给你看'],
+    [5.55, 7.45, '从{工具选择}、画面设计'],
+    [7.50, 9.25, '到动画制作、声音和封面'],
+    [9.35, 12.10, '整套流程{规则和经验}也都整理开源了'],
+    [12.15, 14.55, '使用方法和提示词都放在公开仓库里']
+  ], { style: 'studio' });
+  FX.build();
+</script>
+</body>
+</html>
